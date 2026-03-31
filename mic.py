@@ -10,6 +10,34 @@ def lodd(binary):
     print("Sending to processor (MBR)")
     print("Sending from MBR -> ALU ->  CABLE C -> AC")
 
+def stod(binary):
+    adress = binary[4:]
+
+"""
+REGISTERS
+
+possível ler e escrever o mesmo registrador em um único ciclo, ou seja, pode fazer A = A AND B ou A = A + B
+
+MAR:    REGISTRADOR DE ENDEREÇO DE MEMÓRIA (BARR 32 BITS)
+↑
+MDR:    REGISTRADOR DE DADOS DE MEMÓRIA (BARR 32 BITS)
+↑
+PC:     CONTADOR DE PROGRAMA (BARR 8 BITS)
+↑
+MBR:    REGISTRADOR DE DADOS DE MEMÓRIA (BARR 8 BITS) | BUFFER REGISTER
+
+SP:     PONTEIRO DE STACK
+↑
+LV:     POINTEIRO PARA BASE DE VARIÁVEIS LOCAIS (NA PILHA)
+↑
+CPP:    APONTA PARA POOL DE CONSTANTES E POINTEIRO PARA OUTRAS ÁREAS DA MEMÓRIA
+↑
+TOS:    REGISTRADOR TEMPORÁRIO
+↑
+OPC:    REGISTRADOR TEMPORÁRIO
+
+H:      ACUMULADOR
+"""
     
 hm = {
     "0000": lodd,
