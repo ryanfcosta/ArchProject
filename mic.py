@@ -52,7 +52,7 @@ def decode_din(binary):
         print("  -> Todos os bits de teste são 0. Fim do Decode, caindo para a Execução principal.")
 
 
-def lodd(binary): # pega o endereço, vai até a RAM externa, busca a variável e salva no AC (Acumulador)
+def lodd(binary): # pega o endereço, vai até a RAM externa, busca a variável e tira do buffer e salva no AC (Acumulador)
     adress = binary[4:]
     
     print(f"\n[LODD] Rastreando o Caminho de Dados (Datapath) para: {binary}")
@@ -64,7 +64,7 @@ def lodd(binary): # pega o endereço, vai até a RAM externa, busca a variável 
     print("\n--- EXECUTE")
     print(f"MPC 6: [mar := ir; rd;]")
     print("  Datapath: IR -> Travas da ULA -> ULA (passagem livre) -> Barramento C -> MAR") # joga até a RAM externa //igual MPC0 mas vem do IR
-    print(f"  Sinal: RD ativado. RAM externa recebe o endereço da variável ({adress}).")
+    print(f"  Sinal: RD ativado. RAM externa recebe o endereço da variável ({adress}).") # lê da RAM
     
     print("\nMPC 7: [rd;]")
     print("  Datapath: Ocioso. Barramentos internos livres aguardando a resposta elétrica da memória RAM.")
@@ -75,10 +75,31 @@ def lodd(binary): # pega o endereço, vai até a RAM externa, busca a variável 
     print("="*85)
     print("Execução finalizada. Processador pronto para a próxima instrução.\n")
 
+def stod(binary): #pega endereço do acumulador e joga no buffer
+    adress = binary[4:]
+
+    print(f"\n[STOD] Rastreando o Caminho de Dados (Datapath) para: {binary}")
+    print("="*85)
+
+    fetch()
+    decode_din(binary)
+
+    print("\n--- EXECUTE ---")
+    print("MPC 9: [mar := ir;]")
+    print("  Datapath: IR -> Travas da ULA -> ULA (passagem livre) -> Barramento C -> MAR") # isola do ir e joga no MAR
+    print(f"  -> O endereço de destino ({adress}) é isolado e enviado para o MAR.")
     
+    print("\nMPC 10: [mbr := ac; wr; goto 0;]")
+    print("  Datapath: AC -> Travas da ULA -> ULA (passagem livre) -> Barramento C -> MBR") # pega do AC e joga no buffer
+    print("  Sinal: WR (Write) ativado. A memória RAM externa recebe a ordem para gravar.") # escreve na RAM
+    print("  -> O dado do Acumulador chega ao MBR e é consolidado na RAM.")
+    print("="*85)
+    print("Execução finalizada. Processador pronto para a próxima instrução.\n")
+
+
 hm = {
     "0000": lodd,
-    "0001": "STOD",
+    "0001": stod,
     "0010": "ADDD",
     "0011": "SUBD",
     "0100": "JPOS",
