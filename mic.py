@@ -1,12 +1,7 @@
 #16 bits each comand
 comando = str(input())
 
-def lodd(binary): # pega o endereço, vai até a RAM externa, busca a variável e salva no AC (Acumulador)
-    adress = binary[4:]
-    
-    print(f"\n[LODD] Rastreando o Caminho de Dados (Datapath) para: {binary}")
-    print("="*85)
-    
+def fetch():
     print("--- FETCH ---") #JOGA O COMANDO NA MEMÓRIA
     print("\nMPC 0: [mar := pc; rd;]")
     print("  Datapath: PC -> Travas da ULA -> ULA (passagem) -> Barramento C -> MAR")  #manda o dado direto pro MAR passagem livre na ula
@@ -19,18 +14,53 @@ def lodd(binary): # pega o endereço, vai até a RAM externa, busca a variável 
     print("  Datapath Externo: RAM -> Barramento de Dados Externo -> MBR") # viaja do pente até a entrada da cpu (MBR)
     print("  Datapath Interno: MBR -> Travas da ULA -> ULA (passgem) -> Barramento C -> IR") # envia os bits do mbr pro IR
 
+def decode_din(binary):
+    print("\n--- DECODE ---") # IDENTIFICA INSTRUÇÃO (joga bit pra esquerda até encontrar 1)
+    
+    # isso acontece no final de MPC 2
+    if binary[0] == '1':
+        print("  -> O 1º bit (bit 15) é 1! Flag N ativada no MPC 2.")
+        print("  -> Salto GOTO 28 executado. Decodificação principal ignorada.")
+        return
 
-    print("\n--- DECODE ---") # IDENTIFICA INSTRUÇÃO (joga bit pra esquerda, se for 1 acende flag n)
     print("\nMPC 3: [tir := lshift(ir + ir); if n then goto 19;]")
     print("  Datapath: IR -> Travas da ULA -> ULA (soma) -> Shifter (desloca 1 bit) -> Barramento C -> TIR")  # desloca bits para a esquerda e guarda no temporário
-    
+    if binary[1] == '1':
+        print("  -> O 2º bit (bit 14) é 1! A ULA acende a Flag N.")
+        print("  -> MPC detecta a flag e realiza o salto GOTO 19.")
+        return
+    else:
+        print("  -> O 2º bit (bit 14) é 0. Flag N desligada. Não salta.")
+
     print("\nMPC 4: [tir := lshift(tir); if n then goto 11;]")
     print("  Datapath: TIR -> Travas da ULA -> ULA (passagem) -> Shifter (desloca 1 bit) -> Barramento C -> TIR") # desloca mais uma vez (lshift) 
-    
+    if binary[2] == '1':
+        print("  -> O 3º bit (bit 13) é 1! A ULA acende a Flag N.")
+        print("  -> MPC detecta a flag e realiza o salto GOTO 11.")
+        return
+    else:
+        print("  -> O 3º bit (bit 13) é 0. Flag N desligada. Não salta.")
+
     print("\nMPC 5: [alu := tir; if n then goto 9;]")
     print("  Datapath: TIR -> Travas da ULA -> ULA (testa flags N/Z) -> (Nenhum registrador recebe no Barramento C)") # identifica instrução
+    if binary[3] == '1':
+        print("  -> O 4º bit (bit 12) é 1! A ULA acende a Flag N.")
+        print("  -> MPC detecta a flag e realiza o salto GOTO 9.")
+        return
+    else:
+        print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
+        print("  -> Todos os bits de teste são 0. Fim do Decode, caindo para a Execução principal.")
+
+
+def lodd(binary): # pega o endereço, vai até a RAM externa, busca a variável e salva no AC (Acumulador)
+    adress = binary[4:]
     
-    
+    print(f"\n[LODD] Rastreando o Caminho de Dados (Datapath) para: {binary}")
+    print("="*85)
+
+    fetch()
+    decode_din(binary)    
+
     print("\n--- EXECUTE")
     print(f"MPC 6: [mar := ir; rd;]")
     print("  Datapath: IR -> Travas da ULA -> ULA (passagem livre) -> Barramento C -> MAR") # joga até a RAM externa //igual MPC0 mas vem do IR
