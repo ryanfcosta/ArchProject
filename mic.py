@@ -11,7 +11,7 @@ def fetch():
     print("  Datapath: PC -> Travas da ULA -> ULA (soma +1) -> Barramento C -> PC") # simplesmente aumenta o pc
     
     print("\nMPC 2: [ir := mbr; if n then goto 28;]")
-    print("  Datapath Externo: RAM -> Barramento de Dados Externo -> MBR") # viaja do pente até a entrada da cpu (MBR)
+    print("  Datapath Externo: RAM -> Barramento de Dados Externo -> MBR") # viaja do pente até a entrada da cpu / buffer (MBR)
     print("  Datapath Interno: MBR -> Travas da ULA -> ULA (passgem) -> Barramento C -> IR") # envia os bits do mbr pro IR
 
 def decode_din(binary):
@@ -170,3 +170,16 @@ elif comando[:4] in hm:
 else:
     print("Não há essa instrução!")
 
+
+"""
+FUNCIONAMENTO POR INSTRUÇÃO:
+FETCH -> DECODE -> EXEC
+
+FETCH (3 CICLOS): GRAVA NA MEMÓRIA O COMANDO
+DECODE (4 CICLOS): IDENTIFICA  A INSTRUÇÃO A PARTIR DO COMANDO GRAVADO // divide um ciclo com tech
+EXEC: ENCAMINHADO A PARTIR DO DECODE (DIFERE A PARTIR DA INSTRUÇÃO)
+
+
+PADRÕES POR DATAPATH
+PARA ACESSAR DADO NO BUFFER, DEVE TER PASSADO ANTES NO MAR
+"""
