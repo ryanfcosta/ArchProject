@@ -1,43 +1,50 @@
 #16 bits each comand
 comando = str(input())
 
-def lodd(binary):
+def lodd(binary): # pega o endereço, vai até a RAM externa, busca a variável e salva no AC (Acumulador)
     adress = binary[4:]
-    print(f"Sending Adress {adress} from IR -> ALU -> CABLE C -> MAR ")
-    print("Signal read")
-    print("RAM receives adress")
-    print("Searching DATA")
-    print("Sending to processor (MBR)")
-    print("Sending from MBR -> ALU ->  CABLE C -> AC")
+    
+    print(f"\n[LODD] Rastreando o Caminho de Dados (Datapath) para: {binary}")
+    print("="*85)
+    
+    print("--- FETCH ---") #JOGA O COMANDO NA MEMÓRIA
+    print("\nMPC 0: [mar := pc; rd;]")
+    print("  Datapath: PC -> Travas da ULA -> ULA (passagem) -> Barramento C -> MAR")  #manda o dado direto pro MAR passagem livre na ula
+    print("  Sinal: RD ativado. RAM externa começa a procurar a instrução.")
+    
+    print("\nMPC 1: [pc := pc + 1; rd;]")
+    print("  Datapath: PC -> Travas da ULA -> ULA (soma +1) -> Barramento C -> PC") # simplesmente aumenta o pc
+    
+    print("\nMPC 2: [ir := mbr; if n then goto 28;]")
+    print("  Datapath Externo: RAM -> Barramento de Dados Externo -> MBR") # viaja do pente até a entrada da cpu (MBR)
+    print("  Datapath Interno: MBR -> Travas da ULA -> ULA (passgem) -> Barramento C -> IR") # envia os bits do mbr pro IR
 
-def stod(binary):
-    adress = binary[4:]
 
-"""
-REGISTERS
+    print("\n--- DECODE ---") # IDENTIFICA INSTRUÇÃO (joga bit pra esquerda, se for 1 acende flag n)
+    print("\nMPC 3: [tir := lshift(ir + ir); if n then goto 19;]")
+    print("  Datapath: IR -> Travas da ULA -> ULA (soma) -> Shifter (desloca 1 bit) -> Barramento C -> TIR")  # desloca bits para a esquerda e guarda no temporário
+    
+    print("\nMPC 4: [tir := lshift(tir); if n then goto 11;]")
+    print("  Datapath: TIR -> Travas da ULA -> ULA (passagem) -> Shifter (desloca 1 bit) -> Barramento C -> TIR") # desloca mais uma vez (lshift) 
+    
+    print("\nMPC 5: [alu := tir; if n then goto 9;]")
+    print("  Datapath: TIR -> Travas da ULA -> ULA (testa flags N/Z) -> (Nenhum registrador recebe no Barramento C)") # identifica instrução
+    
+    
+    print("\n--- EXECUTE")
+    print(f"MPC 6: [mar := ir; rd;]")
+    print("  Datapath: IR -> Travas da ULA -> ULA (passagem livre) -> Barramento C -> MAR") # joga até a RAM externa //igual MPC0 mas vem do IR
+    print(f"  Sinal: RD ativado. RAM externa recebe o endereço da variável ({adress}).")
+    
+    print("\nMPC 7: [rd;]")
+    print("  Datapath: Ocioso. Barramentos internos livres aguardando a resposta elétrica da memória RAM.")
+    
+    print("\nMPC 8: [ac := mbr; goto 0;]")
+    print("  Datapath Externo: RAM -> Barramento de Dados Externo -> MBR") # joga pro buffer
+    print("  Datapath Interno: MBR -> Travas da ULA -> ULA (passagem livre) -> Barramento C -> AC (Acumulador)") # grava no acumulador
+    print("="*85)
+    print("Execução finalizada. Processador pronto para a próxima instrução.\n")
 
-possível ler e escrever o mesmo registrador em um único ciclo, ou seja, pode fazer A = A AND B ou A = A + B
-
-MAR:    REGISTRADOR DE ENDEREÇO DE MEMÓRIA (BARR 32 BITS)
-↑
-MDR:    REGISTRADOR DE DADOS DE MEMÓRIA (BARR 32 BITS)
-↑
-PC:     CONTADOR DE PROGRAMA (BARR 8 BITS)
-↑
-MBR:    REGISTRADOR DE DADOS DE MEMÓRIA (BARR 8 BITS) | BUFFER REGISTER
-
-SP:     PONTEIRO DE STACK
-↑
-LV:     POINTEIRO PARA BASE DE VARIÁVEIS LOCAIS (NA PILHA)
-↑
-CPP:    APONTA PARA POOL DE CONSTANTES E POINTEIRO PARA OUTRAS ÁREAS DA MEMÓRIA
-↑
-TOS:    REGISTRADOR TEMPORÁRIO
-↑
-OPC:    REGISTRADOR TEMPORÁRIO
-
-H:      ACUMULADOR
-"""
     
 hm = {
     "0000": lodd,
@@ -65,6 +72,41 @@ hm = {
     "1111111":"DESP"
 }
 
+"""
+REGISTERS
+
+possível ler e escrever o mesmo registrador em um único ciclo, ou seja, pode fazer A = A AND B ou A = A + B
+
+MAR:    REGISTRADOR DE ENDEREÇO DE MEMÓRIA (BARR 32 BITS)
+↑
+MDR:    REGISTRADOR DE DADOS DE MEMÓRIA (BARR 32 BITS)
+↑
+PC:     CONTADOR DE PROGRAMA (BARR 8 BITS)
+↑
+MBR:    REGISTRADOR DE DADOS DE MEMÓRIA (BARR 8 BITS) | BUFFER REGISTER
+
+SP:     PONTEIRO DE STACK
+↑
+LV:     POINTEIRO PARA BASE DE VARIÁVEIS LOCAIS (NA PILHA)
+↑
+CPP:    APONTA PARA POOL DE CONSTANTES E POINTEIRO PARA OUTRAS ÁREAS DA MEMÓRIA
+↑
+TOS:    REGISTRADOR TEMPORÁRIO
+↑
+OPC:    REGISTRADOR TEMPORÁRIO
+
+H:      ACUMULADOR
+
+OUTROS COMPONENTES 
+
+ULA:                SOMA, SUBTRAI E RESOLVE OPERAÇÕES BOOLEANAS
+A-LATCH/B-LATCH:    TRAVAS DA ULA QUE ARMAZENAM OS DADOS PARA A ULA (REGISTRADORES)
+RD:                 PINO DE LEITURA EXTERNA
+IR:                 REGISTRADOR DE INSTRUÇÃO (GUARDA A INSTRUÇÃO ATUAL DE 16 BITS)
+TIR:                REGISTRADOR DE INSTRUÇÃO TEMPORÁRIO (USADO NO DECODE)
+"""
+
+
 
 print(comando[:4])
 
@@ -75,5 +117,5 @@ elif comando[:4] in hm:
     inst = hm[comando[:4]]
     inst(comando)
 else:
-    print("Not comando")
+    print("Não há essa instrução!")
 
