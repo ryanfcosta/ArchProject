@@ -96,11 +96,38 @@ def stod(binary): #pega endereço do acumulador e joga no buffer
     print("="*85)
     print("Execução finalizada. Processador pronto para a próxima instrução.\n")
 
+def addd(binary): #joga endereço no buffer e soma com o que tem no acumulador
+    adress = binary[4:]
+
+    print(f"\n[ADDD] Rastreando o Caminho de Dados (Datapath) para: {binary}")
+    print("="*85)
+
+    fetch()
+    decode_din(binary)
+
+    print("\n--- EXECUTE ---")
+    print("MPC 12: [mar := ir; rd;]")
+    print("  Datapath: IR -> Travas da ULA -> ULA (passagem) -> Barramento C -> MAR") # acessa o MAR e liga o read
+    print(f"  Sinal: RD ativado. Buscando valor na RAM no endereço ({adress}).")
+    
+    print("\nMPC 13: [rd;]")
+    print("  Datapath: Ocioso. Aguardando dado da RAM chegar ao MBR.")
+    
+    print("\nMPC 14: [ac := ac + mbr; goto 0;]")
+    print("  Datapath Interno (A Soma):")
+    print("    1. Valor do AC -> Barramento B -> B-LATCH") # acumulador na trava B
+    print("    2. Valor do MBR -> AMUX -> Entrada A da ULA") # joga valor do buffer na ULA
+    print("    3. ULA: Realiza a operação SOMA entre as duas entradas.")
+    print("    4. Resultado -> Barramento C -> AC (Acumulador)") # soma e joga pro ac
+    print("  -> Operação aritmética concluída. MPC zerado.")
+    print("="*85)
+    print("Execução finalizada. Processador pronto para a próxima instrução.\n")
+
 
 hm = {
     "0000": lodd,
     "0001": stod,
-    "0010": "ADDD",
+    "0010": addd,
     "0011": "SUBD",
     "0100": "JPOS",
     "0101": "JZER",
