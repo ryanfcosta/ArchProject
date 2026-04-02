@@ -1,5 +1,5 @@
 #16 bits each comand
-comando = str(input())
+comando = str(input()).strip()
 
 def fetch():
     print("--- FETCH ---") #JOGA O COMANDO NA MEMÓRIA
