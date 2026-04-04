@@ -21,76 +21,99 @@ def decode_din(binary):
     if binary[0] == '1':
         print("  -> O 1º bit (bit 15) é 1! Flag N ativada no MPC 2.")
         print("  -> Salto GOTO 28 executado. Iniciando decodificação de variáveis locais (1xxx).")
-        return 
-
-    # se bit 15 for 0, cai para MPC 3
-    print("\nMPC 3: [tir := lshift(ir + ir); if n then goto 19;]")
-    print("  Datapath: IR -> Travas da ULA -> ULA (soma) -> Shifter (desloca 1 bit) -> Barramento C -> TIR")  # desloca bits para a esquerda e guarda no temporário
-    if binary[1] == '1':
-        print("  -> O 2º bit (bit 14) é 1! A ULA acende a Flag N.")
-        print("  -> MPC detecta a flag e realiza o salto GOTO 19 (Família 01xx - Saltos e Constantes).")
         
-        # --- 01xx ---
-        print("\nMPC 19: [tir := lshift(tir); if n then goto 23;]")
-        if binary[2] == '1':
-            print("  -> O 3º bit (bit 13) é 1! A ULA acende a Flag N.")
-            print("  -> MPC realiza o salto GOTO 23 (Família 011x - JUMP e LOCO).")
-            
-            print("\nMPC 23: [alu := tir; if n then goto 30;]")
-            if binary[3] == '1':
-                print("  -> O 4º bit (bit 12) é 1! A ULA acende a Flag N.")
-                print("  -> MPC realiza o salto GOTO 30. Fim do Decode. (Instrução LOCO)")
-                return
-            else:
-                print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
-                print("  -> Fim do Decode, caindo para MPC 24. (Instrução JUMP)")
-                return
+        # --- 10xx ---
+        print("\nMPC 28: [tir := lshift(ir + ir); if n then goto 32;]")
+        if binary[1] == '1':
+             print("  -> O 2º bit (bit 14) é 1! Salto GOTO 32 (Famílias 11xx - Em construção).")
+             return 
         else:
-            print("  -> O 3º bit (bit 13) é 0. Flag N desligada. Não salta. Cai para MPC 20.")
-            
-            print("\nMPC 20: [alu := tir; if n then goto 25;]")
-            if binary[3] == '1':
-                print("  -> O 4º bit (bit 12) é 1! A ULA acende a Flag N.")
-                print("  -> MPC realiza o salto GOTO 25. Fim do Decode. (Instrução JZER)")
-                return
-            else:
-                print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
-                print("  -> Fim do Decode, caindo para MPC 21. (Instrução JPOS)")
-                return
+             print("  -> O 2º bit (bit 14) é 0. Flag N desligada. Não salta. Cai para MPC 29.")
+             
+             print("\nMPC 29: [tir := lshift(tir); if n then goto 36;]")
+             if binary[2] == '1':
+                 print("  -> O 3º bit (bit 13) é 1! Salto GOTO 36 (Famílias 101x - ADDL e SUBL).")
+                 return
+             else:
+                 print("  -> O 3º bit (bit 13) é 0. Flag N desligada. Não salta. Cai para MPC 30.")
+                 
+                 print("\nMPC 30: [alu := tir; if n then goto 38;]")
+                 if binary[3] == '1':
+                     print("  -> O 4º bit (bit 12) é 1! Salto GOTO 38. Fim do Decode. (Instrução STOL)")
+                     return
+                 else:
+                     print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
+                     print("  -> Todos os bits de teste são 0. Fim do Decode, caindo para MPC 31. (Instrução LODL)")
+                     return
+
     else:
-        print("  -> O 2º bit (bit 14) é 0. Flag N desligada. Não salta. Cai para MPC 4 (Família 00xx).")
-        
-        # --- 00xx ---
-        print("\nMPC 4: [tir := lshift(tir); if n then goto 11;]")
-        print("  Datapath: TIR -> Travas da ULA -> ULA (passagem) -> Shifter (desloca 1 bit) -> Barramento C -> TIR") # desloca mais uma vez (lshift) 
-        if binary[2] == '1':
-            print("  -> O 3º bit (bit 13) é 1! A ULA acende a Flag N.")
-            print("  -> MPC realiza o salto GOTO 11 (Família 001x - ADDD e SUBD).")
+        # se bit 15 for 0 cai para MPC 3
+        print("\nMPC 3: [tir := lshift(ir + ir); if n then goto 19;]")
+        print("  Datapath: IR -> Travas da ULA -> ULA (soma) -> Shifter (desloca 1 bit) -> Barramento C -> TIR")  # desloca bits para a esquerda e guarda no temporário
+        if binary[1] == '1':
+            print("  -> O 2º bit (bit 14) é 1! A ULA acende a Flag N.")
+            print("  -> MPC detecta a flag e realiza o salto GOTO 19 (Família 01xx - Saltos e Constantes).")
             
-            print("\nMPC 11: [alu := tir; if n then goto 15;]")
-            if binary[3] == '1':
-                print("  -> O 4º bit (bit 12) é 1! A ULA acende a Flag N.")
-                print("  -> MPC realiza o salto GOTO 15. Fim do Decode. (Instrução SUBD)")
-                return
+            # --- 01xx ---
+            print("\nMPC 19: [tir := lshift(tir); if n then goto 23;]")
+            if binary[2] == '1':
+                print("  -> O 3º bit (bit 13) é 1! A ULA acende a Flag N.")
+                print("  -> MPC realiza o salto GOTO 23 (Família 011x - JUMP e LOCO).")
+                
+                print("\nMPC 23: [alu := tir; if n then goto 30;]")
+                if binary[3] == '1':
+                    print("  -> O 4º bit (bit 12) é 1! A ULA acende a Flag N.")
+                    print("  -> MPC realiza o salto GOTO 30. Fim do Decode. (Instrução LOCO)")
+                    return
+                else:
+                    print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
+                    print("  -> Fim do Decode, caindo para MPC 24. (Instrução JUMP)")
+                    return
             else:
-                print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
-                print("  -> Fim do Decode, caindo para MPC 12. (Instrução ADDD)")
-                return
+                print("  -> O 3º bit (bit 13) é 0. Flag N desligada. Não salta. Cai para MPC 20.")
+                
+                print("\nMPC 20: [alu := tir; if n then goto 25;]")
+                if binary[3] == '1':
+                    print("  -> O 4º bit (bit 12) é 1! A ULA acende a Flag N.")
+                    print("  -> MPC realiza o salto GOTO 25. Fim do Decode. (Instrução JZER)")
+                    return
+                else:
+                    print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
+                    print("  -> Fim do Decode, caindo para MPC 21. (Instrução JPOS)")
+                    return
         else:
-            print("  -> O 3º bit (bit 13) é 0. Flag N desligada. Não salta. Cai para MPC 5.")
+            print("  -> O 2º bit (bit 14) é 0. Flag N desligada. Não salta. Cai para MPC 4 (Família 00xx).")
             
-            print("\nMPC 5: [alu := tir; if n then goto 9;]")
-            print("  Datapath: TIR -> Travas da ULA -> ULA (testa flags N/Z) -> (Nenhum registrador recebe no Barramento C)") # identifica instrução
-            if binary[3] == '1':
-                print("  -> O 4º bit (bit 12) é 1! A ULA acende a Flag N.")
-                print("  -> MPC detecta a flag e realiza o salto GOTO 9. Fim do Decode. (Instrução STOD)")
-                return
+            # --- 00xx ---
+            print("\nMPC 4: [tir := lshift(tir); if n then goto 11;]")
+            print("  Datapath: TIR -> Travas da ULA -> ULA (passagem) -> Shifter (desloca 1 bit) -> Barramento C -> TIR") # desloca mais uma vez (lshift) 
+            if binary[2] == '1':
+                print("  -> O 3º bit (bit 13) é 1! A ULA acende a Flag N.")
+                print("  -> MPC realiza o salto GOTO 11 (Família 001x - ADDD e SUBD).")
+                
+                print("\nMPC 11: [alu := tir; if n then goto 15;]")
+                if binary[3] == '1':
+                    print("  -> O 4º bit (bit 12) é 1! A ULA acende a Flag N.")
+                    print("  -> MPC realiza o salto GOTO 15. Fim do Decode. (Instrução SUBD)")
+                    return
+                else:
+                    print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
+                    print("  -> Fim do Decode, caindo para MPC 12. (Instrução ADDD)")
+                    return
             else:
-                print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
-                print("  -> Todos os bits de teste são 0. Fim do Decode, caindo para MPC 6. (Instrução LODD)")
-                return
-
-
+                print("  -> O 3º bit (bit 13) é 0. Flag N desligada. Não salta. Cai para MPC 5.")
+                
+                print("\nMPC 5: [alu := tir; if n then goto 9;]")
+                print("  Datapath: TIR -> Travas da ULA -> ULA (testa flags N/Z) -> (Nenhum registrador recebe no Barramento C)") # identifica instrução
+                if binary[3] == '1':
+                    print("  -> O 4º bit (bit 12) é 1! A ULA acende a Flag N.")
+                    print("  -> MPC detecta a flag e realiza o salto GOTO 9. Fim do Decode. (Instrução STOD)")
+                    return
+                else:
+                    print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
+                    print("  -> Todos os bits de teste são 0. Fim do Decode, caindo para a Execução principal. (Instrução LODD)")
+                    return
+                
 def lodd(binary): # pega o endereço, vai até a RAM externa, busca a variável e tira do buffer e salva no AC (Acumulador)
     adress = binary[4:]
     
@@ -102,7 +125,7 @@ def lodd(binary): # pega o endereço, vai até a RAM externa, busca a variável 
 
     print("\n--- EXECUTE")
     print(f"MPC 6: [mar := ir; rd;]")
-    print("  Datapath: IR -> Travas da ULA -> ULA (passagem livre) -> Barramento C -> MAR") # joga até a RAM externa //igual MPC0 mas vem do IR
+    print("  Datapath: IR -> Travas da ULA -> ULA (passagem) -> Barramento C -> MAR") # joga até a RAM externa //igual MPC0 mas vem do IR
     print(f"  Sinal: RD ativado. RAM externa recebe o endereço da variável ({adress}).") # lê da RAM
     
     print("\nMPC 7: [rd;]")
@@ -110,7 +133,7 @@ def lodd(binary): # pega o endereço, vai até a RAM externa, busca a variável 
     
     print("\nMPC 8: [ac := mbr; goto 0;]")
     print("  Datapath Externo: RAM -> Barramento de Dados Externo -> MBR") # joga pro buffer
-    print("  Datapath Interno: MBR -> Travas da ULA -> ULA (passagem livre) -> Barramento C -> AC (Acumulador)") # grava no acumulador
+    print("  Datapath Interno: MBR -> Travas da ULA -> ULA (passagem) -> Barramento C -> AC (Acumulador)") # grava no acumulador
     print("="*85)
     print("Execução finalizada. Processador pronto para a próxima instrução.\n")
 
@@ -125,11 +148,11 @@ def stod(binary): # pega endereço do acumulador e joga no buffer
 
     print("\n--- EXECUTE ---")
     print("MPC 9: [mar := ir;]")
-    print("  Datapath: IR -> Travas da ULA -> ULA (passagem livre) -> Barramento C -> MAR") # isola do ir e joga no MAR
+    print("  Datapath: IR -> Travas da ULA -> ULA (passagem) -> Barramento C -> MAR") # isola do ir e joga no MAR
     print(f"  -> O endereço de destino ({adress}) é isolado e enviado para o MAR.")
     
     print("\nMPC 10: [mbr := ac; wr; goto 0;]")
-    print("  Datapath: AC -> Travas da ULA -> ULA (passagem livre) -> Barramento C -> MBR") # pega do AC e joga no buffer
+    print("  Datapath: AC -> Travas da ULA -> ULA (passagem) -> Barramento C -> MBR") # pega do AC e joga no buffer
     print("  Sinal: WR (Write) ativado. A memória RAM externa recebe a ordem para gravar.") # escreve na RAM
     print("  -> O dado do Acumulador chega ao MBR e é consolidado na RAM.")
     print("="*85)
@@ -162,7 +185,7 @@ def addd(binary): # joga endereço no buffer e soma com o que tem no acumulador
     print("="*85)
     print("Execução finalizada. Processador pronto para a próxima instrução.\n")
 
-def subd(binary):   #joga endereço no buffer e subtrai ele do que tem no acumulador
+def subd(binary):   # joga endereço no buffer e subtrai ele do que tem no acumulador
     adress = binary[4:]
 
     print(f"\n[SUBD] Rastreando o Caminho de Dados (Datapath) para: {binary}")
@@ -189,7 +212,7 @@ def subd(binary):   #joga endereço no buffer e subtrai ele do que tem no acumul
     print("="*85)
     print("Execução finalizada. Processador pronto para a próxima instrução.\n")
 
-def jpos(binary): #se o dado AC for >= 0 ele pula para o endereço
+def jpos(binary): # se o dado AC for >= 0 ele pula para o endereço
     adress = binary[4:]
 
     print(f"\n[JPOS] Rastreando o Caminho de Dados (Datapath) para: {binary}")
@@ -203,7 +226,7 @@ def jpos(binary): #se o dado AC for >= 0 ele pula para o endereço
     print("  Datapath Interno (O Teste Lógico):")
     print("    1. O valor do AC viaja pelo Barramento B até à Trava B.") # acumulador para trava B da ULA
     print("    2. A ULA avalia o valor apenas para testar a Flag N (Negativo).")
-    print("    3. O Barramento C não recebe ordem de escrita para nenhum registo.")
+    print("    3. O Barramento C não recebe ordem de escrita para nenhum registrador.")
     print("  -> Se AC for negativo (N=1): O hardware executa o salto para MPC 0 (o desvio é abortado).") # flag desvia
     print("  -> Se AC for positivo ou zero (N=0): A Flag N fica desligada, o fluxo cai para a próxima linha.")
     
@@ -231,7 +254,7 @@ def jzer(binary): # se o dado AC for == 0 ele pula para o endereço
     print("  Datapath Interno (O Teste Lógico da Flag Z):") #flag Z (ver se é zero)
     print("    1. O valor do AC viaja pelo Barramento B até à Trava B.")    
     print("    2. A ULA avalia o valor apenas para testar a Flag Z (Zero).")
-    print("    3. O Barramento C não recebe ordem de escrita para nenhum registo.")
+    print("    3. O Barramento C não recebe ordem de escrita para nenhum registrador.")
     print("  -> Se AC for igual a zero (Z=1): A ULA acende a Flag Z e o hardware salta para MPC 27.") # desvia para MPC 27
     print("  -> Se AC for diferente de zero (Z=0): A Flag Z fica desligada, o fluxo cai para a próxima linha.")
 
@@ -266,31 +289,82 @@ def jump(binary): # pula para o endereço
     print("="*85)
     print("Execução finalizada. Processador pronto para ler do novo endereço.\n") # fetch vai guardar novo endereço na memória
 
+def loco(binary): # salva uma constante no acumulador
+    constante = binary[4:]
+
+    print(f"\n[LOCO] Rastreando o Caminho de Dados (Datapath) para: {binary}")
+    print("="*85)
+
+    fetch()
+    decode_din(binary)
+
+    print("\n--- EXECUTE ---")
+    print("MPC 30: [ac := ir and amask; goto 0;]")
+    print("  Datapath Interno (Isolamento da Constante via Máscara):")
+    print("    1. Valor do IR (16 bits) -> Barramento B -> B-LATCH")
+    print("    2. Valor interno do AMASK (4095) -> Barramento A -> A-LATCH")
+    print("    3. ULA: Executa a operação lógica AND. Apaga os 4 bits iniciais e passa os 12 finais.") # transforma o "endereço" em constante
+    print("    4. Resultado -> Barramento C -> AC (Acumulador)") # salva no acumulador
+    print(f"  -> A constante ({constante}) foi extraída e salva no AC! MPC zerado (goto 0).")
+    print("="*85)
+    print("Execução finalizada. Processador pronto para a próxima instrução.\n")
+
+def lodl(binary): # joga uma variável local da pilha para o ac
+    offset = binary[4:]
+    print(f"\n[LODL] Rastreando o Caminho de Dados (Datapath) para: {binary}")
+    print("="*85)
+
+    fetch()
+    decode_din(binary)
+
+    print("\n--- EXECUTE ---")
+    print("MPC 31: [mar := ir + lv; rd;]")
+    print("  Datapath Interno (Cálculo do Ponteiro na ULA):")
+    print("    1. Valor do IR (12 bits de offset) -> Barramento B -> B-LATCH") # offset vai pra trava B
+    print("    2. Valor do registrador LV (Local Variables) -> Barramento A -> A-LATCH") # variavel local vai pra trava A
+    print("    3. ULA: Executa a operação de SOMA para encontrar o endereço absoluto na memória.") # endereço absoluto é a soma
+    print("    4. Resultado -> Barramento C -> MAR")
+    print(f"  Sinal: RD ativado. A RAM começa a buscar o dado na gaveta calculada (LV + {offset}).")
+    
+    print("\nMPC 32: [rd;]")
+    print("  Datapath: Ocioso. Barramentos internos livres aguardando a resposta elétrica da memória RAM.")
+    
+    print("\nMPC 33: [ac := mbr; goto 0;]")
+    print("  Datapath Externo: RAM -> Barramento de Dados Externo -> MBR") # joga endereço abs no buffer
+    print("  Datapath Interno: MBR -> Travas da ULA -> ULA (passagem) -> Barramento C -> AC (Acumulador)") # buffer -> ac
+    print("="*85)
+    print("Execução finalizada. Processador pronto para a próxima instrução.\n")
 
 hm = {
-    "0000": lodd,
-    "0001": stod,
-    "0010": addd,
-    "0011": subd,
-    "0100": jpos,
-    "0101": jzer,   
-    "0110": jump,
-    "0111":"LOCO",
-    "1000":"LODL",
-    "1001":"STOL",
-    "1010":"ADDL",
-    "1011":"SUBL",
-    "1100":"JNEG",
-    "1101":"JNZE",
-    "1110":"CALL",
-    "1111":"PSHI",
-    "1111001":"POPI",
-    "1111010":"PUSH",  
-    "1111011":"POP",
-    "1111100":"RETN",
-    "1111101":"SWAP",
-    "1111110":"INSP",
-    "1111111":"DESP"
+    # buffer x ac
+    "0000": lodd,           # 00: buffer -> ac
+    "0001": stod,           # 01: ac -> buffer
+    "0010": addd,           # 02: ac = ac + buffer
+    "0011": subd,           # 03: ac = ac - buffer
+    
+    # pula endereço
+    "0100": jpos,           # 04: if AC for >= 0 pula para o endereço
+    "0101": jzer,           # 05: if AC for == 0 pula para o endereço
+    "0110": jump,           # 06: pula para o endereço
+    "1100":"JNEG",          # 12:
+    "1101":"JNZE",          # 13:
+
+    "0111": loco,           # 7: salva uma constante no acumulador
+
+    # var local pilha
+    "1000": lodl,           # 08: acha endereço usando offset, endereço -> ac
+    "1001":"STOL",          # 09:
+    "1010":"ADDL",          # 10:
+    "1011":"SUBL",          # 11:
+    "1110":"CALL",          # 14:
+    "1111":"PSHI",          # 15:
+    "1111001":"POPI",       # 16:
+    "1111010":"PUSH",       # 17:
+    "1111011":"POP",        # 18:
+    "1111100":"RETN",       # 19:
+    "1111101":"SWAP",       # 20:
+    "1111110":"INSP",       # 21:
+    "1111111":"DESP"        # 22:
 }
 
 """
@@ -317,14 +391,15 @@ TOS:    REGISTRADOR TEMPORÁRIO
 OPC:    REGISTRADOR TEMPORÁRIO
 
 H:      ACUMULADOR
+AMASK:              REGISTRADOR DE CONSTANTES
+IR:                 REGISTRADOR DE INSTRUÇÃO (GUARDA A INSTRUÇÃO ATUAL DE 16 BITS)
+TIR:                REGISTRADOR DE INSTRUÇÃO TEMPORÁRIO (USADO NO DECODE)
 
 OUTROS COMPONENTES 
 
 ULA:                SOMA, SUBTRAI E RESOLVE OPERAÇÕES BOOLEANAS
 A-LATCH/B-LATCH:    TRAVAS DA ULA QUE ARMAZENAM OS DADOS PARA A ULA (REGISTRADORES)
 RD:                 PINO DE LEITURA EXTERNA
-IR:                 REGISTRADOR DE INSTRUÇÃO (GUARDA A INSTRUÇÃO ATUAL DE 16 BITS)
-TIR:                REGISTRADOR DE INSTRUÇÃO TEMPORÁRIO (USADO NO DECODE)
 """
 
 
