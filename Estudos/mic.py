@@ -1,5 +1,48 @@
-#16 bits each comand
-comando = str(input()).strip()
+def main():
+    #16 bits each comand
+    comando = str(input()).strip()
+    hm = {
+        # buffer x ac
+        "0000": lodd,           # 00: buffer -> ac
+        "0001": stod,           # 01: ac -> buffer
+        "0010": addd,           # 02: ac = ac + buffer
+        "0011": subd,           # 03: ac = ac - buffer
+        
+        # pula endereço
+        "0100": jpos,           # 04: if AC for >= 0 pula para o endereço
+        "0101": jzer,           # 05: if AC for == 0 pula para o endereço
+        "0110": jump,           # 06: pula para o endereço
+        "1100":"JNEG",          # 12:
+        "1101":"JNZE",          # 13:
+
+        "0111": loco,           # 7: salva uma constante no acumulador
+
+        # var local pilha
+        "1000": lodl,           # 08: acha endereço usando offset, endereço -> ac
+        "1001":"STOL",          # 09:
+        "1010":"ADDL",          # 10:
+        "1011":"SUBL",          # 11:
+        "1110":"CALL",          # 14:
+        "1111":"PSHI",          # 15:
+        "1111001":"POPI",       # 16:
+        "1111010":"PUSH",       # 17:
+        "1111011":"POP",        # 18:
+        "1111100":"RETN",       # 19:
+        "1111101":"SWAP",       # 20:
+        "1111110":"INSP",       # 21:
+        "1111111":"DESP"        # 22:
+    }
+
+    print(comando[:4])
+
+    if comando[:7] in hm:
+        inst = hm[comando[:7]]
+        inst(comando)
+    elif comando[:4] in hm:
+        inst = hm[comando[:4]]
+        inst(comando)
+    else:
+        print("Não há essa instrução!")
 
 def fetch():
     print("--- FETCH ---") #JOGA O COMANDO NA MEMÓRIA
@@ -113,7 +156,53 @@ def decode_din(binary):
                     print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
                     print("  -> Todos os bits de teste são 0. Fim do Decode, caindo para a Execução principal. (Instrução LODD)")
                     return
-                
+
+
+"""
+REGISTERS
+
+possível ler e escrever o mesmo registrador em um único ciclo, ou seja, pode fazer A = A AND B ou A = A + B
+
+MAR:    REGISTRADOR DE ENDEREÇO DE MEMÓRIA (BARR 32 BITS)
+↑
+MDR:    REGISTRADOR DE DADOS DE MEMÓRIA (BARR 32 BITS)
+↑
+PC:     CONTADOR DE PROGRAMA (BARR 8 BITS)
+↑
+MBR:    REGISTRADOR DE DADOS DE MEMÓRIA (BARR 8 BITS) | BUFFER REGISTER
+
+SP:     PONTEIRO DE STACK
+↑
+LV:     POINTEIRO PARA BASE DE VARIÁVEIS LOCAIS (NA PILHA)
+↑
+CPP:    APONTA PARA POOL DE CONSTANTES E POINTEIRO PARA OUTRAS ÁREAS DA MEMÓRIA
+↑
+TOS:    REGISTRADOR TEMPORÁRIO
+↑
+OPC:    REGISTRADOR TEMPORÁRIO
+
+H:      ACUMULADOR
+AMASK:              REGISTRADOR DE CONSTANTES
+IR:                 REGISTRADOR DE INSTRUÇÃO (GUARDA A INSTRUÇÃO ATUAL DE 16 BITS)
+TIR:                REGISTRADOR DE INSTRUÇÃO TEMPORÁRIO (USADO NO DECODE)
+
+OUTROS COMPONENTES 
+
+ULA:                SOMA, SUBTRAI E RESOLVE OPERAÇÕES BOOLEANAS
+A-LATCH/B-LATCH:    TRAVAS DA ULA QUE ARMAZENAM OS DADOS PARA A ULA (REGISTRADORES)
+RD:                 PINO DE LEITURA EXTERNA
+
+FUNCIONAMENTO POR INSTRUÇÃO:
+FETCH -> DECODE -> EXEC
+
+FETCH (3 CICLOS): GRAVA NA MEMÓRIA O COMANDO
+DECODE (4 CICLOS): IDENTIFICA  A INSTRUÇÃO A PARTIR DO COMANDO GRAVADO // divide um ciclo com tech
+EXEC: ENCAMINHADO A PARTIR DO DECODE (DIFERE A PARTIR DA INSTRUÇÃO)
+
+
+PADRÕES POR DATAPATH
+PARA ACESSAR DADO NO BUFFER, DEVE TER PASSADO ANTES NO MAR
+"""
 def lodd(binary): # pega o endereço, vai até a RAM externa, busca a variável e tira do buffer e salva no AC (Acumulador)
     adress = binary[4:]
     
@@ -335,96 +424,5 @@ def lodl(binary): # joga uma variável local da pilha para o ac
     print("="*85)
     print("Execução finalizada. Processador pronto para a próxima instrução.\n")
 
-hm = {
-    # buffer x ac
-    "0000": lodd,           # 00: buffer -> ac
-    "0001": stod,           # 01: ac -> buffer
-    "0010": addd,           # 02: ac = ac + buffer
-    "0011": subd,           # 03: ac = ac - buffer
-    
-    # pula endereço
-    "0100": jpos,           # 04: if AC for >= 0 pula para o endereço
-    "0101": jzer,           # 05: if AC for == 0 pula para o endereço
-    "0110": jump,           # 06: pula para o endereço
-    "1100":"JNEG",          # 12:
-    "1101":"JNZE",          # 13:
-
-    "0111": loco,           # 7: salva uma constante no acumulador
-
-    # var local pilha
-    "1000": lodl,           # 08: acha endereço usando offset, endereço -> ac
-    "1001":"STOL",          # 09:
-    "1010":"ADDL",          # 10:
-    "1011":"SUBL",          # 11:
-    "1110":"CALL",          # 14:
-    "1111":"PSHI",          # 15:
-    "1111001":"POPI",       # 16:
-    "1111010":"PUSH",       # 17:
-    "1111011":"POP",        # 18:
-    "1111100":"RETN",       # 19:
-    "1111101":"SWAP",       # 20:
-    "1111110":"INSP",       # 21:
-    "1111111":"DESP"        # 22:
-}
-
-"""
-REGISTERS
-
-possível ler e escrever o mesmo registrador em um único ciclo, ou seja, pode fazer A = A AND B ou A = A + B
-
-MAR:    REGISTRADOR DE ENDEREÇO DE MEMÓRIA (BARR 32 BITS)
-↑
-MDR:    REGISTRADOR DE DADOS DE MEMÓRIA (BARR 32 BITS)
-↑
-PC:     CONTADOR DE PROGRAMA (BARR 8 BITS)
-↑
-MBR:    REGISTRADOR DE DADOS DE MEMÓRIA (BARR 8 BITS) | BUFFER REGISTER
-
-SP:     PONTEIRO DE STACK
-↑
-LV:     POINTEIRO PARA BASE DE VARIÁVEIS LOCAIS (NA PILHA)
-↑
-CPP:    APONTA PARA POOL DE CONSTANTES E POINTEIRO PARA OUTRAS ÁREAS DA MEMÓRIA
-↑
-TOS:    REGISTRADOR TEMPORÁRIO
-↑
-OPC:    REGISTRADOR TEMPORÁRIO
-
-H:      ACUMULADOR
-AMASK:              REGISTRADOR DE CONSTANTES
-IR:                 REGISTRADOR DE INSTRUÇÃO (GUARDA A INSTRUÇÃO ATUAL DE 16 BITS)
-TIR:                REGISTRADOR DE INSTRUÇÃO TEMPORÁRIO (USADO NO DECODE)
-
-OUTROS COMPONENTES 
-
-ULA:                SOMA, SUBTRAI E RESOLVE OPERAÇÕES BOOLEANAS
-A-LATCH/B-LATCH:    TRAVAS DA ULA QUE ARMAZENAM OS DADOS PARA A ULA (REGISTRADORES)
-RD:                 PINO DE LEITURA EXTERNA
-"""
-
-
-
-print(comando[:4])
-
-if comando[:7] in hm:
-    inst = hm[comando[:7]]
-    inst(comando)
-elif comando[:4] in hm:
-    inst = hm[comando[:4]]
-    inst(comando)
-else:
-    print("Não há essa instrução!")
-
-
-"""
-FUNCIONAMENTO POR INSTRUÇÃO:
-FETCH -> DECODE -> EXEC
-
-FETCH (3 CICLOS): GRAVA NA MEMÓRIA O COMANDO
-DECODE (4 CICLOS): IDENTIFICA  A INSTRUÇÃO A PARTIR DO COMANDO GRAVADO // divide um ciclo com tech
-EXEC: ENCAMINHADO A PARTIR DO DECODE (DIFERE A PARTIR DA INSTRUÇÃO)
-
-
-PADRÕES POR DATAPATH
-PARA ACESSAR DADO NO BUFFER, DEVE TER PASSADO ANTES NO MAR
-"""
+if __name__ == "__main__":
+    main()
