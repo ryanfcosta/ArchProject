@@ -12,112 +12,124 @@ def fetch():
     print("  Datapath Interno: MBR -> Travas da ULA -> ULA (passgem) -> Barramento C -> IR") # envia os bits do mbr pro IR
 
 def decode_din(binary):
-    print("\n--- DECODE ---") # IDENTIFICA INSTRUÇÃO (joga bit pra esquerda até encontrar 1)
+    print("\n--- DECODE ---") 
+    # ULA e o MMUX para testam cada bit do opcode sequencialmente.
+    # a instrução sofre um shift a cada etapa para colocar o próximo bit na Flag N.
     
-    # isso acontece no final de MPC 2
+    # 1xxx 
     if binary[0] == '1':
         print("  -> O 1º bit (bit 15) é 1! Flag N ativada no MPC 2.")
-        print("  -> Salto GOTO 28 executado. Iniciando decodificação de variáveis locais (1xxx).")
+        print("  -> Salto GOTO 28 executado. Iniciando decodificação da Família 1xxx.")
         
-        # --- 10xx ---
         print("\nMPC 28: [tir := lshift(ir + ir); if n then goto 32;]")
+        # Deslocamento na ULA
         if binary[1] == '1':
-             print("  -> O 2º bit (bit 14) é 1! Salto GOTO 32 Famílias 11xx.")
-             return 
+             print("  -> O 2º bit (bit 14) é 1! Salto GOTO 32 (Família 11xx - Pilha e Fluxo).")
+             
+             print("\nMPC 32: [tir := lshift(tir); if n then goto 47;]")
+             if binary[2] == '1':
+                 print("  -> O 3º bit (bit 13) é 1! Salto GOTO 47 (Família 111x - CALL/Estendidas).")
+                 
+                 print("\nMPC 47: [alu := tir; if n then goto 55;]")
+                 if binary[3] == '1':
+                     print("  -> O 4º bit (bit 12) é 1! Salto GOTO 55. Fim da ramificação de 4 bits.")
+                     print("  -> Delegação do hardware para instruções estendidas (Família 1111 - PUSH, POP, etc).")
+                     return 
+                 else:
+                     print("  -> O 4º bit (bit 12) é 0. Fim do Decode.")
+                     print("  -> Roteamento concluído. Iniciando fase de Execução (Instrução CALL).")
+                     return 
+             else:
+                 print("  -> O 3º bit (bit 13) é 0. Flag N desligada. Transição para MPC 33 (Família 110x).")
+                 
+                 print("\nMPC 33: [alu := tir; if n then goto 35;]")
+                 if binary[3] == '1':
+                     print("  -> O 4º bit (bit 12) é 1! Salto GOTO 35. Fim do Decode (Instrução JNZE).")
+                     return
+                 else:
+                     print("  -> O 4º bit (bit 12) é 0. Fim do Decode. Transição para MPC 34 (Instrução JNEG).")
+                     return
         else:
-             print("  -> O 2º bit (bit 14) é 0. Flag N desligada. Não salta. Cai para MPC 29.")
+             print("  -> O 2º bit (bit 14) é 0. Flag N desligada. Transição para MPC 29 (Família 10xx).")
              
              print("\nMPC 29: [tir := lshift(tir); if n then goto 36;]")
              if binary[2] == '1':
-                 print("  -> O 3º bit (bit 13) é 1! Salto GOTO 36 (Famílias 101x - ADDL e SUBL).")
+                 print("  -> O 3º bit (bit 13) é 1! Salto GOTO 36 (Família 101x - ADDL e SUBL).")
                  
                  print("\nMPC 36: [alu := tir; if n then goto 44;]")
                  if binary[3] == '1':
-                     print("  -> O 4º bit (bit 12) é 1! A ULA acende a Flag N.")
-                     print("  -> Salto GOTO 44. Fim do Decode. Instrução SUBL")
+                     print("  -> O 4º bit (bit 12) é 1! Salto GOTO 44. Fim do Decode (Instrução SUBL).")
                      return
                  else:
-                     print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
-                     print("  -> Fim do Decode. Instrução ADDL")
+                     print("  -> O 4º bit (bit 12) é 0. Fim do Decode. Roteamento concluído (Instrução ADDL).")
                      return
              else:
-                 print("  -> O 3º bit (bit 13) é 0. Flag N desligada. Não salta. Cai para MPC 30.")
+                 print("  -> O 3º bit (bit 13) é 0. Flag N desligada. Transição para MPC 30 (Família 100x).")
                  
                  print("\nMPC 30: [alu := tir; if n then goto 38;]")
                  if binary[3] == '1':
-                     print("  -> O 4º bit (bit 12) é 1! Salto GOTO 38. Fim do Decode. (Instrução STOL)")
+                     print("  -> O 4º bit (bit 12) é 1! Salto GOTO 38. Fim do Decode (Instrução STOL).")
                      return
                  else:
-                     print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
-                     print("  -> Todos os bits de teste são 0. Fim do Decode, caindo para MPC 31. (Instrução LODL)")
+                     print("  -> O 4º bit (bit 12) é 0. Fim do Decode. Transição para MPC 31 (Instrução LODL).")
                      return
 
+    # 0xxx 
+
     else:
-        # se bit 15 for 0 cai para MPC 3
+        print("  -> O 1º bit (bit 15) é 0. Flag N não ativada. Transição para MPC 3.")
+        
         print("\nMPC 3: [tir := lshift(ir + ir); if n then goto 19;]")
-        print("  Datapath: IR -> Travas da ULA -> ULA (soma) -> Shifter (desloca 1 bit) -> Barramento C -> TIR")  # desloca bits para a esquerda e guarda no temporário
+        print("  Datapath: IR -> Travas da ULA -> ULA (soma) -> Shifter (deslocamento) -> Barramento C -> TIR")  
         if binary[1] == '1':
-            print("  -> O 2º bit (bit 14) é 1! A ULA acende a Flag N.")
-            print("  -> MPC detecta a flag e realiza o salto GOTO 19 (Família 01xx - Saltos e Constantes).")
+            print("  -> O 2º bit (bit 14) é 1! Salto GOTO 19 executado (Família 01xx - Saltos e Constantes).")
             
-            # --- 01xx ---
             print("\nMPC 19: [tir := lshift(tir); if n then goto 23;]")
             if binary[2] == '1':
-                print("  -> O 3º bit (bit 13) é 1! A ULA acende a Flag N.")
-                print("  -> MPC realiza o salto GOTO 23 (Família 011x - JUMP e LOCO).")
+                print("  -> O 3º bit (bit 13) é 1! Salto GOTO 23 (Família 011x - JUMP e LOCO).")
                 
                 print("\nMPC 23: [alu := tir; if n then goto 30;]")
                 if binary[3] == '1':
-                    print("  -> O 4º bit (bit 12) é 1! A ULA acende a Flag N.")
-                    print("  -> MPC realiza o salto GOTO 30. Fim do Decode. (Instrução LOCO)")
+                    print("  -> O 4º bit (bit 12) é 1! Salto GOTO 30. Fim do Decode (Instrução LOCO).")
                     return
                 else:
-                    print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
-                    print("  -> Fim do Decode, caindo para MPC 24. (Instrução JUMP)")
+                    print("  -> O 4º bit (bit 12) é 0. Fim do Decode. Transição para MPC 24 (Instrução JUMP).")
                     return
             else:
-                print("  -> O 3º bit (bit 13) é 0. Flag N desligada. Não salta. Cai para MPC 20.")
+                print("  -> O 3º bit (bit 13) é 0. Flag N desligada. Transição para MPC 20 (Família 010x).")
                 
                 print("\nMPC 20: [alu := tir; if n then goto 25;]")
                 if binary[3] == '1':
-                    print("  -> O 4º bit (bit 12) é 1! A ULA acende a Flag N.")
-                    print("  -> MPC realiza o salto GOTO 25. Fim do Decode. (Instrução JZER)")
+                    print("  -> O 4º bit (bit 12) é 1! Salto GOTO 25. Fim do Decode (Instrução JZER).")
                     return
                 else:
-                    print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
-                    print("  -> Fim do Decode, caindo para MPC 21. (Instrução JPOS)")
+                    print("  -> O 4º bit (bit 12) é 0. Fim do Decode. Transição para MPC 21 (Instrução JPOS).")
                     return
         else:
-            print("  -> O 2º bit (bit 14) é 0. Flag N desligada. Não salta. Cai para MPC 4 (Família 00xx).")
+            print("  -> O 2º bit (bit 14) é 0. Flag N desligada. Transição para MPC 4 (Família 00xx).")
             
-            # --- 00xx ---
             print("\nMPC 4: [tir := lshift(tir); if n then goto 11;]")
-            print("  Datapath: TIR -> Travas da ULA -> ULA (passagem) -> Shifter (desloca 1 bit) -> Barramento C -> TIR") # desloca mais uma vez (lshift) 
+            print("  Datapath: TIR -> Travas da ULA -> ULA (passagem livre) -> Shifter -> Barramento C -> TIR") 
             if binary[2] == '1':
-                print("  -> O 3º bit (bit 13) é 1! A ULA acende a Flag N.")
-                print("  -> MPC realiza o salto GOTO 11 (Família 001x - ADDD e SUBD).")
+                print("  -> O 3º bit (bit 13) é 1! Salto GOTO 11 (Família 001x - ADDD e SUBD).")
                 
                 print("\nMPC 11: [alu := tir; if n then goto 15;]")
                 if binary[3] == '1':
-                    print("  -> O 4º bit (bit 12) é 1! A ULA acende a Flag N.")
-                    print("  -> MPC realiza o salto GOTO 15. Fim do Decode. (Instrução SUBD)")
+                    print("  -> O 4º bit (bit 12) é 1! Salto GOTO 15. Fim do Decode (Instrução SUBD).")
                     return
                 else:
-                    print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
-                    print("  -> Fim do Decode, caindo para MPC 12. (Instrução ADDD)")
+                    print("  -> O 4º bit (bit 12) é 0. Fim do Decode. Transição para MPC 12 (Instrução ADDD).")
                     return
             else:
-                print("  -> O 3º bit (bit 13) é 0. Flag N desligada. Não salta. Cai para MPC 5.")
+                print("  -> O 3º bit (bit 13) é 0. Flag N desligada. Transição para MPC 5 (Família 000x).")
                 
                 print("\nMPC 5: [alu := tir; if n then goto 9;]")
-                print("  Datapath: TIR -> Travas da ULA -> ULA (testa flags N/Z) -> (Nenhum registrador recebe no Barramento C)") # identifica instrução
+                print("  Datapath: TIR -> Travas -> ULA (sinaliza flags lógicas) -> Bloqueio de gravação no Barramento C") 
                 if binary[3] == '1':
-                    print("  -> O 4º bit (bit 12) é 1! A ULA acende a Flag N.")
-                    print("  -> MPC detecta a flag e realiza o salto GOTO 9. Fim do Decode. (Instrução STOD)")
+                    print("  -> O 4º bit (bit 12) é 1! Salto GOTO 9. Fim do Decode (Instrução STOD).")
                     return
                 else:
-                    print("  -> O 4º bit (bit 12) é 0. Flag N desligada. Não salta.")
-                    print("  -> Todos os bits de teste são 0. Fim do Decode, caindo para a Execução principal. (Instrução LODD)")
+                    print("  -> O 4º bit (bit 12) é 0. Fim do Decode. Transição para Execução primária (Instrução LODD).")
                     return
 
 def lodd(binary): # pega o endereço, vai até a RAM externa, busca a variável e tira do buffer e salva no AC (Acumulador)
@@ -428,3 +440,31 @@ def subl(binary): # soma a variável local do acumulador
     print("  -> Operação concluída e Acumulador atualizado! MPC zerado (goto 0).")
     print("="*85)
     print("Execução finalizada. Processador pronto para a próxima instrução.\n")
+
+def call(binary):
+    adress = binary[4:]
+    
+    print(f"\n[CALL] Rastreando o Caminho de Dados (Datapath) para: {binary}")
+    print("="*85)
+    
+    fetch()
+    decode_din(binary)
+    
+    print("\n--- EXECUTE ---")
+    print("MPC 48: [sp := sp + 1;]")
+    print("  Datapath Interno: SP -> Travas da ULA -> ULA (soma +1) -> Barramento C -> SP")
+    print("  -> O Stack Pointer (SP) é incrementado para abrir um novo espaço na pilha.")
+    
+    print("\nMPC 49: [mar := sp;]")
+    print("  Datapath Interno: SP -> Travas da ULA -> ULA (passagem) -> Barramento C -> MAR")
+    print("  -> O endereço do topo atualizado da pilha vai para o MAR.")
+    
+    print("\nMPC 50: [mbr := pc; wr;]")
+    print("  Datapath Interno: PC -> Travas da ULA -> ULA (passagem) -> Barramento C -> MBR")
+    print("  Sinal: WR (Write) ativado. A memória RAM grava o endereço de retorno no topo da pilha.")
+    
+    print("\nMPC 51: [pc := ir; goto 0;]")
+    print("  Datapath Interno: IR -> Travas da ULA -> ULA (passagem) -> Barramento C -> PC")
+    print(f"  -> O PC recebe o endereço da função ({adress}). Salto executado! MPC zerado (goto 0).")
+    print("="*85)
+    print("Execução finalizada. Processador pronto para executar a nova função.\n")
