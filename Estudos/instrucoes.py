@@ -468,3 +468,4 @@ def call(binary):
     print(f"  -> O PC recebe o endereço da função ({adress}). Salto executado! MPC zerado (goto 0).")
     print("="*85)
     print("Execução finalizada. Processador pronto para executar a nova função.\n")
+    print("Execução finalizada. Processador pronto para executar a nova função.\n")
