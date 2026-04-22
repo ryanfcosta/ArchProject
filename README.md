@@ -23,7 +23,6 @@ Tudo isso é exibido utilizando a dupla
 - *primary.fxml*: Basicamente um arquivo de marcação e estilo, com o design da aplicação
 - *PrimaryController.java*: Atualiza labels, cores e gerencia inputs e botões
 
-
 ## Perspectiva de Features
 Temos o objetivo de, durante o desenvolvimento do projeto  
 - Integrar dois processadores MIC-1 em paralelo
