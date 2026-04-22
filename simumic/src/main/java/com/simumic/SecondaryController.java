@@ -5,5 +5,7 @@ import javafx.fxml.FXML;
 
 public class SecondaryController {
 
+FUTURAMENTE DOIS MIC-1 EM PARALELO
+
 }
 */

@@ -11,27 +11,22 @@
          <font> <Font name="System Bold" size="24.0" /> </font>
       </Label>
 
-      <AnchorPane prefWidth="700.0" prefHeight="500.0" style="-fx-background-color: #2f3640; -fx-background-radius: 10; -fx-border-color: #718093; -fx-border-radius: 10; -fx-border-width: 2;">
+      <AnchorPane prefWidth="760.0" prefHeight="500.0" style="-fx-background-color: #2f3640; -fx-background-radius: 10; -fx-border-color: #718093; -fx-border-radius: 10; -fx-border-width: 2;">
          <children>
             
             <Line startX="450.0" startY="110.0" endX="300.0" endY="110.0" stroke="#fbc531" strokeWidth="3.0" />
             <Polygon points="300.0,105.0, 300.0,115.0, 290.0,110.0" fill="#fbc531" />
-
             <Line startX="200.0" startY="110.0" endX="120.0" endY="110.0" stroke="#2ecc71" strokeWidth="3.0" />
             <Polygon points="120.0,105.0, 120.0,115.0, 110.0,110.0" fill="#2ecc71" />
-
             <Line startX="120.0" startY="270.0" endX="200.0" endY="270.0" stroke="#3498db" strokeWidth="5.0" />
             <Polygon points="200.0,265.0, 200.0,275.0, 210.0,270.0" fill="#3498db" />
             <Polygon points="120.0,265.0, 120.0,275.0, 110.0,270.0" fill="#3498db" />
-
             <Line startX="300.0" startY="270.0" endX="450.0" endY="270.0" stroke="#fbc531" strokeWidth="3.0" />
             <Polygon points="450.0,265.0, 450.0,275.0, 460.0,270.0" fill="#fbc531" />
-
             <Line startX="250.0" startY="300.0" endX="250.0" endY="350.0" stroke="#9b59b6" strokeWidth="3.0" />
             <Line startX="250.0" startY="350.0" endX="375.0" endY="350.0" stroke="#9b59b6" strokeWidth="3.0" />
             <Line startX="375.0" startY="350.0" endX="375.0" endY="400.0" stroke="#9b59b6" strokeWidth="3.0" />
             <Polygon points="370.0,400.0, 380.0,400.0, 375.0,410.0" fill="#9b59b6" />
-
 
             <StackPane layoutX="20.0" layoutY="60.0">
                <Rectangle width="90.0" height="260.0" fill="#95a5a6" stroke="#7f8c8d" strokeWidth="3.0" arcWidth="15.0" arcHeight="15.0" />
@@ -42,7 +37,7 @@
             </StackPane>
 
             <VBox layoutX="15.0" layoutY="330.0" alignment="CENTER" spacing="5.0">
-               <Label text="SINAL DE CONTROLE" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 10;" />
+               <Label text="SINAL DE CONTROLO" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 10;" />
                <StackPane>
                   <Rectangle fx:id="rectControl" width="100.0" height="30.0" fill="#34495e" stroke="#7f8c8d" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0" />
                   <Label fx:id="labelControl" text="IDLE" textFill="WHITE">
@@ -52,23 +47,24 @@
             </VBox>
 
             <StackPane layoutX="200.0" layoutY="80.0">
-               <Rectangle width="100.0" height="60.0" fill="#2c3e50" stroke="#2ecc71" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0" />
-               <VBox alignment="CENTER">
+   
+                  <Rectangle fx:id="rectMAR" width="100.0" height="60.0" fill="#2c3e50" stroke="#2ecc71" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0" />               
+                  <VBox alignment="CENTER">
                   <Label text="MAR" textFill="WHITE" style="-fx-font-weight: bold;" />
                   <Label fx:id="labelMAR" text="0000" textFill="#2ecc71"> <font><Font name="Monospaced Bold" size="18.0" /></font> </Label>
                </VBox>
             </StackPane>
 
             <StackPane layoutX="450.0" layoutY="80.0">
-               <Rectangle width="100.0" height="60.0" fill="#2c3e50" stroke="#fbc531" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0" />
-               <VBox alignment="CENTER">
+                  <Rectangle fx:id="rectPC" width="100.0" height="60.0" fill="#2c3e50" stroke="#fbc531" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0" />               
+                  <VBox alignment="CENTER">
                   <Label text="PC" textFill="WHITE" style="-fx-font-weight: bold;" />
                   <Label fx:id="labelPC" text="0000" textFill="#fbc531"> <font><Font name="Monospaced Bold" size="18.0" /></font> </Label>
                </VBox>
             </StackPane>
 
             <StackPane layoutX="200.0" layoutY="240.0">
-               <Rectangle width="100.0" height="60.0" fill="#2c3e50" stroke="#3498db" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0" />
+               <Rectangle fx:id="rectMBR" width="100.0" height="60.0" fill="#2c3e50" stroke="#3498db" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0" />
                <VBox alignment="CENTER">
                   <Label text="MBR" textFill="WHITE" style="-fx-font-weight: bold;" />
                   <Label fx:id="labelMBR" text="0000" textFill="#3498db"> <font><Font name="Monospaced Bold" size="18.0" /></font> </Label>
@@ -76,41 +72,128 @@
             </StackPane>
 
             <StackPane layoutX="450.0" layoutY="240.0">
-               <Rectangle width="100.0" height="60.0" fill="#2c3e50" stroke="#fbc531" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0" />
+               <Rectangle fx:id="rectIR" width="100.0" height="60.0" fill="#2c3e50" stroke="#fbc531" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0" />
                <VBox alignment="CENTER">
                   <Label text="IR" textFill="WHITE" style="-fx-font-weight: bold;" />
                   <Label fx:id="labelIR" text="0000" textFill="#fbc531"> <font><Font name="Monospaced Bold" size="18.0" /></font> </Label>
                </VBox>
             </StackPane>
 
-            <StackPane layoutX="325.0" layoutY="410.0">
-               <Rectangle width="100.0" height="60.0" fill="#2c3e50" stroke="#9b59b6" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0" />
+            <StackPane layoutX="570.0" layoutY="80.0">
+               <Rectangle fx:id="rectLV" width="100.0" height="60.0" fill="#2c3e50" stroke="#e84393" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0" />
                <VBox alignment="CENTER">
-                  <Label text="AC (ULA)" textFill="WHITE" style="-fx-font-weight: bold;" />
+                  <Label text="LV" textFill="WHITE" style="-fx-font-weight: bold;" />
+                  <Label fx:id="labelLV" text="0000" textFill="#e84393"> <font><Font name="Monospaced Bold" size="18.0" /></font> </Label>
+               </VBox>
+            </StackPane>
+
+            <StackPane layoutX="570.0" layoutY="240.0">
+               <Rectangle fx:id="rectSP" width="100.0" height="60.0" fill="#2c3e50" stroke="#e84393" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0" />
+               <VBox alignment="CENTER">
+                  <Label text="SP" textFill="WHITE" style="-fx-font-weight: bold;" />
+                  <Label fx:id="labelSP" text="0000" textFill="#e84393"> <font><Font name="Monospaced Bold" size="18.0" /></font> </Label>
+               </VBox>
+            </StackPane>
+
+            <StackPane layoutX="325.0" layoutY="410.0">
+               <Rectangle fx:id="rectAC" width="100.0" height="60.0" fill="#2c3e50" stroke="#9b59b6" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0" />
+               <VBox alignment="CENTER">
+                  <Label text="AC" textFill="WHITE" style="-fx-font-weight: bold;" />
                   <Label fx:id="labelAC" text="0000" textFill="#9b59b6"> <font><Font name="Monospaced Bold" size="18.0" /></font> </Label>
                </VBox>
             </StackPane>
 
-            <VBox layoutX="450.0" layoutY="410.0" alignment="CENTER" spacing="5.0">
-               <Label text="FLAG N" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 12;" />
-               <StackPane>
-                  <Rectangle fx:id="rectFlagN" width="40.0" height="40.0" fill="#34495e" stroke="#7f8c8d" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0" />
-                  <Label fx:id="labelFlagN" text="0" textFill="WHITE">
-                     <font><Font name="Monospaced Bold" size="18.0" /></font>
-                  </Label>
-               </StackPane>
-            </VBox>
+            <HBox layoutX="450.0" layoutY="410.0" spacing="20.0">
+               <children>
+                  <VBox alignment="CENTER" spacing="5.0">
+                     <Label text="FLAG N" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                     <StackPane>
+                        <Rectangle fx:id="rectFlagN" width="40.0" height="40.0" fill="#34495e" stroke="#7f8c8d" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0" />
+                        <Label fx:id="labelFlagN" text="0" textFill="WHITE">
+                           <font><Font name="Monospaced Bold" size="18.0" /></font>
+                        </Label>
+                     </StackPane>
+                  </VBox>
+
+                  <VBox alignment="CENTER" spacing="5.0">
+                     <Label text="FLAG Z" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+                     <StackPane>
+                        <Rectangle fx:id="rectFlagZ" width="40.0" height="40.0" fill="#34495e" stroke="#7f8c8d" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0" />
+                        <Label fx:id="labelFlagZ" text="1" textFill="WHITE">
+                           <font><Font name="Monospaced Bold" size="18.0" /></font>
+                        </Label>
+                     </StackPane>
+                  </VBox>
+               </children>
+            </HBox>
 
          </children>
       </AnchorPane>
 
-      <HBox alignment="CENTER" spacing="10.0">
-         <Label text="Comando Binário:" textFill="#ecf0f1" />
-         <TextField fx:id="inputInstrucao" promptText="0000000000001010" prefWidth="180.0" style="-fx-font-family: 'Monospaced';" />
-         <Button text="Gravar na RAM" onAction="#ramWrite" style="-fx-background-color: #44bd32; -fx-text-fill: white;" />
+      <HBox alignment="CENTER" spacing="15.0">
+         <children>
+            
+            <GridPane hgap="8" vgap="8" alignment="CENTER" style="-fx-background-color: #2c3e50; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #7f8c8d; -fx-border-radius: 5;">
+               <children>
+                  <Button text="LODD" onAction="#btnLODD" prefWidth="60" style="-fx-background-color: #3498db; -fx-text-fill: white;" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                  <Button text="STOD" onAction="#btnSTOD" prefWidth="60" style="-fx-background-color: #e67e22; -fx-text-fill: white;" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                  <Button text="ADDD" onAction="#btnADDD" prefWidth="60" style="-fx-background-color: #2ecc71; -fx-text-fill: white;" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                  <Button text="SUBD" onAction="#btnSUBD" prefWidth="60" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+                  
+                  <Button text="JPOS" onAction="#btnJPOS" prefWidth="60" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                  <Button text="JZER" onAction="#btnJZER" prefWidth="60" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                  <Button text="JUMP" onAction="#btnJUMP" prefWidth="60" style="-fx-background-color: #8e44ad; -fx-text-fill: white;" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                  <Button text="LOCO" onAction="#btnLOCO" prefWidth="60" style="-fx-background-color: #f1c40f; -fx-text-fill: black;" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+
+                  <Button text="LODL" onAction="#btnLODL" prefWidth="60" style="-fx-background-color: #1abc9c; -fx-text-fill: white;" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                  <Button text="STOL" onAction="#btnSTOL" prefWidth="60" style="-fx-background-color: #16a085; -fx-text-fill: white;" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                  <Button text="ADDL" onAction="#btnADDL" prefWidth="60" style="-fx-background-color: #27ae60; -fx-text-fill: white;" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                  <Button text="SUBL" onAction="#btnSUBL" prefWidth="60" style="-fx-background-color: #c0392b; -fx-text-fill: white;" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+
+                  <Button text="JNEG" onAction="#btnJNEG" prefWidth="60" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                  <Button text="JNZE" onAction="#btnJNZE" prefWidth="60" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                  <Button text="CALL" onAction="#btnCALL" prefWidth="60" style="-fx-background-color: #e84393; -fx-text-fill: white;" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+               </children>
+            </GridPane>
+
+            <VBox alignment="CENTER" prefWidth="130.0" style="-fx-background-color: #2c3e50; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #7f8c8d; -fx-border-radius: 5;">
+               <Label text="Status Ciclo" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 14;" />
+               <Label fx:id="labelStatus" text="---" textFill="#2ecc71">
+                  <font><Font name="Monospaced Bold" size="20.0" /></font>
+               </Label>
+            </VBox>
+
+            <VBox alignment="CENTER_LEFT" prefWidth="380.0" prefHeight="130.0" style="-fx-background-color: #000000; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #7f8c8d; -fx-border-radius: 5;">
+               <Label text="MICROPROGRAMA (MPC)" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 12;" />
+               <Label fx:id="labelMPC" text="---" textFill="#f1c40f" wrapText="true">
+                  <font><Font name="Monospaced" size="12.0" /></font>
+               </Label>
+            </VBox>
+         </children>
       </HBox>
 
-      <Button fx:id="primaryButton" text="PRÓXIMO PASSO (FETCH + EXEC)" onAction="#execCiclo" style="-fx-background-color: #c23616; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;"/>
+      <HBox alignment="CENTER" spacing="10.0">
+         <Label text="Endereço:" textFill="#ecf0f1" />
+         <TextField fx:id="inputEndereco" promptText="0" prefWidth="50.0" style="-fx-font-family: 'Monospaced';" />
+         
+         <Label text="Binário:" textFill="#ecf0f1" />
+         
+         <StackPane alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-background-radius: 3;">
+            <Label fx:id="labelPlaceholder" text="0000000000000000" textFill="#bdc3c7" style="-fx-font-family: 'Monospaced'; -fx-padding: 4 8 4 8;" />
+            <TextField fx:id="inputInstrucao" prefWidth="180.0" style="-fx-font-family: 'Monospaced'; -fx-background-color: transparent; -fx-text-fill: black; -fx-padding: 4 8 4 8;" />
+         </StackPane>
+         
+         <Button text="Gravar na RAM" onAction="#ramWrite" style="-fx-background-color: #44bd32; -fx-text-fill: white; -fx-font-weight: bold;" />
+         <Button text="RESET CPU" onAction="#resetCpu" style="-fx-background-color: #8e44ad; -fx-text-fill: white; -fx-font-weight: bold;" />
+      </HBox>
+   
+      <HBox alignment="CENTER" spacing="20.0">
+         <children>
+            <Button fx:id="btnSubciclo" text="SUBCICLO 1: FETCH" onAction="#execSubciclo" style="-fx-background-color: #c23616; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;"/>
+            <Button text="CICLO COMPLETO (PULAR)" onAction="#execCicloCompleto" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;"/>
+         </children>
+      </HBox>
+
    </children>
    
    <padding>
