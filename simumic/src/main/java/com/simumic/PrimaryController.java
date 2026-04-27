@@ -265,7 +265,6 @@ public class PrimaryController {
     @FXML private void btnSTOD() { inputInstrucao.setText("0001"); inputInstrucao.requestFocus(); }
     @FXML private void btnADDD() { inputInstrucao.setText("0010"); inputInstrucao.requestFocus(); }
     @FXML private void btnSUBD() { inputInstrucao.setText("0011"); inputInstrucao.requestFocus(); }
-    
     @FXML private void btnJPOS() { inputInstrucao.setText("0100"); inputInstrucao.requestFocus(); }
     @FXML private void btnJZER() { inputInstrucao.setText("0101"); inputInstrucao.requestFocus(); }
     @FXML private void btnJUMP() { inputInstrucao.setText("0110"); inputInstrucao.requestFocus(); }
@@ -275,8 +274,15 @@ public class PrimaryController {
     @FXML private void btnSTOL() { inputInstrucao.setText("1001"); inputInstrucao.requestFocus(); }
     @FXML private void btnADDL() { inputInstrucao.setText("1010"); inputInstrucao.requestFocus(); }
     @FXML private void btnSUBL() { inputInstrucao.setText("1011"); inputInstrucao.requestFocus(); }
-    
     @FXML private void btnJNEG() { inputInstrucao.setText("1100"); inputInstrucao.requestFocus(); }
     @FXML private void btnJNZE() { inputInstrucao.setText("1101"); inputInstrucao.requestFocus(); }
     @FXML private void btnCALL() { inputInstrucao.setText("1110"); inputInstrucao.requestFocus(); }
+    
+    @FXML private void btnPSHI() { inputInstrucao.setText("1111000"); inputInstrucao.requestFocus(); }
+    @FXML private void btnPOPI() { inputInstrucao.setText("1111001"); inputInstrucao.requestFocus(); }
+    @FXML private void btnPUSH() { inputInstrucao.setText("1111010"); inputInstrucao.requestFocus(); }
+    @FXML private void btnPOP()  { inputInstrucao.setText("1111011"); inputInstrucao.requestFocus(); }
+    @FXML private void btnRETN() { inputInstrucao.setText("1111100"); inputInstrucao.requestFocus(); }
+    @FXML private void btnSWAP() { inputInstrucao.setText("1111101"); inputInstrucao.requestFocus(); }
+    @FXML private void btnINSP() { inputInstrucao.setText("1111110"); inputInstrucao.requestFocus(); }
 }

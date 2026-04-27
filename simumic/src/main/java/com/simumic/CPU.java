@@ -16,6 +16,7 @@ public class CPU {
     // Mascara endereço
     private final int AMASK = 0xFFF;
     private int opcodeAtual = 0;
+    private int subOpcode = 0;
     private int enderecoAtual = 0;
 
     // Strings
@@ -32,7 +33,7 @@ public class CPU {
         this.lv = 0; this.sp = 0;
         this.flagN = false; this.flagZ = true; this.ctrlSign = "IDLE";
         this.statusCiclo = "---"; this.msgMPC = "---";
-        this.opcodeAtual = 0; this.enderecoAtual = 0;
+        this.opcodeAtual = 0; this.subOpcode = 0; this.enderecoAtual = 0;
     }
 
     public void fetch(){
@@ -55,6 +56,7 @@ public class CPU {
         this.msgMPC = "--- SUBCICLO 2: DECODE ---\nULA e o MMUX testam os bits do opcode sequencialmente.";
 
         this.opcodeAtual = (this.ir >> 12) & 0xF; 
+        this.subOpcode = (this.ir >> 9) & 0x7;
         this.enderecoAtual = this.ir & AMASK; 
 
         int primeiroBit = (this.ir >> 15) & 1;
@@ -89,25 +91,25 @@ public class CPU {
         this.msgMPC = "--- SUBCICLO 3: MEMÓRIA ---";
 
         switch (this.opcodeAtual) {
-            case 0: directRead(10, 11); break; // LODD
-            case 2: directRead(15, 16); break; // ADDD
-            case 3: directRead(18, 19); break; // SUBD
-            case 8: localRead(31, 32); break; // LODL
-            case 10: localRead(41, 42); break; // ADDL
-            case 11: localRead(44, 45); break; // SUBL
-            case 1: // STOD 
+            case 0: directRead(10, 11); break; // LOD D
+            case 2: directRead(15, 16); break; // ADD D
+            case 3: directRead(18, 19); break; // SUB D
+            case 8: localRead(31, 32); break; // LOD L
+            case 10: localRead(41, 42); break; // ADD L
+            case 11: localRead(44, 45); break; // SUB L
+            case 1: // STO D diferente pois é write
                 this.mar = this.enderecoAtual;             
                 this.mbr = this.ac;             
-                this.ctrlSign = "WRITE";
+                this.ctrlSign = "WRITE"; 
                 ram.write(this.mar, this.mbr);  
                 this.msgMPC += "\nMPC 9: [mar := ir;]\nMPC 10: [mbr := ac; wr;]\n  Sinal: WR (Write) ativado. RAM recebe ordem de gravar.";
                 break;
-            case 9: // STOL
+            case 9: // STO L
                 this.mar = this.enderecoAtual + this.lv;
                 this.mbr = this.ac;
                 this.ctrlSign = "WRITE";
                 ram.write(this.mar, this.mbr);
-                this.msgMPC += "\nMPC 38: [mar := ir + lv;]\nMPC 39: [mbr := ac; wr;]\n  Datapath Interno: Cálculo do Ponteiro (LV + " + this.enderecoAtual + ")\n  Sinal: WR ativado.";
+                this.msgMPC += "\nMPC 38: [mar := ir +  lv;]\nMPC 39: [mbr := ac; wr;]\n  Datapath Interno: Cálculo do Ponteiro (LV + " + this.enderecoAtual + ")\n  Sinal: WR ativado.";
                 break;
             case 14: // CALL
                 this.sp++; 
@@ -116,6 +118,24 @@ public class CPU {
                 this.ctrlSign = "WRITE"; 
                 ram.write(this.mar, this.mbr);
                 this.msgMPC += "\nMPC 48: [sp := sp + 1;]\nMPC 49: [mar := sp;]\nMPC 50: [mbr := pc; wr;]\n  Stack Pointer incrementado. RAM grava endereço de retorno.";
+                break;
+            case 15: // Opcodes maiores
+                switch (this.subOpcode) {
+                    case 2: // PUSH 
+                        this.sp++; this.mar = this.sp; this.mbr = this.ac;
+                        this.ctrlSign = "WRITE"; ram.write(this.mar, this.mbr);
+                        this.msgMPC += "\n[sp := sp + 1;]\n[mar := sp;]\n[mbr := ac; wr;]\n  Sinal: WR ativado. Guardando AC na pilha.";
+                        break;
+                    case 3: case 4: // POP RETN
+                        this.mar = this.sp; this.ctrlSign = "READ";
+                        this.mbr = ram.read(this.mar);
+                        this.msgMPC += "\n[mar := sp; rd;]\n  Sinal: RD ativado. Lendo do topo da pilha.";
+                        break;
+                    default:
+                        this.ctrlSign = "IDLE";
+                        this.msgMPC += "\n[MEMÓRIA] Ocioso. Instrução estendida sem acesso à RAM neste ciclo.";
+                        break;
+                }
                 break;
             case 4: case 5: case 6: case 7: case 12: case 13: // Saltos e LOCO
                 this.ctrlSign = "IDLE";
@@ -219,6 +239,44 @@ public class CPU {
                 this.statusCiclo = "CALL " + this.enderecoAtual;
                 this.pc = this.enderecoAtual;
                 this.msgMPC += "\nMPC 51: [pc := ir; goto 0;]\n  Datapath Interno: IR -> PC\n  -> O PC recebe o endereço da função. Salto executado!";
+                break;
+            case 15: 
+                switch (this.subOpcode) {
+                    case 0: // PSHI
+                        this.statusCiclo = "PSHI";
+                        this.msgMPC += "\n[ULA] Ociosa.";
+                        break;
+                    case 1: // POPI
+                        this.statusCiclo = "POPI";
+                        this.msgMPC += "\n[ULA] Ociosa.";
+                        break;
+                    case 2: // PUSH
+                        this.statusCiclo = "PUSH";
+                        this.msgMPC += "\n[ULA] Ociosa. Valor consolidado na pilha. goto 0;";
+                        break;
+                    case 3: // POP
+                        this.statusCiclo = "POP";
+                        this.ac = this.mbr; this.sp--;
+                        this.msgMPC += "\n[ac := mbr;]\n[sp := sp - 1; goto 0;]\n  Valor retirado da pilha para o AC.";
+                        break;
+                    case 4: // RETN
+                        this.statusCiclo = "RETN";
+                        this.pc = this.mbr; this.sp--;
+                        this.msgMPC += "\n[pc := mbr;]\n[sp := sp - 1; goto 0;]\n  Retorno de sub-rotina concluído.";
+                        break;
+                    case 5: // SWAP
+                        this.statusCiclo = "SWAP";
+                        this.msgMPC += "\n[ULA] SWAP aguardando implementação de hardware.";
+                        break;
+                    case 6: // INSP
+                        this.statusCiclo = "INSP " + this.enderecoAtual;
+                        this.sp += this.enderecoAtual;
+                        this.msgMPC += "\n[sp := sp + offset; goto 0;]\n  Stack Pointer ajustado.";
+                        break;
+                    default:
+                        this.statusCiclo = "UNKNOWN 1111";
+                        break;
+                }
                 break;
             default:
                 this.statusCiclo = "UNKNOWN";
