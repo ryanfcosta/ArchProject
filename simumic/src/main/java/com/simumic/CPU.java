@@ -4,7 +4,7 @@ public class CPU {
     private Memoria ram;  
     
     // Registradores
-    private int pc = 0, ac = 0, ir = 0, mar = 0, mbr = 0; 
+    private int pc = 0, ac = 0, ir = 0, mar = 0, mbr = 0, mpc = 0; 
     
     // Registradores da stack 
     private int lv = 0, sp = 0;
@@ -20,12 +20,99 @@ public class CPU {
     private int enderecoAtual = 0;
 
     // Strings
-    private String msgMPC = "---";
-    private String statusCiclo = "---";
+    private String msgMPC = "";
+    private String statusCiclo = "";
+
+    private final String[] mcpStrings = {
+        "mar:=pc; rd;",
+        "pc:=pc + 1; rd;",
+        "ir:=mbr; if n then goto 28;",
+        "tir:=lshift(ir + ir); if n then goto 19;",
+        "tir:=lshift(tir); if n then goto 11;",
+        "alu:=tir; if n then goto 9;",
+        "mar:=ir; rd;",
+        "rd;",
+        "ac:=mbr; goto 0;",
+        "mar:=ir; mbr:=ac; wr;", 
+        "wr; goto 0;",
+        "alu:=tir; if n then goto 15;",
+        "mar:=ir; rd;",
+        "rd;",
+        "ac:=mbr + ac; goto 0;",
+        "mar:=ir; rd;",
+        "ac:=ac + 1; rd;",
+        "a:=inv(mbr);",
+        "ac:=ac + a; goto 0;",
+        "tir:=lshift(tir); if n then goto 25;",
+        "alu:=tir; if n then goto 23;",
+        "alu:=ac; if n then goto 0;", 
+        "pc:=band(ir,amask); goto 0;",
+        "alu:=ac; if z then goto 22;",
+        "goto 0;",
+        "alu:=tir; if n then goto 27;",
+        "pc:=band(ir,amask); goto 0;",
+        "ac:=band(ir,amask); goto 0; ",
+        "tir:=lshift(ir + ir); if n then goto 40;",
+        "tir:=lshift(tir); if n then goto 35;",
+        "alu:=tir; if n then goto 33;",
+        "a:=ir + sp; {1000 = LODL}",
+        "mar:=a; rd; goto 7;",
+        "a:=ir + sp; {1001 = STOL}",
+        "mar:=a; mbr:=ac; wr; goto 10;",
+        "alu:=tir; if n then goto 38;",
+        "a:=ir + sp;",
+        "mar:=a; rd; goto 13;",
+        "a:=ir + sp;",
+        "mar:=a; rd; goto 16 ;",
+        "tir:=lshift(tir); if n then goto 46;",
+        "alu:=tir; if n then goto 44;",
+        "alu:=ac; if n then goto 22; {1100 = JNEG}",
+        "goto 0;",
+        "alu:=ac; if z then goto 0; {1101 = JNZE}",
+        "pc:=band(ir,amask); goto 0;",
+        "tir:=lshift(tir); if n then goto",
+        "sp:=sp + (-1);",
+        "mar:=sp; mbr:=pc; wr;",
+        "pc:=band(ir,amask); wr; goto 0;",
+        "tir:=lshift(tir); if n then goto 65;",
+        "tir:=lshift(tir); if n then goto 59;",
+        "alu:=tir; if n then goto 56;",
+        "mar:=ac; rd;",
+        "sp:=sp + (-1); rd;",
+        "mar:=sp; wr; goto 10;",
+        "mar:=sp; sp:=sp + 1; rd;",
+        "rd;",
+        "mar:=ac; wr; goto 10;",
+        "alu:=tir; if n then goto 62;",
+        "sp:=sp + (-1);",
+        "mar:=sp; mbr:=ac; wr; goto 10;",
+        "mar:=sp; sp:=sp + 1; rd;",
+        "rd;",
+        "ac:=mbr; goto 0;",
+        "tir:=lshift(tir); if n then goto 73;",
+        "alu:=tir; if n then goto 70;",
+        "mar:=sp; sp:=sp + 1; rd; ",
+        "rd;",
+        "pc:=mbr; goto 0;",
+        "a:=ac;",
+        "ac:=sp;",
+        "sp:=a; goto 0;",
+        "alu:=tir; if n then goto 76;",
+        "a:=band(ir,smask);",
+        "sp:=sp + a; goto 0;",
+        "a:=band(ir, smask);",
+        "a:=inv(a);",
+        "a:=a + 1; goto 75;"
+    };
 
 
     public CPU(Memoria memoria) {
         this.ram = memoria;
+    }
+
+    public void attMPC(int n){
+        this.mpc = n;
+        this.msgMPC += mcpStrings[n];
     }
 
     public void reset() {
@@ -37,23 +124,27 @@ public class CPU {
     }
 
     public void fetch(){
-        this.statusCiclo = "BUSCA";
+        //MPC 0,1,2
         
-        this.msgMPC = "MPC 0: [mar := pc; rd;]\n  Datapath: PC -> Travas da ULA -> ULA (passagem) -> Barramento C -> MAR";
+        
+        this.statusCiclo = "BUSCA";
+        attMPC(0);
+        this.msgMPC = "\nDatapath: PC -> Travas da ULA -> ULA (passagem) -> Barramento C -> MAR";
         this.mar = this.pc;
         
-        this.msgMPC += "\nMPC 1: [pc := pc + 1; rd;]\n  Datapath: PC -> Travas da ULA -> ULA (soma +1) -> Barramento C -> PC"; 
+        attMPC(1);
+        this.msgMPC += "\n  Datapath: PC -> Travas da ULA -> ULA (soma +1) -> Barramento C -> PC"; 
         this.pc++; 
         this.ctrlSign = "READ";
 
-        this.msgMPC += "\nMPC 2: [ir := mbr; if n then goto 28;]\n  Datapath Externo: RAM -> MBR\n  Datapath Interno: MBR -> IR"; 
+        attMPC(2);
+        this.msgMPC += "\n  Datapath Externo: RAM -> MBR\n  Datapath Interno: MBR -> IR"; 
         this.mbr = ram.read(this.mar);
         this.ir = this.mbr;
     }
 
     public void decode(){
         this.statusCiclo = "DECODE";
-        this.msgMPC = "--- SUBCICLO 2: DECODE ---\nULA e o MMUX testam os bits do opcode sequencialmente.";
 
         this.opcodeAtual = (this.ir >> 12) & 0xF; 
         this.subOpcode = (this.ir >> 9) & 0x7;
@@ -76,19 +167,22 @@ public class CPU {
         this.mar = this.enderecoAtual;             
         this.ctrlSign = "READ"; 
         this.mbr = ram.read(this.mar);  
-        this.msgMPC += "\nMPC " + mpc1 + ": [mar := ir; rd;]\nMPC " + mpc2 + ": [rd;]\n  Sinal: RD ativado. Buscando valor na RAM no endereço (" + this.mar + ").\n  Datapath: IR -> MAR\n  Ocioso. Aguardando dado.";
+        attMPC(mpc1);
+        attMPC(mpc2);
+        this.msgMPC += "\nSinal: RD ativado. Buscando valor na RAM no endereço (" + this.mar + ").\n  Datapath: IR -> MAR\n  Ocioso. Aguardando dado.";
     }
 
     private void localRead(int mpc1, int mpc2) {
         this.mar = this.enderecoAtual + this.lv;
         this.ctrlSign = "READ";
         this.mbr = ram.read(this.mar);
-        this.msgMPC += "\nMPC " + mpc1 + ": [mar := ir + lv; rd;]\nMPC " + mpc2 + ": [rd;]\n  Datapath Interno: Cálculo do Ponteiro na ULA (IR + LV = " + this.mar + ")\n  Sinal: RD ativado.";
+        attMPC(mpc1);
+        attMPC(mpc2);
+        this.msgMPC += "\n Datapath Interno: Cálculo do Ponteiro na ULA (IR + LV = " + this.mar + ")\n  Sinal: RD ativado.";
     }
 
     public void memoria(){
         this.statusCiclo = "MEMÓRIA";
-        this.msgMPC = "--- SUBCICLO 3: MEMÓRIA ---";
 
         switch (this.opcodeAtual) {
             case 0: directRead(10, 11); break; // LOD D
@@ -102,14 +196,17 @@ public class CPU {
                 this.mbr = this.ac;             
                 this.ctrlSign = "WRITE"; 
                 ram.write(this.mar, this.mbr);  
-                this.msgMPC += "\nMPC 9: [mar := ir;]\nMPC 10: [mbr := ac; wr;]\n  Sinal: WR (Write) ativado. RAM recebe ordem de gravar.";
+                
+                attMPC(9); attMPC(10);
+                this.msgMPC += "\n  Sinal: WR (Write) ativado. RAM recebe ordem de gravar.";
                 break;
             case 9: // STO L
                 this.mar = this.enderecoAtual + this.lv;
                 this.mbr = this.ac;
                 this.ctrlSign = "WRITE";
                 ram.write(this.mar, this.mbr);
-                this.msgMPC += "\nMPC 38: [mar := ir +  lv;]\nMPC 39: [mbr := ac; wr;]\n  Datapath Interno: Cálculo do Ponteiro (LV + " + this.enderecoAtual + ")\n  Sinal: WR ativado.";
+                attMPC(38); attMPC(39);
+                this.msgMPC += "\n Datapath Interno: Cálculo do Ponteiro (LV + " + this.enderecoAtual + ")\n  Sinal: WR ativado.";
                 break;
             case 14: // CALL
                 this.sp++; 
@@ -117,7 +214,10 @@ public class CPU {
                 this.mbr = this.pc; 
                 this.ctrlSign = "WRITE"; 
                 ram.write(this.mar, this.mbr);
-                this.msgMPC += "\nMPC 48: [sp := sp + 1;]\nMPC 49: [mar := sp;]\nMPC 50: [mbr := pc; wr;]\n  Stack Pointer incrementado. RAM grava endereço de retorno.";
+
+                attMPC(48); attMPC(49); attMPC(50);
+
+                this.msgMPC += "\n  Stack Pointer incrementado. RAM grava endereço de retorno.";
                 break;
             case 15: // Opcodes maiores
                 switch (this.subOpcode) {
@@ -148,89 +248,100 @@ public class CPU {
     }
 
     public void executeULA(){
-        this.msgMPC = "--- SUBCICLO 4: EXECUTE ---";
 
         switch (this.opcodeAtual) {
             case 0: // LODD
                 this.statusCiclo = "LODD " + this.enderecoAtual;
                 this.ac = this.mbr; 
-                this.msgMPC += "\nMPC 12: [ac := mbr; goto 0;]\n  Datapath: MBR -> ULA -> AC\n  Operação concluída. MPC zerado.";           
+                attMPC(12);
+                this.msgMPC += "\n Datapath: MBR -> ULA -> AC\n  Operação concluída. MPC zerado.";           
                 break;
             case 1: case 9: // STOD STOL
                 this.statusCiclo = (this.opcodeAtual == 1 ? "STOD " : "STOL ") + this.enderecoAtual;
-                this.msgMPC += "\n  [ULA] Ociosa. Operação de escrita finalizada no ciclo anterior. goto 0;";
+                this.msgMPC += "\n [ULA] Ociosa. Operação de escrita finalizada no ciclo anterior. goto 0;";
                 break;
             case 2: // ADDD
                 this.statusCiclo = "ADDD " + this.enderecoAtual;
                 this.ac += this.mbr;
-                this.msgMPC += "\nMPC 17: [ac := ac + mbr; goto 0;]\n  Datapath: AC + MBR -> ULA (SOMA) -> AC\n  Operação concluída.";
+                
+                attMPC(17);
+                this.msgMPC += "\n Datapath: AC + MBR -> ULA (SOMA) -> AC\n  Operação concluída.";
                 break;
             case 3: // SUBD
                 this.statusCiclo = "SUBD " + this.enderecoAtual;
-                this.ac -= this.mbr; 
-                this.msgMPC += "\nMPC 20: [ac := ac - mbr; goto 0;]\n  Datapath: AC - MBR -> ULA (SUBTRAÇÃO) -> AC\n  Operação concluída.";
+                this.ac -= this.mbr;
+                
+                attMPC(20);
+                this.msgMPC += "\n Datapath: AC - MBR -> ULA (SUBTRAÇÃO) -> AC\n  Operação concluída.";
                 break;
             case 4: // JPOS (if AC >= 0)
                 this.statusCiclo = "JPOS " + this.enderecoAtual;
-                this.msgMPC += "\nMPC 21: [alu := ac; if n then goto 0;]\n  Datapath: AC avaliado pela ULA.";
+                attMPC(21);
+                this.msgMPC += "\n Datapath: AC avaliado pela ULA.";
                 if (this.ac >= 0) {
                     this.pc = this.enderecoAtual;
-                    this.msgMPC += "\nMPC 22: [pc := ir; goto 0;]\n  -> Salto executado com sucesso!";
+                    attMPC(22);
+                    this.msgMPC += "\n  -> Salto executado com sucesso!";
                 } else {
                     this.msgMPC += "\n  -> Se AC for negativo (N=1): Salto abortado. goto 0;";
                 }
                 break;
             case 5: // JZER (if AC == 0)
                 this.statusCiclo = "JZER " + this.enderecoAtual;
-                this.msgMPC += "\nMPC 25: [alu := ac; if z then goto 27;]\n  Datapath: ULA testa Flag Z.";
+                attMPC(25);
+                this.msgMPC += "\n  Datapath: ULA testa Flag Z.";
                 if (this.ac == 0) {
                     this.pc = this.enderecoAtual;
-                    this.msgMPC += "\nMPC 27: [pc := ir; goto 0;]\n  -> Salto executado com sucesso!";
+                    
+                    attMPC(27); this.msgMPC += "\n  -> Salto executado com sucesso!";
                 } else {
-                    this.msgMPC += "\nMPC 26: [goto 0;]\n  -> O salto falhou (AC != 0). Aborta desvio.";
+                    attMPC(26); this.msgMPC += "\n  -> O salto falhou (AC != 0). Aborta desvio.";
                 }
                 break;
             case 6: // JUMP
                 this.statusCiclo = "JUMP " + this.enderecoAtual;
                 this.pc = this.enderecoAtual;
-                this.msgMPC += "\nMPC 24: [pc := ir; goto 0;]\n  Datapath Interno: IR -> PC\n  -> Salto direto executado!";
+                
+                attMPC(24); this.msgMPC += "\n  Datapath Interno: IR -> PC\n  -> Salto direto executado!";
                 break;
             case 7: // LOCO
                 this.statusCiclo = "LOCO " + this.enderecoAtual;
                 this.ac = this.enderecoAtual; // Equivale a (ir and amask)
-                this.msgMPC += "\nMPC 30: [ac := ir and amask; goto 0;]\n  Datapath: IR (16b) AND AMASK (4095) -> AC\n  -> Constante extraída e salva no AC!";
+
+                attMPC(30); this.msgMPC += "\n  Datapath: IR (16b) AND AMASK (4095) -> AC\n  -> Constante extraída e salva no AC!";
                 break;
             case 8: // LODL
                 this.statusCiclo = "LODL " + this.enderecoAtual;
                 this.ac = this.mbr;
-                this.msgMPC += "\nMPC 33: [ac := mbr; goto 0;]\n  Variável local carregada no AC.";
+                attMPC(33);
                 break;
             case 10: // ADDL
                 this.statusCiclo = "ADDL " + this.enderecoAtual;
                 this.ac += this.mbr;
-                this.msgMPC += "\nMPC 43: [ac := ac + mbr; goto 0;]\n  Soma de Variável Local concluída.";
+                attMPC(43);                 
                 break;
             case 11: // SUBL
                 this.statusCiclo = "SUBL " + this.enderecoAtual;
                 this.ac -= this.mbr;
-                this.msgMPC += "\nMPC 46: [ac := ac - mbr; goto 0;]\n  Subtração de Variável Local concluída.";
+                attMPC(46);
                 break;
             case 12: // JNEG (if AC < 0)
                 this.statusCiclo = "JNEG " + this.enderecoAtual;
-                this.msgMPC += "\nMPC 34: [alu := ac; if n then goto 27;]";
+                attMPC(34);
                 if (this.ac < 0) {
                     this.pc = this.enderecoAtual;
-                    this.msgMPC += "\nMPC 27: [pc := ir; goto 0;]\n  -> Salto executado!";
+                    attMPC(27);
+                    this.msgMPC += "\n  -> Salto executado!";
                 } else {
                     this.msgMPC += "\n  -> O salto falhou. Aborta desvio.";
                 }
                 break;
             case 13: // JNZE (if AC != 0)
                 this.statusCiclo = "JNZE " + this.enderecoAtual;
-                this.msgMPC += "\nMPC 35: [alu := ac; if z then goto 0;]";
+                attMPC(35);
                 if (this.ac != 0) {
                     this.pc = this.enderecoAtual;
-                    this.msgMPC += "\nMPC 27: [pc := ir; goto 0;]\n  -> Salto executado!";
+                    attMPC(27); this.msgMPC += "\n  -> Salto executado!";
                 } else {
                     this.msgMPC += "\n  -> O salto falhou (Z=1). Aborta desvio.";
                 }
@@ -238,7 +349,8 @@ public class CPU {
             case 14: // CALL
                 this.statusCiclo = "CALL " + this.enderecoAtual;
                 this.pc = this.enderecoAtual;
-                this.msgMPC += "\nMPC 51: [pc := ir; goto 0;]\n  Datapath Interno: IR -> PC\n  -> O PC recebe o endereço da função. Salto executado!";
+                attMPC(51);
+                this.msgMPC += "\n  Datapath Interno: IR -> PC\n  -> O PC recebe o endereço da função. Salto executado!";
                 break;
             case 15: 
                 switch (this.subOpcode) {
@@ -293,6 +405,7 @@ public class CPU {
     public int getIR() { return ir; }
     public int getMAR() { return mar; }
     public int getMBR() { return mbr; }
+    public int getMPC() { return mpc; }
     public int getLV() { return lv; }
     public int getSP() { return sp; }
     public boolean isFlagN() { return flagN; }

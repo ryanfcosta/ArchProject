@@ -173,8 +173,10 @@ public class PrimaryController {
 
         // Atualiza status, mpc e preenche registrador
         labelStatus.setText(cpu.getstatusCiclo());
+        // Label MPC vai ser um console que salva o MPC anterior
         labelMPC.setText(cpu.getMsgMPC());
         fillReg();
+        System.out.println(cpu.getMPC());
     }
     
     private void fillReg() {
