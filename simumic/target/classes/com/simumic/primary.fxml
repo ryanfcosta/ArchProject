@@ -37,7 +37,7 @@
             </StackPane>
 
             <VBox layoutX="15.0" layoutY="330.0" alignment="CENTER" spacing="5.0">
-               <Label text="SINAL DE CONTROLO" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 10;" />
+               <Label text="SINAL DE CONTROLE" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 10;" />
                <StackPane>
                   <Rectangle fx:id="rectControl" width="100.0" height="30.0" fill="#34495e" stroke="#7f8c8d" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0" />
                   <Label fx:id="labelControl" text="IDLE" textFill="WHITE">
@@ -133,26 +133,35 @@
       <HBox alignment="CENTER" spacing="15.0">
          <children>
             
-            <GridPane hgap="8" vgap="8" alignment="CENTER" style="-fx-background-color: #2c3e50; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #7f8c8d; -fx-border-radius: 5;">
+<GridPane hgap="8" vgap="8" alignment="CENTER" style="-fx-background-color: #2c3e50; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #7f8c8d; -fx-border-radius: 5;">
                <children>
-                  <Button text="LODD" onAction="#btnLODD" prefWidth="60" style="-fx-background-color: #3498db; -fx-text-fill: white;" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                  <Button text="STOD" onAction="#btnSTOD" prefWidth="60" style="-fx-background-color: #e67e22; -fx-text-fill: white;" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                  <Button text="ADDD" onAction="#btnADDD" prefWidth="60" style="-fx-background-color: #2ecc71; -fx-text-fill: white;" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-                  <Button text="SUBD" onAction="#btnSUBD" prefWidth="60" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+                  <Button text="LODD" onAction="#btnLODD" prefWidth="65" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                  <Button text="STOD" onAction="#btnSTOD" prefWidth="65" style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                  <Button text="ADDD" onAction="#btnADDD" prefWidth="65" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                  <Button text="SUBD" onAction="#btnSUBD" prefWidth="65" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
                   
-                  <Button text="JPOS" onAction="#btnJPOS" prefWidth="60" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                  <Button text="JZER" onAction="#btnJZER" prefWidth="60" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                  <Button text="JUMP" onAction="#btnJUMP" prefWidth="60" style="-fx-background-color: #8e44ad; -fx-text-fill: white;" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-                  <Button text="LOCO" onAction="#btnLOCO" prefWidth="60" style="-fx-background-color: #f1c40f; -fx-text-fill: black;" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                  <Button text="JPOS" onAction="#btnJPOS" prefWidth="65" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                  <Button text="JZER" onAction="#btnJZER" prefWidth="65" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                  <Button text="JUMP" onAction="#btnJUMP" prefWidth="65" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                  <Button text="LOCO" onAction="#btnLOCO" prefWidth="65" style="-fx-background-color: #f1c40f; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
 
-                  <Button text="LODL" onAction="#btnLODL" prefWidth="60" style="-fx-background-color: #1abc9c; -fx-text-fill: white;" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                  <Button text="STOL" onAction="#btnSTOL" prefWidth="60" style="-fx-background-color: #16a085; -fx-text-fill: white;" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                  <Button text="ADDL" onAction="#btnADDL" prefWidth="60" style="-fx-background-color: #27ae60; -fx-text-fill: white;" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
-                  <Button text="SUBL" onAction="#btnSUBL" prefWidth="60" style="-fx-background-color: #c0392b; -fx-text-fill: white;" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+                  <Button text="LODL" onAction="#btnLODL" prefWidth="65" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                  <Button text="STOL" onAction="#btnSTOL" prefWidth="65" style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                  <Button text="ADDL" onAction="#btnADDL" prefWidth="65" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                  <Button text="SUBL" onAction="#btnSUBL" prefWidth="65" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
 
-                  <Button text="JNEG" onAction="#btnJNEG" prefWidth="60" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                  <Button text="JNZE" onAction="#btnJNZE" prefWidth="60" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                  <Button text="CALL" onAction="#btnCALL" prefWidth="60" style="-fx-background-color: #e84393; -fx-text-fill: white;" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+                  <Button text="JNEG" onAction="#btnJNEG" prefWidth="65" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                  <Button text="JNZE" onAction="#btnJNZE" prefWidth="65" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                  <Button text="CALL" onAction="#btnCALL" prefWidth="65" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+                  <Button text="RETN" onAction="#btnRETN" prefWidth="65" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="3" GridPane.rowIndex="3"/>
+
+                  <Button text="PUSH" onAction="#btnPUSH" prefWidth="65" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                  <Button text="POP"  onAction="#btnPOP"  prefWidth="65" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                  <Button text="PSHI" onAction="#btnPSHI" prefWidth="65" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="2" GridPane.rowIndex="4"/>
+                  <Button text="POPI" onAction="#btnPOPI" prefWidth="65" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="3" GridPane.rowIndex="4"/>
+
+                  <Button text="SWAP" onAction="#btnSWAP" prefWidth="65" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                  <Button text="INSP" onAction="#btnINSP" prefWidth="65" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                </children>
             </GridPane>
 
