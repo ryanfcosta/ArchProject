@@ -131,9 +131,8 @@
       </AnchorPane>
 
       <HBox alignment="CENTER" spacing="15.0">
-         <children>
-            
-<GridPane hgap="8" vgap="8" alignment="CENTER" style="-fx-background-color: #2c3e50; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #7f8c8d; -fx-border-radius: 5;">
+         <children>   
+            <GridPane hgap="8" vgap="8" alignment="CENTER" style="-fx-background-color: #2c3e50; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #7f8c8d; -fx-border-radius: 5;">
                <children>
                   <Button text="LODD" onAction="#btnLODD" prefWidth="65" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                   <Button text="STOD" onAction="#btnSTOD" prefWidth="65" style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
@@ -172,11 +171,15 @@
                </Label>
             </VBox>
 
-            <VBox alignment="CENTER_LEFT" prefWidth="380.0" prefHeight="130.0" style="-fx-background-color: #000000; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #7f8c8d; -fx-border-radius: 5;">
-               <Label text="MICROPROGRAMA (MPC)" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 12;" />
-               <Label fx:id="labelMPC" text="---" textFill="#f1c40f" wrapText="true">
-                  <font><Font name="Monospaced" size="12.0" /></font>
-               </Label>
+            <VBox alignment="TOP_LEFT" prefWidth="380.0" prefHeight="130.0" style="-fx-background-color: #000000; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #7f8c8d; -fx-border-radius: 5;">
+               <Label text="MICROPROGRAMA (MPC)" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 0 0 5 0;" />
+               <ScrollPane fx:id="scrollMPC" fitToWidth="true" style="-fx-background: black; -fx-background-color: black;" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+                  <content>
+                        <Label fx:id="labelMPC" text="---" textFill="#f1c40f" wrapText="true" maxWidth="340.0">
+                           <font><Font name="Monospaced" size="12.0" /></font>
+                        </Label>
+                  </content>
+               </ScrollPane>
             </VBox>
          </children>
       </HBox>

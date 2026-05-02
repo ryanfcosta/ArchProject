@@ -3,6 +3,7 @@ package com.simumic;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 //import javafx.scene.layout.HBox;
 import javafx.scene.shape.Rectangle;
@@ -10,8 +11,8 @@ import javafx.scene.paint.Color;
 
 public class PrimaryController {
     // Labels XML do registrador
-    @FXML private Label labelPC, labelAC, labelIR, labelMAR, labelMBR;
-    @FXML private Rectangle rectPC, rectAC, rectIR, rectMAR, rectMBR, rectLV, rectSP;
+    @FXML private Label labelPC, labelAC, labelIR, labelMAR, labelMBR, labelMPCReg;
+    @FXML private Rectangle rectPC, rectAC, rectIR, rectMAR, rectMBR, rectLV, rectSP, rectMPC;
     
     // Registradores da Pilha
     @FXML private Label labelLV; 
@@ -33,6 +34,7 @@ public class PrimaryController {
 
     // MPC e Assembly
     @FXML private Label labelStatus, labelMPC;
+    @FXML private ScrollPane scrollMPC;
 
     // Instancia CPU e RAM
     private Memoria ram = new Memoria();
@@ -131,6 +133,7 @@ public class PrimaryController {
         // Atualiza as labels da Pilha 
         if (labelLV != null) labelLV.setText(String.format("%04X", cpu.getLV()));
         if (labelSP != null) labelSP.setText(String.format("%04X", cpu.getSP()));
+        if (labelMPCReg != null) labelMPCReg.setText(String.format("%04X", cpu.getMPC()));
         
         // Atualiza Barramento de Controle (Sinal RD/WR)
         String sinal = cpu.getSinalControle();
@@ -186,6 +189,7 @@ public class PrimaryController {
         Color corAzul    = Color.web("#3498db"); // MBR
         Color corRoxo    = Color.web("#9b59b6"); // AC
         Color corRosa    = Color.web("#e84393"); // LV, SP
+        Color corCiano = Color.web("#00cec9"); //MPC
 
         // Apaga
         rectMAR.setFill(corFundoApagado); labelMAR.setTextFill(corVerde);
@@ -193,6 +197,7 @@ public class PrimaryController {
         rectMBR.setFill(corFundoApagado); labelMBR.setTextFill(corAzul);
         rectIR.setFill(corFundoApagado);  labelIR.setTextFill(corAmarelo);
         rectAC.setFill(corFundoApagado);  labelAC.setTextFill(corRoxo);
+        rectMPC.setFill(corFundoApagado); labelMPCReg.setTextFill(corCiano);
         
         if (rectLV != null) rectLV.setFill(corFundoApagado);
         if (labelLV != null) labelLV.setTextFill(corRosa);
@@ -206,6 +211,7 @@ public class PrimaryController {
             rectMAR.setFill(corVerde);  labelMAR.setTextFill(Color.WHITE);
             rectMBR.setFill(corAzul);   labelMBR.setTextFill(Color.WHITE);
             rectIR.setFill(corAmarelo); labelIR.setTextFill(Color.WHITE);
+            if (rectMPC != null) { rectMPC.setFill(corCiano); labelMPCReg.setTextFill(Color.WHITE); }
         } 
         else if (estadoClock == 2) { 
             // DECODE
@@ -240,6 +246,10 @@ public class PrimaryController {
 
     // Placeholder/Ghost text
     @FXML public void initialize() {
+        labelMPC.heightProperty().addListener((observable, oldValue, newValue) -> {
+            scrollMPC.setVvalue(1.0); // Listener que rola a barrinha
+        });
+
         inputInstrucao.textProperty().addListener((observable, oldValue, newValue) -> {
             int tamanho = newValue.length();
             

@@ -112,7 +112,7 @@ public class CPU {
 
     public void attMPC(int n){
         this.mpc = n;
-        this.msgMPC += mcpStrings[n];
+        this.msgMPC += "\nMPC " + n + ": [" + mcpStrings[n] + "]";
     }
 
     public void reset() {
@@ -129,16 +129,16 @@ public class CPU {
         
         this.statusCiclo = "BUSCA";
         attMPC(0);
-        this.msgMPC = "\nDatapath: PC -> Travas da ULA -> ULA (passagem) -> Barramento C -> MAR";
+        // Datapath: PC -> Travas da ULA -> ULA (passagem) -> Barramento C -> MAR";
         this.mar = this.pc;
         
         attMPC(1);
-        this.msgMPC += "\n  Datapath: PC -> Travas da ULA -> ULA (soma +1) -> Barramento C -> PC"; 
+        // Datapath: PC -> Travas da ULA -> ULA (soma +1) -> Barramento C -> PC"; 
         this.pc++; 
         this.ctrlSign = "READ";
 
         attMPC(2);
-        this.msgMPC += "\n  Datapath Externo: RAM -> MBR\n  Datapath Interno: MBR -> IR"; 
+        // Datapath Externo: RAM -> MBR\n  Datapath Interno: MBR -> IR"; 
         this.mbr = ram.read(this.mar);
         this.ir = this.mbr;
     }
@@ -153,10 +153,10 @@ public class CPU {
         int primeiroBit = (this.ir >> 15) & 1;
         if (primeiroBit == 1) {
             this.flagN = true; 
-            this.msgMPC += "\n  -> O 1º bit (bit 15) é 1! Flag N ativada. Salto GOTO 28 (Família 1xxx)";
+            //O 1º bit (bit 15) é 1! Flag N ativada. Salto GOTO 28 (Família 1xxx)";
         } else {
             this.flagN = false; 
-            this.msgMPC += "\n  -> O 1º bit (bit 15) é 0. Flag N não ativada. Transição para MPC 3 (Família 0xxx)";
+            //O 1º bit (bit 15) é 0. Flag N não ativada. Transição para MPC 3 (Família 0xxx)";
         }
         
         this.ctrlSign = "IDLE"; 
@@ -169,7 +169,7 @@ public class CPU {
         this.mbr = ram.read(this.mar);  
         attMPC(mpc1);
         attMPC(mpc2);
-        this.msgMPC += "\nSinal: RD ativado. Buscando valor na RAM no endereço (" + this.mar + ").\n  Datapath: IR -> MAR\n  Ocioso. Aguardando dado.";
+        //Sinal: RD ativado. Buscando valor na RAM no endereço (" + this.mar + ").\n  Datapath: IR -> MAR\n  Ocioso. Aguardando dado.";
     }
 
     private void localRead(int mpc1, int mpc2) {
@@ -178,7 +178,7 @@ public class CPU {
         this.mbr = ram.read(this.mar);
         attMPC(mpc1);
         attMPC(mpc2);
-        this.msgMPC += "\n Datapath Interno: Cálculo do Ponteiro na ULA (IR + LV = " + this.mar + ")\n  Sinal: RD ativado.";
+        //Datapath Interno: Cálculo do Ponteiro na ULA (IR + LV = " + this.mar + ")\n  Sinal: RD ativado.";
     }
 
     public void memoria(){
@@ -198,7 +198,7 @@ public class CPU {
                 ram.write(this.mar, this.mbr);  
                 
                 attMPC(9); attMPC(10);
-                this.msgMPC += "\n  Sinal: WR (Write) ativado. RAM recebe ordem de gravar.";
+                // Sinal: WR (Write) ativado. RAM recebe ordem de gravar.";
                 break;
             case 9: // STO L
                 this.mar = this.enderecoAtual + this.lv;
@@ -206,7 +206,7 @@ public class CPU {
                 this.ctrlSign = "WRITE";
                 ram.write(this.mar, this.mbr);
                 attMPC(38); attMPC(39);
-                this.msgMPC += "\n Datapath Interno: Cálculo do Ponteiro (LV + " + this.enderecoAtual + ")\n  Sinal: WR ativado.";
+                // Datapath Interno: Cálculo do Ponteiro (LV + " + this.enderecoAtual + ")\n  Sinal: WR ativado.";
                 break;
             case 14: // CALL
                 this.sp++; 
@@ -217,7 +217,7 @@ public class CPU {
 
                 attMPC(48); attMPC(49); attMPC(50);
 
-                this.msgMPC += "\n  Stack Pointer incrementado. RAM grava endereço de retorno.";
+                // Stack Pointer incrementado. RAM grava endereço de retorno.";
                 break;
             case 15: // Opcodes maiores
                 switch (this.subOpcode) {
@@ -239,7 +239,7 @@ public class CPU {
                 break;
             case 4: case 5: case 6: case 7: case 12: case 13: // Saltos e LOCO
                 this.ctrlSign = "IDLE";
-                this.msgMPC += "\n  [MEMÓRIA] Ocioso. Esta instrução não realiza acesso de leitura/escrita externa neste ciclo.";
+                // [MEMÓRIA] Ocioso. Esta instrução não realiza acesso de leitura/escrita externa neste ciclo.";
                 break;
             default:
                 this.ctrlSign = "IDLE";
@@ -254,61 +254,61 @@ public class CPU {
                 this.statusCiclo = "LODD " + this.enderecoAtual;
                 this.ac = this.mbr; 
                 attMPC(12);
-                this.msgMPC += "\n Datapath: MBR -> ULA -> AC\n  Operação concluída. MPC zerado.";           
+                //Datapath: MBR -> ULA -> AC\n  Operação concluída. MPC zerado.";           
                 break;
             case 1: case 9: // STOD STOL
                 this.statusCiclo = (this.opcodeAtual == 1 ? "STOD " : "STOL ") + this.enderecoAtual;
-                this.msgMPC += "\n [ULA] Ociosa. Operação de escrita finalizada no ciclo anterior. goto 0;";
+                //[ULA] Ociosa. Operação de escrita finalizada no ciclo anterior. goto 0;";
                 break;
             case 2: // ADDD
                 this.statusCiclo = "ADDD " + this.enderecoAtual;
                 this.ac += this.mbr;
                 
                 attMPC(17);
-                this.msgMPC += "\n Datapath: AC + MBR -> ULA (SOMA) -> AC\n  Operação concluída.";
+                //Datapath: AC + MBR -> ULA (SOMA) -> AC\n  Operação concluída.";
                 break;
             case 3: // SUBD
                 this.statusCiclo = "SUBD " + this.enderecoAtual;
                 this.ac -= this.mbr;
                 
                 attMPC(20);
-                this.msgMPC += "\n Datapath: AC - MBR -> ULA (SUBTRAÇÃO) -> AC\n  Operação concluída.";
+                //Datapath: AC - MBR -> ULA (SUBTRAÇÃO) -> AC\n  Operação concluída.";
                 break;
             case 4: // JPOS (if AC >= 0)
                 this.statusCiclo = "JPOS " + this.enderecoAtual;
                 attMPC(21);
-                this.msgMPC += "\n Datapath: AC avaliado pela ULA.";
+                //Datapath: AC avaliado pela ULA.";
                 if (this.ac >= 0) {
                     this.pc = this.enderecoAtual;
                     attMPC(22);
-                    this.msgMPC += "\n  -> Salto executado com sucesso!";
+                    // -> Salto executado com sucesso!";
                 } else {
-                    this.msgMPC += "\n  -> Se AC for negativo (N=1): Salto abortado. goto 0;";
+                    // -> Se AC for negativo (N=1): Salto abortado. goto 0;";
                 }
                 break;
             case 5: // JZER (if AC == 0)
                 this.statusCiclo = "JZER " + this.enderecoAtual;
                 attMPC(25);
-                this.msgMPC += "\n  Datapath: ULA testa Flag Z.";
+                // Datapath: ULA testa Flag Z.";
                 if (this.ac == 0) {
                     this.pc = this.enderecoAtual;
                     
-                    attMPC(27); this.msgMPC += "\n  -> Salto executado com sucesso!";
+                    attMPC(27); // -> Salto executado com sucesso!";
                 } else {
-                    attMPC(26); this.msgMPC += "\n  -> O salto falhou (AC != 0). Aborta desvio.";
+                    attMPC(26); // -> O salto falhou (AC != 0). Aborta desvio.";
                 }
                 break;
             case 6: // JUMP
                 this.statusCiclo = "JUMP " + this.enderecoAtual;
                 this.pc = this.enderecoAtual;
                 
-                attMPC(24); this.msgMPC += "\n  Datapath Interno: IR -> PC\n  -> Salto direto executado!";
+                attMPC(24); // Datapath Interno: IR -> PC\n  -> Salto direto executado!";
                 break;
             case 7: // LOCO
                 this.statusCiclo = "LOCO " + this.enderecoAtual;
                 this.ac = this.enderecoAtual; // Equivale a (ir and amask)
 
-                attMPC(30); this.msgMPC += "\n  Datapath: IR (16b) AND AMASK (4095) -> AC\n  -> Constante extraída e salva no AC!";
+                attMPC(30); // Datapath: IR (16b) AND AMASK (4095) -> AC\n  -> Constante extraída e salva no AC!";
                 break;
             case 8: // LODL
                 this.statusCiclo = "LODL " + this.enderecoAtual;
@@ -331,9 +331,9 @@ public class CPU {
                 if (this.ac < 0) {
                     this.pc = this.enderecoAtual;
                     attMPC(27);
-                    this.msgMPC += "\n  -> Salto executado!";
+                    // -> Salto executado!";
                 } else {
-                    this.msgMPC += "\n  -> O salto falhou. Aborta desvio.";
+                    // -> O salto falhou. Aborta desvio.";
                 }
                 break;
             case 13: // JNZE (if AC != 0)
@@ -341,16 +341,16 @@ public class CPU {
                 attMPC(35);
                 if (this.ac != 0) {
                     this.pc = this.enderecoAtual;
-                    attMPC(27); this.msgMPC += "\n  -> Salto executado!";
+                    attMPC(27); // -> Salto executado!";
                 } else {
-                    this.msgMPC += "\n  -> O salto falhou (Z=1). Aborta desvio.";
+                    // -> O salto falhou (Z=1). Aborta desvio.";
                 }
                 break;
             case 14: // CALL
                 this.statusCiclo = "CALL " + this.enderecoAtual;
                 this.pc = this.enderecoAtual;
                 attMPC(51);
-                this.msgMPC += "\n  Datapath Interno: IR -> PC\n  -> O PC recebe o endereço da função. Salto executado!";
+                // Datapath Interno: IR -> PC\n  -> O PC recebe o endereço da função. Salto executado!";
                 break;
             case 15: 
                 switch (this.subOpcode) {
