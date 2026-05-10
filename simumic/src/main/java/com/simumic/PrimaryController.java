@@ -40,12 +40,11 @@ public class PrimaryController {
     private Memoria ram = new Memoria();
     private CPU cpu = new CPU(ram); 
 
-    // Clock de 4 Fases (0 = Fetch, 1 = Decode, 2 = Memória, 3 = Execute)
     private int estadoClock = 0;
 
     @FXML private void resetCpu() {
         cpu.reset(); // Reseta a lógica interna da CPU
-        estadoClock = 0; // Reseta clock para a fase 0 (Fetch)
+        estadoClock = 0; // Reseta clock
         
         // Volta o botão
         btnSubciclo.setText("SUBCICLO 1: FETCH");
@@ -75,27 +74,27 @@ public class PrimaryController {
 
     @FXML
     private void execSubciclo() {
-        if (estadoClock == 0) {
+        if (estadoClock == 0) { // Subciclo 2
             cpu.fetch();
             btnSubciclo.setText("SUBCICLO 2: DECODE");
             btnSubciclo.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
             estadoClock = 1;
 
-        } else if (estadoClock == 1) {
+        } else if (estadoClock == 1) { // Subciclo 3
             cpu.decode();
-            btnSubciclo.setText("SUBCICLO 3: ACESSA MEMÓRIA");
+            btnSubciclo.setText("SUBCICLO 3");
             btnSubciclo.setStyle("-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
             estadoClock = 2;
 
-        } else if (estadoClock == 2) {
+        } else if (estadoClock == 2) { // Subciclo 4
             cpu.memoria();
-            btnSubciclo.setText("SUBCICLO 4: EXECUTE");
+            btnSubciclo.setText("SUBCICLO 4");
             btnSubciclo.setStyle("-fx-background-color: #8e44ad; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
             estadoClock = 3;
 
-        } else {
+        } else { // Subciclo 1
             cpu.executeULA();
-            btnSubciclo.setText("SUBCICLO 1: FETCH");
+            btnSubciclo.setText("SUBCICLO 1"); 
             btnSubciclo.setStyle("-fx-background-color: #c23616; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
             estadoClock = 0;
         }
@@ -115,7 +114,7 @@ public class PrimaryController {
             cpu.executeULA();
         }
         
-        btnSubciclo.setText("SUBCICLO 1: FETCH");
+        btnSubciclo.setText("SUBCICLO 1");
         btnSubciclo.setStyle("-fx-background-color: #c23616; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
         estadoClock = 0;
         

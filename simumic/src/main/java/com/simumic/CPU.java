@@ -4,7 +4,7 @@ public class CPU {
     private Memoria ram;  
     
     // Registradores
-    private int pc = 0, ac = 0, ir = 0, mar = 0, mbr = 0, mpc = 0; 
+    private int pc = 0, ac = 0, ir = 0, mar = 0, mbr = 0, mpc = 0;
     
     // Registradores da stack 
     private int lv = 0, sp = 0;
@@ -13,17 +13,39 @@ public class CPU {
     private String ctrlSign = "IDLE";
     private boolean flagN = false, flagZ = true;  
 
+
+        // Sinais de controle da MIR ativados no primeiro subciclo
+        /* MIR SGNS:
+        16b registradores por barramento (3 barramentos)
+        2b barramento mar
+        1b abus, 1b bbus, 1bcbus (entrada/saida) / cada um carrega dado do registrador
+        1b latcha e 1blatch b / cada latch carrega dado do barramento a ou b
+        1b AMUX (recebe do mar ou do latch a 0/1)
+        2b ULA (soma, inverte, and e idle)
+        2b shifter (inverte esquerda, direita ou nada)
+        4b mbr
+        2b mp
+        
+        */
+    private int pc_ctrl = 0, ac_crl = 0, ir_ctrl = 0, mar_ctrl, mbr_ctrl, lv_ctrl, sp_ctrl, latcha_ctrl, latchb_ctrl, amux_ctrl, ula_ctrl, shifter_ctrl;
+
+
+
+
+    // Transiçao read e write
+    private int rdtrans = 0, wrttrans = 1;
+
     // Mascara endereço
     private final int AMASK = 0xFFF;
     private int opcodeAtual = 0;
-    private int subOpcode = 0;
+    private int subOpcode = 0;  
     private int enderecoAtual = 0;
 
     // Strings
     private String msgMPC = "";
     private String statusCiclo = "";
 
-    private final String[] mcpStrings = {
+    private final String[] mpcStrings = {
         "mar:=pc; rd;",
         "pc:=pc + 1; rd;",
         "ir:=mbr; if n then goto 28;",
@@ -55,9 +77,9 @@ public class CPU {
         "tir:=lshift(ir + ir); if n then goto 40;",
         "tir:=lshift(tir); if n then goto 35;",
         "alu:=tir; if n then goto 33;",
-        "a:=ir + sp; {1000 = LODL}",
+        "a:=ir + sp;",
         "mar:=a; rd; goto 7;",
-        "a:=ir + sp; {1001 = STOL}",
+        "a:=ir + sp;",
         "mar:=a; mbr:=ac; wr; goto 10;",
         "alu:=tir; if n then goto 38;",
         "a:=ir + sp;",
@@ -66,11 +88,11 @@ public class CPU {
         "mar:=a; rd; goto 16 ;",
         "tir:=lshift(tir); if n then goto 46;",
         "alu:=tir; if n then goto 44;",
-        "alu:=ac; if n then goto 22; {1100 = JNEG}",
+        "alu:=ac; if n then goto 22;",
         "goto 0;",
-        "alu:=ac; if z then goto 0; {1101 = JNZE}",
+        "alu:=ac; if z then goto 0;",
         "pc:=band(ir,amask); goto 0;",
-        "tir:=lshift(tir); if n then goto",
+        "tir:=lshift(tir); if n then goto 50",
         "sp:=sp + (-1);",
         "mar:=sp; mbr:=pc; wr;",
         "pc:=band(ir,amask); wr; goto 0;",
@@ -112,7 +134,7 @@ public class CPU {
 
     public void attMPC(int n){
         this.mpc = n;
-        this.msgMPC += "\nMPC " + n + ": [" + mcpStrings[n] + "]";
+        this.msgMPC += "\nMPC " + n + ": [" + mpcStrings[n] + "]";
     }
 
     public void reset() {
@@ -123,9 +145,41 @@ public class CPU {
         this.opcodeAtual = 0; this.subOpcode = 0; this.enderecoAtual = 0;
     }
 
+
+    // recebe macroinstrução e executa as microinstruções carregando o endereço e o opcode da macro
+
+    /*MIR recebe valor novo do MC e, utilizando a via de dados, altera o sinal de controle dos componentes. além disso altera os registradores especificados para os barramentos A, B e C e é onde ocorre a captura de dado de uma leitura para o buffer(termina acesso a memoria), e os sinais de rd e wr sao alterados (0->0, 0->1, 1->0, 1->1) */
+    public void sub1(){
+        // Atualiza MIR
+        String instrucaoAtual = mpcStrings[this.mpc];
+        // Atualiza sinais de controle
+        // Avisa registrados especificados
+        // Libera entrada nos  barramentos A e B
+        // Altera sinal do read
+        // Se rd 1->0 captura dado
+    }
+
+    /*Habilita entrada nas travas (latches) e libera os valores especificados que estao na A e B, alterando os operandos que vão entrar na ULA e no shifter começa o processamento na ula*/
+    public void sub2(){
+        latcha_ctrl = 1;
+        latchb_ctrl = 1;
+    }
+
+
+    /*Habilita entrada no MAR, ou seja, a MP já pode ser acessada e pode ocorrer oq está descrito no barramento de controle, além disso o dado processado na ULA pode ir para o barramento C*/
+    public void sub3(){
+
+    }
+
+    /*O registrador especficado grava a saída da ula pelo barramento c, as flags da ULA são armazenadas, habilita entrada no MPC para passar a microinstrução (incrementar 1 ou fazer salto), Buffer recebe o dado para escrita na MP */
+    public void sub4(){
+
+    }
+
+    // Apagarei futuramente, usando para me guiar
+    /* 
     public void fetch(){
         //MPC 0,1,2
-        
         
         this.statusCiclo = "BUSCA";
         attMPC(0);
@@ -142,7 +196,9 @@ public class CPU {
         this.mbr = ram.read(this.mar);
         this.ir = this.mbr;
     }
+    */
 
+    /* 
     public void decode(){
         this.statusCiclo = "DECODE";
 
@@ -246,7 +302,9 @@ public class CPU {
                 break;
         }
     }
+    */
 
+    /*
     public void executeULA(){
 
         switch (this.opcodeAtual) {
@@ -399,7 +457,7 @@ public class CPU {
         this.flagZ = (this.ac == 0); 
         this.ctrlSign = "IDLE"; 
     }
-
+    */
     public int getPC() { return pc; }
     public int getAC() { return ac; }
     public int getIR() { return ir; }
