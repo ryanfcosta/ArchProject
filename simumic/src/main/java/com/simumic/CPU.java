@@ -13,23 +13,31 @@ public class CPU {
     private String ctrlSign = "IDLE";
     private boolean flagN = false, flagZ = true;  
 
+    /* MIR SGNS:
+    
+    2b barramento mar
+    1b abus, 1b bbus, 1bcbus (entrada/saida) / cada um carrega dado do registrador
+    1b latcha e 1blatch b / cada latch carrega dado do barramento a ou b
+    1b AMUX (recebe do mar ou do latch a 0/1)
+    2b ULA (soma, inverte, and e idle)
+    2b shifter (inverte esquerda, direita ou nada)
+    4b mbr
+    2b mp
+    
+    */
+    private int busA_ctrl;    // 4 bits: Seleciona 1 dos 16 registradores para o Barramento A
+    private int busB_ctrl;    // 4 bits: Seleciona 1 dos 16 registradores para o Barramento B
+    private int busC_ctrl;    // 5 bits: Seleciona o registrador de destino no Barramento C
+    private int latchA_ctrl;  // 1 bit: Abre a trava A para receber o dado do Barramento A
+    private int latchB_ctrl;  // 1 bit: Abre a trava B para receber o dado do Barramento B
+    private int amux_ctrl;    // 1 bit: Seleciona a entrada da ULA (0 = Latch A, 1 = MBR)
+    private int ula_ctrl;     // 2 bits: Operação (ex: 00=Soma, 01=AND, 10=Passa B, 11=Inverte)
+    private int desl_ctrl;    // 2 bits: Shifter (00=Passa reto, 01=Esq, 10=Dir)
 
-        // Sinais de controle da MIR ativados no primeiro subciclo
-        /* MIR SGNS:
-        16b registradores por barramento (3 barramentos)
-        2b barramento mar
-        1b abus, 1b bbus, 1bcbus (entrada/saida) / cada um carrega dado do registrador
-        1b latcha e 1blatch b / cada latch carrega dado do barramento a ou b
-        1b AMUX (recebe do mar ou do latch a 0/1)
-        2b ULA (soma, inverte, and e idle)
-        2b shifter (inverte esquerda, direita ou nada)
-        4b mbr
-        2b mp
-        
-        */
-    private int pc_ctrl = 0, ac_crl = 0, ir_ctrl = 0, mar_ctrl, mbr_ctrl, lv_ctrl, sp_ctrl, latcha_ctrl, latchb_ctrl, amux_ctrl, ula_ctrl, shifter_ctrl;
-
-
+    private int mar_ctrl;     // 1 bit: Habilita escrita no MAR
+    private int mbr_ctrl;     // 1 bit: Habilita escrita no MBR via Datapath
+    private int rd_ctrl;      // 1 bit: Inicia ciclo de Leitura (Read) na RAM
+    private int wr_ctrl;      // 1 bit: Inicia ciclo de Escrita (Write) na RAM
 
 
     // Transiçao read e write
@@ -149,31 +157,46 @@ public class CPU {
     // recebe macroinstrução e executa as microinstruções carregando o endereço e o opcode da macro
 
     /*MIR recebe valor novo do MC e, utilizando a via de dados, altera o sinal de controle dos componentes. além disso altera os registradores especificados para os barramentos A, B e C e é onde ocorre a captura de dado de uma leitura para o buffer(termina acesso a memoria), e os sinais de rd e wr sao alterados (0->0, 0->1, 1->0, 1->1) */
-    public void sub1(){
-        // Atualiza MIR
-        String instrucaoAtual = mpcStrings[this.mpc];
-        // Atualiza sinais de controle
-        // Avisa registrados especificados
-        // Libera entrada nos  barramentos A e B
-        // Altera sinal do read
-        // Se rd 1->0 captura dado
+    public void sub1(){ // Atualiza sinais de controle
+       
+        String instrucao = mpcStrings[this.mpc]; // Altera MIR
+
+        this.amux_ctrl = instrucao.contains("mbr") && !instrucao.contains("mbr:=") ? 1 : 0; // MBR vai pra ULA, nao muda
+        
+        //this.mar_ctrl = instrucao.contains("mar:=") ? 1 : 0;  O recebimento na verdade é da instrução anterior, mp->mbr
+        this.mbr_ctrl = instrucao.contains("mbr:=") ? 1 : 0; // MP[endereço da instrução anterior] -> MBR
+        
+        // Avisa registrados especificados Libera entrada nos  barramentos A e B
+        this.busA_ctrl = 0; //Endereço do registrador (ver de onde esta saindo na instrucao)
+        this.busB_ctrl = 0;
+        // Altera sinal do read Se rd 1->0 captura dado
+        this.rd_ctrl = instrucao.contains("rd;") ? 1 : 0; // Ativa sinais read write
+        this.wr_ctrl = instrucao.contains("wr;") ? 1 : 0;
     }
 
     /*Habilita entrada nas travas (latches) e libera os valores especificados que estao na A e B, alterando os operandos que vão entrar na ULA e no shifter começa o processamento na ula*/
     public void sub2(){
-        latcha_ctrl = 1;
-        latchb_ctrl = 1;
+        this.latchA_ctrl = 1;
+        this.latchB_ctrl = 1;
+        this.ula_ctrl = 0; // Trocar 0 pela operaçao do ciclo
+        this.flagN = false; // Flags baseadas no resultado da operaçao
+        this.flagZ = false; 
+        this.desl_ctrl = 0;
     }
 
 
     /*Habilita entrada no MAR, ou seja, a MP já pode ser acessada e pode ocorrer oq está descrito no barramento de controle, além disso o dado processado na ULA pode ir para o barramento C*/
     public void sub3(){
-
+        this.mar_ctrl = 1; // MAR recebe o endereço para procurar e MP começa a busca de 6 ciclos
+        this.busC_ctrl = 0; //Endereço do registrador (ver de onde esta saindo na instrucao)
+        //busc recebe dado
     }
 
     /*O registrador especficado grava a saída da ula pelo barramento c, as flags da ULA são armazenadas, habilita entrada no MPC para passar a microinstrução (incrementar 1 ou fazer salto), Buffer recebe o dado para escrita na MP */
     public void sub4(){
-
+    //registrador definido no busC_ctrl = dado do busC
+    //flags armazenadas de acordo com resultado da ULA
+    //mbr recebe dado caso tenha que escrever
     }
 
     // Apagarei futuramente, usando para me guiar

@@ -74,6 +74,7 @@ public class PrimaryController {
 
     @FXML
     private void execSubciclo() {
+        /*
         if (estadoClock == 0) { // Subciclo 2
             cpu.fetch();
             btnSubciclo.setText("SUBCICLO 2: DECODE");
@@ -98,12 +99,13 @@ public class PrimaryController {
             btnSubciclo.setStyle("-fx-background-color: #c23616; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
             estadoClock = 0;
         }
-        
+        */
         attLabels();
     }
 
 
     @FXML private void execCicloCompleto() {
+        /* 
         if (estadoClock == 0) {
             cpu.fetch(); cpu.decode(); cpu.memoria(); cpu.executeULA();
         } else if (estadoClock == 1) {
@@ -117,8 +119,9 @@ public class PrimaryController {
         btnSubciclo.setText("SUBCICLO 1");
         btnSubciclo.setStyle("-fx-background-color: #c23616; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
         estadoClock = 0;
-        
-        attLabels();
+         
+        */
+       attLabels();
     }
 
     private void attLabels() {
