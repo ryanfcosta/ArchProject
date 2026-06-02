@@ -24,7 +24,7 @@
                 
                 <Group>
                     <children>
-                        <AnchorPane prefWidth="940.0" prefHeight="520.0" scaleX="1.15" scaleY="1.15" style="-fx-background-color: #000000; 
+                        <AnchorPane prefWidth="940.0" prefHeight="520.0" scaleX="1.15" scaleY="1.15" style=" 
                         -fx-border-color: #077d29; -fx-border-width: 2;">
                             <children>
                                 <Line startX="200.0" startY="130.0" endX="120.0" endY="130.0" stroke="#d2d5d5" strokeWidth="3.0"/>
@@ -55,7 +55,7 @@
                                 <VBox layoutX="14.0" layoutY="360.0" alignment="CENTER" spacing="4.0">
                                     <Label text="RD / WR" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
                                     <StackPane>
-                                        <Rectangle fx:id="rectControl" width="100.0" height="32.0"  stroke="#7f8c8d" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0"/>
+                                        <Rectangle fx:id="rectControl" width="100.0" height="32.0"  stroke="#d2d5d5" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0"/>
                                         <Label fx:id="labelControl" text="IDLE" textFill="WHITE">
                                             <font>
                                                 <Font name="Monospaced Bold" size="13.0"/>
@@ -158,7 +158,7 @@
                                         <VBox alignment="CENTER" spacing="4.0">
                                             <Label text="FLAG Z" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
                                             <StackPane>
-                                                <Rectangle fx:id="rectFlagZ" width="44.0" height="44.0" fill="#34495e" stroke="#d2d5d5" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0"/>
+                                                <Rectangle fx:id="rectFlagZ" width="44.0" height="44.0" fill="#d2d5d5" stroke="#d2d5d5" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0"/>
                                                 <Label fx:id="labelFlagZ" text="1" textFill="WHITE">
                                                     <font><Font name="Monospaced Bold" size="20.0"/></font>
                                                 </Label>
@@ -167,8 +167,8 @@
                                     </children>
                                 </HBox>
                                 
-                                <VBox layoutX="720.0" layoutY="260.0" spacing="6.0" style="-fx-background-color: #000000; -fx-padding: 8; 
-                                -fx-border-color: #555;">
+                                <VBox layoutX="720.0" layoutY="260.0" spacing="6.0" style="-fx-padding: 8; 
+                                -fx-border-color: #d2d5d5;">
                                     <Label text="SINAIS DE CONTROLE E BARRAMENTOS" textFill="#d2d5d5" style="-fx-font-size: 9; -fx-font-weight: bold;"/>
                                     <HBox spacing="6.0" alignment="CENTER_LEFT">
                                         <Label text="Bus A:" textFill="#d2d5d5" style="-fx-font-size: 10;"/>
@@ -221,7 +221,7 @@
                 <VBox alignment="CENTER" spacing="15.0" prefWidth="420.0">
                     <children>
                         
-                        <VBox spacing="8.0" style="-fx-background-color: #000000; -fx-padding: 10;-fx-border-color: #077d29;">
+                        <VBox spacing="8.0" style="-fx-padding: 10;-fx-border-color: #077d29;">
                             <Label text="Console Macroinstruções" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
                             <TextArea fx:id="consoleMacro" prefWidth="380.0" prefHeight="130.0" style="-fx-font-family: 'Monospaced'; -fx-control-inner-background: #000000; -fx-text-fill: white;" promptText="Exemplo:&#10;LOCO 15&#10;STOD 50&#10;JUMP 0"/>
                             <HBox spacing="10" alignment="CENTER_LEFT">
@@ -231,7 +231,7 @@
                         </VBox>
 
                         <HBox spacing="15.0" alignment="CENTER">
-                            <VBox alignment="CENTER" prefWidth="180.0" spacing="4.0" style="-fx-background-color: #000000; -fx-padding: 10; -fx-border-color: #077d29;">
+                            <VBox alignment="CENTER" prefWidth="180.0" spacing="4.0" style="-fx-padding: 10; -fx-border-color: #077d29;">
                                 <Label text="Subciclo Atual" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 13;"/>
                                 <Label fx:id="labelStatus" text="---" textFill="#077d29">
                                     <font><Font name="Monospaced Bold" size="22.0"/></font>
@@ -241,7 +241,7 @@
                             <Button text="RESET CPU" onAction="#resetCpu" prefHeight="60.0" prefWidth="120.0" style="-fx-background-color: #077d29; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14;"/>
                         </HBox>
 
-                        <VBox alignment="TOP_LEFT" prefWidth="400.0" prefHeight="180.0" style="-fx-background-color: #000000; -fx-padding: 10;  -fx-border-color: #077d29;">
+                        <VBox alignment="TOP_LEFT" prefWidth="400.0" prefHeight="180.0" style="-fx-padding: 10;  -fx-border-color: #077d29;">
                             <Label text="MICROPROGRAMA (Control Store)" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 11; -fx-padding: 0 0 5 0;"/>
                             <ScrollPane fx:id="scrollMPC" fitToWidth="true" style="-fx-background: black; -fx-background-color: black;" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
                                 <content>
@@ -252,7 +252,7 @@
                             </ScrollPane>
                         </VBox>
 
-                        <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: #000000; -fx-padding: 15; -fx-border-color: #7f8c8d;">
+                        <VBox alignment="CENTER" spacing="10.0" style="-fx-padding: 15;">
                             <Button fx:id="btnSubciclo" prefWidth="380.0" text="SUBCICLO 1" onAction="#execSubciclo" style="-fx-background-color: #c23616; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20;"/>
                             <Button text="CICLO COMPLETO" prefWidth="380.0" onAction="#execCicloCompleto" style="-fx-background-color: #077d29; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20;"/>
                         </VBox>
