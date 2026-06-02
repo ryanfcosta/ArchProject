@@ -3,8 +3,13 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.Group?>
 
-<VBox alignment="CENTER" spacing="16.0" style="-fx-background-color: #1e272e;" 
+<!--PRETO #000000 FUNDO E TEXTOS-->
+<!--CINZA #d2d5d5 COMPONENTES NÃO UTILIZADOS NO SB -->
+<!--VERDE #077d29 COMPONENTES UTILIZADOS NO SB-->
+
+<VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: #000000;" 
       xmlns="http://javafx.com/javafx/21" 
       xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="com.simumic.PrimaryController">
@@ -14,317 +19,247 @@
     </padding>
 
     <children>
-        <Label text="SIMULADOR MIC-1 — MICROINSTRUÇÕES" textFill="#0fb9b1">
-            <font></font>
-        </Label>
-
-        <AnchorPane prefWidth="860.0" prefHeight="520.0" style="-fx-background-color: #2f3640; -fx-background-radius: 10; -fx-border-color: #718093; -fx-border-radius: 10; -fx-border-width: 2;">
+        <HBox alignment="CENTER" spacing="40.0">
             <children>
-                <Line startX="200.0" startY="130.0" endX="120.0" endY="130.0" stroke="#2ecc71" strokeWidth="3.0"/>
-                <Polygon points="120.0,125.0, 120.0,135.0, 110.0,130.0" fill="#2ecc71"/>
                 
-                <Line startX="480.0" startY="130.0" endX="300.0" endY="130.0" stroke="#fbc531" strokeWidth="3.0"/>
-                <Polygon points="300.0,125.0, 300.0,135.0, 290.0,130.0" fill="#fbc531"/>
-                
-                <Line startX="110.0" startY="290.0" endX="200.0" endY="290.0" stroke="#3498db" strokeWidth="5.0"/>
-                <Polygon points="200.0,285.0, 200.0,295.0, 210.0,290.0" fill="#3498db"/>
-                
-                <Line startX="300.0" startY="290.0" endX="480.0" endY="290.0" stroke="#fbc531" strokeWidth="3.0"/>
-                <Polygon points="480.0,285.0, 480.0,295.0, 490.0,290.0" fill="#fbc531"/>
-                
-                <Line startX="250.0" startY="320.0" endX="250.0" endY="375.0" stroke="#9b59b6" strokeWidth="3.0"/>
-                <Line startX="250.0" startY="375.0" endX="395.0" endY="375.0" stroke="#9b59b6" strokeWidth="3.0"/>
-                <Line startX="395.0" startY="375.0" endX="395.0" endY="430.0" stroke="#9b59b6" strokeWidth="3.0"/>
-                <Polygon points="390.0,430.0, 400.0,430.0, 395.0,440.0" fill="#9b59b6"/>
-                
-                <StackPane layoutX="20.0" layoutY="60.0">
-                    <Rectangle width="90.0" height="290.0" fill="#95a5a6" stroke="#7f8c8d" strokeWidth="3.0" arcWidth="15.0" arcHeight="15.0"/>
-                    <VBox alignment="CENTER">
-                        <Label text="MEMÓRIA" textFill="WHITE" style="-fx-font-weight: bold; -fx-font-size: 13;"/>
-                        <Label text="RAM" textFill="WHITE" style="-fx-font-weight: bold; -fx-font-size: 13;"/>
-                    </VBox>
-                </StackPane>
-                
-                <VBox layoutX="14.0" layoutY="360.0" alignment="CENTER" spacing="4.0">
-                    <Label text="RD / WR" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
-                    <StackPane>
-                        <Rectangle fx:id="rectControl" width="100.0" height="32.0" fill="#34495e" stroke="#7f8c8d" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0"/>
-                        <Label fx:id="labelControl" text="IDLE" textFill="WHITE">
-                            <font>
-                                <Font name="Monospaced Bold" size="13.0"/>
-                            </font>
-                        </Label>
-                    </StackPane>
-                </VBox>
-                
-                <StackPane layoutX="200.0" layoutY="100.0">
-                    <Rectangle fx:id="rectMAR" width="100.0" height="60.0" fill="#2c3e50" stroke="#2ecc71" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
-                    <VBox alignment="CENTER">
-                        <Label text="MAR" textFill="WHITE" style="-fx-font-weight: bold;"/>
-                        <Label fx:id="labelMAR" text="0000" textFill="#2ecc71">
-                            <font>
-                                <Font name="Monospaced Bold" size="18.0"/>
-                            </font>
-                        </Label>
-                    </VBox>
-                </StackPane>
-                
-                <StackPane layoutX="480.0" layoutY="100.0">
-                    <Rectangle fx:id="rectPC" width="100.0" height="60.0" fill="#2c3e50" stroke="#fbc531" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
-                    <VBox alignment="CENTER">
-                        <Label text="PC" textFill="WHITE" style="-fx-font-weight: bold;"/>
-                        <Label fx:id="labelPC" text="0000" textFill="#fbc531">
-                            <font>
-                                <Font name="Monospaced Bold" size="18.0"/>
-                            </font>
-                        </Label>
-                    </VBox>
-                </StackPane>
-                
-                <StackPane layoutX="200.0" layoutY="260.0">
-                    <Rectangle fx:id="rectMBR" width="100.0" height="60.0" fill="#2c3e50" stroke="#3498db" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
-                    <VBox alignment="CENTER">
-                        <Label text="MBR" textFill="WHITE" style="-fx-font-weight: bold;"/>
-                        <Label fx:id="labelMBR" text="0000" textFill="#3498db">
-                            <font>
-                                <Font name="Monospaced Bold" size="18.0"/>
-                            </font>
-                        </Label>
-                    </VBox>
-                </StackPane>
-                
-                <StackPane layoutX="480.0" layoutY="260.0">
-                    <Rectangle fx:id="rectIR" width="100.0" height="60.0" fill="#2c3e50" stroke="#fbc531" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
-                    <VBox alignment="CENTER">
-                        <Label text="IR" textFill="WHITE" style="-fx-font-weight: bold;"/>
-                        <Label fx:id="labelIR" text="0000" textFill="#fbc531">
-                            <font>
-                                <Font name="Monospaced Bold" size="18.0"/>
-                            </font>
-                        </Label>
-                    </VBox>
-                </StackPane>
-                
-                <StackPane layoutX="600.0" layoutY="260.0">
-                    <Rectangle fx:id="rectTIR" width="100.0" height="60.0" fill="#2c3e50" stroke="#00cec9" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
-                    <VBox alignment="CENTER">
-                        <Label text="TIR" textFill="WHITE" style="-fx-font-weight: bold;"/>
-                        <Label fx:id="labelTIR" text="0000" textFill="#00cec9">
-                            <font>
-                                <Font name="Monospaced Bold" size="18.0"/>
-                            </font>
-                        </Label>
-                    </VBox>
-                </StackPane>
-                
-                <StackPane layoutX="600.0" layoutY="100.0">
-                    <Rectangle fx:id="rectLV" width="100.0" height="60.0" fill="#2c3e50" stroke="#e84393" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
-                    <VBox alignment="CENTER">
-                        <Label text="LV" textFill="WHITE" style="-fx-font-weight: bold;"/>
-                        <Label fx:id="labelLV" text="0000" textFill="#e84393">
-                            <font>
-                                <Font name="Monospaced Bold" size="18.0"/>
-                            </font>
-                        </Label>
-                    </VBox>
-                </StackPane>
-                
-                <StackPane layoutX="720.0" layoutY="100.0">
-                    <Rectangle fx:id="rectSP" width="100.0" height="60.0" fill="#2c3e50" stroke="#e84393" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
-                    <VBox alignment="CENTER">
-                        <Label text="SP" textFill="WHITE" style="-fx-font-weight: bold;"/>
-                        <Label fx:id="labelSP" text="0000" textFill="#e84393">
-                            <font>
-                                <Font name="Monospaced Bold" size="18.0"/>
-                            </font>
-                        </Label>
-                    </VBox>
-                </StackPane>
-                
-                <StackPane layoutX="340.0" layoutY="430.0">
-                    <Rectangle fx:id="rectAC" width="100.0" height="60.0" fill="#2c3e50" stroke="#9b59b6" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
-                    <VBox alignment="CENTER">
-                        <Label text="AC" textFill="WHITE" style="-fx-font-weight: bold;"/>
-                        <Label fx:id="labelAC" text="0000" textFill="#9b59b6">
-                            <font>
-                                <Font name="Monospaced Bold" size="18.0"/>
-                            </font>
-                        </Label>
-                    </VBox>
-                </StackPane>
-                
-                <HBox layoutX="480.0" layoutY="430.0" spacing="20.0">
+                <Group>
                     <children>
-                        <VBox alignment="CENTER" spacing="4.0">
-                            <Label text="FLAG N" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
-                            <StackPane>
-                                <Rectangle fx:id="rectFlagN" width="44.0" height="44.0" fill="#34495e" stroke="#7f8c8d" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0"/>
-                                <Label fx:id="labelFlagN" text="0" textFill="WHITE">
-                                    <font>
-                                        <Font name="Monospaced Bold" size="20.0"/>
-                                    </font>
-                                </Label>
-                            </StackPane>
-                        </VBox>
-                        <VBox alignment="CENTER" spacing="4.0">
-                            <Label text="FLAG Z" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
-                            <StackPane>
-                                <Rectangle fx:id="rectFlagZ" width="44.0" height="44.0" fill="#34495e" stroke="#7f8c8d" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0"/>
-                                <Label fx:id="labelFlagZ" text="1" textFill="WHITE">
-                                    <font>
-                                        <Font name="Monospaced Bold" size="20.0"/>
-                                    </font>
-                                </Label>
-                            </StackPane>
-                        </VBox>
+                        <AnchorPane prefWidth="940.0" prefHeight="520.0" scaleX="1.15" scaleY="1.15" style="-fx-background-color: #000000; 
+                        -fx-border-color: #077d29; -fx-border-width: 2;">
+                            <children>
+                                <Line startX="200.0" startY="130.0" endX="120.0" endY="130.0" stroke="#d2d5d5" strokeWidth="3.0"/>
+                                <Polygon points="120.0,125.0, 120.0,135.0, 110.0,130.0" fill="#d2d5d5"/>
+                                
+                                <Line startX="480.0" startY="130.0" endX="300.0" endY="130.0" stroke="#d2d5d5" strokeWidth="3.0"/>
+                                <Polygon points="300.0,125.0, 300.0,135.0, 290.0,130.0" fill="#d2d5d5"/>
+                                
+                                <Line startX="110.0" startY="290.0" endX="200.0" endY="290.0" stroke="#d2d5d5" strokeWidth="5.0"/>
+                                <Polygon points="200.0,285.0, 200.0,295.0, 210.0,290.0" fill="#d2d5d5"/>
+                                
+                                <Line startX="300.0" startY="290.0" endX="480.0" endY="290.0" stroke="#d2d5d5" strokeWidth="3.0"/>
+                                <Polygon points="480.0,285.0, 480.0,295.0, 490.0,290.0" fill="#d2d5d5"/>
+                                
+                                <Line startX="250.0" startY="320.0" endX="250.0" endY="375.0" stroke="#d2d5d5" strokeWidth="3.0"/>
+                                <Line startX="250.0" startY="375.0" endX="395.0" endY="375.0" stroke="#d2d5d5" strokeWidth="3.0"/>
+                                <Line startX="395.0" startY="375.0" endX="395.0" endY="430.0" stroke="#d2d5d5" strokeWidth="3.0"/>
+                                <Polygon points="390.0,430.0, 400.0,430.0, 395.0,440.0" fill="#d2d5d5"/>
+                                
+                                <StackPane layoutX="20.0" layoutY="60.0">
+                                    <Rectangle width="90.0" height="290.0" stroke="#d2d5d5" strokeWidth="3.0" arcWidth="15.0" arcHeight="15.0"/>
+                                    <VBox alignment="CENTER">
+                                        <Label text="MEMÓRIA" textFill="WHITE" style="-fx-font-weight: bold; -fx-font-size: 13;"/>
+                                        <Label text="RAM" textFill="WHITE" style="-fx-font-weight: bold; -fx-font-size: 13;"/>
+                                    </VBox>
+                                </StackPane>
+                                
+                                <VBox layoutX="14.0" layoutY="360.0" alignment="CENTER" spacing="4.0">
+                                    <Label text="RD / WR" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                                    <StackPane>
+                                        <Rectangle fx:id="rectControl" width="100.0" height="32.0"  stroke="#7f8c8d" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0"/>
+                                        <Label fx:id="labelControl" text="IDLE" textFill="WHITE">
+                                            <font>
+                                                <Font name="Monospaced Bold" size="13.0"/>
+                                            </font>
+                                        </Label>
+                                    </StackPane>
+                                </VBox>
+                                
+                                <StackPane layoutX="200.0" layoutY="100.0">
+                                    <Rectangle fx:id="rectMAR" width="100.0" height="60.0"  stroke="#d2d5d5" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
+                                    <VBox alignment="CENTER">
+                                        <Label text="MAR" textFill="WHITE" style="-fx-font-weight: bold;"/>
+                                        <Label fx:id="labelMAR" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="18.0"/></font>
+                                        </Label>
+                                    </VBox>
+                                </StackPane>
+                                
+                                <StackPane layoutX="480.0" layoutY="100.0">
+                                    <Rectangle fx:id="rectPC" width="100.0" height="60.0"  stroke="#d2d5d5" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
+                                    <VBox alignment="CENTER">
+                                        <Label text="PC" textFill="WHITE" style="-fx-font-weight: bold;"/>
+                                        <Label fx:id="labelPC" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="18.0"/></font>
+                                        </Label>
+                                    </VBox>
+                                </StackPane>
+                                
+                                <StackPane layoutX="200.0" layoutY="260.0">
+                                    <Rectangle fx:id="rectMBR" width="100.0" height="60.0"  stroke="#d2d5d5" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
+                                    <VBox alignment="CENTER">
+                                        <Label text="MBR" textFill="WHITE" style="-fx-font-weight: bold;"/>
+                                        <Label fx:id="labelMBR" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="18.0"/></font>
+                                        </Label>
+                                    </VBox>
+                                </StackPane>
+                                
+                                <StackPane layoutX="480.0" layoutY="260.0">
+                                    <Rectangle fx:id="rectIR" width="100.0" height="60.0"  stroke="#d2d5d5" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
+                                    <VBox alignment="CENTER">
+                                        <Label text="IR" textFill="WHITE" style="-fx-font-weight: bold;"/>
+                                        <Label fx:id="labelIR" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="18.0"/></font>
+                                        </Label>
+                                    </VBox>
+                                </StackPane>
+                                
+                                <StackPane layoutX="600.0" layoutY="260.0">
+                                    <Rectangle fx:id="rectTIR" width="100.0" height="60.0"  stroke="#d2d5d5" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
+                                    <VBox alignment="CENTER">
+                                        <Label text="TIR" textFill="WHITE" style="-fx-font-weight: bold;"/>
+                                        <Label fx:id="labelTIR" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="18.0"/></font>
+                                        </Label>
+                                    </VBox>
+                                </StackPane>
+                                
+                                <StackPane layoutX="600.0" layoutY="100.0">
+                                    <Rectangle fx:id="rectLV" width="100.0" height="60.0"  stroke="#d2d5d5" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
+                                    <VBox alignment="CENTER">
+                                        <Label text="LV" textFill="WHITE" style="-fx-font-weight: bold;"/>
+                                        <Label fx:id="labelLV" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="18.0"/></font>
+                                        </Label>
+                                    </VBox>
+                                </StackPane>
+                                
+                                <StackPane layoutX="720.0" layoutY="100.0">
+                                    <Rectangle fx:id="rectSP" width="100.0" height="60.0"  stroke="#d2d5d5" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
+                                    <VBox alignment="CENTER">
+                                        <Label text="SP" textFill="WHITE" style="-fx-font-weight: bold;"/>
+                                        <Label fx:id="labelSP" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="18.0"/></font>
+                                        </Label>
+                                    </VBox>
+                                </StackPane>
+                                
+                                <StackPane layoutX="340.0" layoutY="430.0">
+                                    <Rectangle fx:id="rectAC" width="100.0" height="60.0"  stroke="#d2d5d5" strokeWidth="3.0" arcWidth="10.0" arcHeight="10.0"/>
+                                    <VBox alignment="CENTER">
+                                        <Label text="AC" textFill="WHITE" style="-fx-font-weight: bold;"/>
+                                        <Label fx:id="labelAC" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="18.0"/></font>
+                                        </Label>
+                                    </VBox>
+                                </StackPane>
+                                
+                                <HBox layoutX="480.0" layoutY="430.0" spacing="20.0">
+                                    <children>
+                                        <VBox alignment="CENTER" spacing="4.0">
+                                            <Label text="FLAG N" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
+                                            <StackPane>
+                                                <Rectangle fx:id="rectFlagN" width="44.0" height="44.0" fill="#34495e" stroke="#7f8c8d" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0"/>
+                                                <Label fx:id="labelFlagN" text="0" textFill="WHITE">
+                                                    <font><Font name="Monospaced Bold" size="20.0"/></font>
+                                                </Label>
+                                            </StackPane>
+                                        </VBox>
+                                        <VBox alignment="CENTER" spacing="4.0">
+                                            <Label text="FLAG Z" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
+                                            <StackPane>
+                                                <Rectangle fx:id="rectFlagZ" width="44.0" height="44.0" fill="#34495e" stroke="#d2d5d5" strokeWidth="2.0" arcWidth="5.0" arcHeight="5.0"/>
+                                                <Label fx:id="labelFlagZ" text="1" textFill="WHITE">
+                                                    <font><Font name="Monospaced Bold" size="20.0"/></font>
+                                                </Label>
+                                            </StackPane>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+                                
+                                <VBox layoutX="720.0" layoutY="260.0" spacing="6.0" style="-fx-background-color: #000000; -fx-padding: 8; 
+                                -fx-border-color: #555;">
+                                    <Label text="SINAIS DE CONTROLE E BARRAMENTOS" textFill="#d2d5d5" style="-fx-font-size: 9; -fx-font-weight: bold;"/>
+                                    <HBox spacing="6.0" alignment="CENTER_LEFT">
+                                        <Label text="Bus A:" textFill="#d2d5d5" style="-fx-font-size: 10;"/>
+                                        <Label fx:id="labelBusA" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="11.0"/></font>
+                                        </Label>
+                                    </HBox>
+                                    <HBox spacing="6.0" alignment="CENTER_LEFT">
+                                        <Label text="Bus B:" textFill="#d2d5d5" style="-fx-font-size: 10;"/>
+                                        <Label fx:id="labelBusB" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="11.0"/></font>
+                                        </Label>
+                                    </HBox>
+                                    <HBox spacing="6.0" alignment="CENTER_LEFT">
+                                        <Label text="Ltch A:" textFill="#d2d5d5" style="-fx-font-size: 10;"/>
+                                        <Label fx:id="labelLatchA" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="11.0"/></font>
+                                        </Label>
+                                    </HBox>
+                                    <HBox spacing="6.0" alignment="CENTER_LEFT">
+                                        <Label text="Ltch B:" textFill="#d2d5d5" style="-fx-font-size: 10;"/>
+                                        <Label fx:id="labelLatchB" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="11.0"/></font>
+                                        </Label>
+                                    </HBox>
+                                    <HBox spacing="6.0" alignment="CENTER_LEFT">
+                                        <Label text="ALU:" textFill="#d2d5d5" style="-fx-font-size: 10;"/>
+                                        <Label fx:id="labelALU" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="11.0"/></font>
+                                        </Label>
+                                    </HBox>
+                                    <HBox spacing="6.0" alignment="CENTER_LEFT">
+                                        <Label text="SHF:" textFill="#d2d5d5" style="-fx-font-size: 10;"/>
+                                        <Label fx:id="labelShifter" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="11.0"/></font>
+                                        </Label>
+                                    </HBox>
+                                    <HBox spacing="6.0" alignment="CENTER_LEFT">
+                                        <Label text="Bus C:" textFill="#d2d5d5" style="-fx-font-size: 10;"/>
+                                        <Label fx:id="labelBusC" text="0000" textFill="#d2d5d5">
+                                            <font><Font name="Monospaced Bold" size="11.0"/></font>
+                                        </Label>
+                                    </HBox>
+                                </VBox>
+                            </children>
+                        </AnchorPane>
                     </children>
-                </HBox>
-                
-                <VBox layoutX="720.0" layoutY="260.0" spacing="6.0" style="-fx-background-color: #1a252f; -fx-padding: 8; -fx-background-radius: 6; -fx-border-color: #555; -fx-border-radius: 6;">
-                    <Label text="BARRAMENTOS" textFill="#95a5a6" style="-fx-font-size: 9; -fx-font-weight: bold;"/>
-                    
-                    <HBox spacing="6.0" alignment="CENTER_LEFT">
-                        <Label text="Bus A:" textFill="#bdc3c7" style="-fx-font-size: 10;"/>
-                        <Label fx:id="labelBusA" text="0000" textFill="#f39c12">
-                            <font>
-                                <Font name="Monospaced Bold" size="11.0"/>
-                            </font>
-                        </Label>
-                    </HBox>
-                    
-                    <HBox spacing="6.0" alignment="CENTER_LEFT">
-                        <Label text="Bus B:" textFill="#bdc3c7" style="-fx-font-size: 10;"/>
-                        <Label fx:id="labelBusB" text="0000" textFill="#f39c12">
-                            <font>
-                                <Font name="Monospaced Bold" size="11.0"/>
-                            </font>
-                        </Label>
-                    </HBox>
-                    
-                    <HBox spacing="6.0" alignment="CENTER_LEFT">
-                        <Label text="Ltch A:" textFill="#bdc3c7" style="-fx-font-size: 10;"/>
-                        <Label fx:id="labelLatchA" text="0000" textFill="#dfe6e9">
-                            <font>
-                                <Font name="Monospaced Bold" size="11.0"/>
-                            </font>
-                        </Label>
-                    </HBox>
-                    
-                    <HBox spacing="6.0" alignment="CENTER_LEFT">
-                        <Label text="Ltch B:" textFill="#bdc3c7" style="-fx-font-size: 10;"/>
-                        <Label fx:id="labelLatchB" text="0000" textFill="#dfe6e9">
-                            <font>
-                                <Font name="Monospaced Bold" size="11.0"/>
-                            </font>
-                        </Label>
-                    </HBox>
-                    
-                    <HBox spacing="6.0" alignment="CENTER_LEFT">
-                        <Label text="ALU:" textFill="#bdc3c7" style="-fx-font-size: 10;"/>
-                        <Label fx:id="labelALU" text="0000" textFill="#55efc4">
-                            <font>
-                                <Font name="Monospaced Bold" size="11.0"/>
-                            </font>
-                        </Label>
-                    </HBox>
-                    
-                    <HBox spacing="6.0" alignment="CENTER_LEFT">
-                        <Label text="SHF:" textFill="#bdc3c7" style="-fx-font-size: 10;"/>
-                        <Label fx:id="labelShifter" text="0000" textFill="#55efc4">
-                            <font>
-                                <Font name="Monospaced Bold" size="11.0"/>
-                            </font>
-                        </Label>
-                    </HBox>
-                    
-                    <HBox spacing="6.0" alignment="CENTER_LEFT">
-                        <Label text="Bus C:" textFill="#bdc3c7" style="-fx-font-size: 10;"/>
-                        <Label fx:id="labelBusC" text="0000" textFill="#a29bfe">
-                            <font>
-                                <Font name="Monospaced Bold" size="11.0"/>
-                            </font>
-                        </Label>
-                    </HBox>
-                </VBox>
-            </children>
-        </AnchorPane>
+                </Group>
 
-        <HBox alignment="CENTER" spacing="15.0">
-            <children>
-                <GridPane hgap="6" vgap="6" alignment="CENTER" style="-fx-background-color: #2c3e50; -fx-padding: 8; -fx-background-radius: 5; -fx-border-color: #7f8c8d; -fx-border-radius: 5;">
+                <VBox alignment="CENTER" spacing="15.0" prefWidth="420.0">
                     <children>
-                        <Button text="LODD" onAction="#btnLODD" prefWidth="62" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                        <Button text="STOD" onAction="#btnSTOD" prefWidth="62" style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                        <Button text="ADDD" onAction="#btnADDD" prefWidth="62" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-                        <Button text="SUBD" onAction="#btnSUBD" prefWidth="62" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
                         
-                        <Button text="JPOS" onAction="#btnJPOS" prefWidth="62" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                        <Button text="JZER" onAction="#btnJZER" prefWidth="62" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                        <Button text="JUMP" onAction="#btnJUMP" prefWidth="62" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-                        <Button text="LOCO" onAction="#btnLOCO" prefWidth="62" style="-fx-background-color: #f1c40f; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
-                        
-                        <Button text="LODL" onAction="#btnLODL" prefWidth="62" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                        <Button text="STOL" onAction="#btnSTOL" prefWidth="62" style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                        <Button text="ADDL" onAction="#btnADDL" prefWidth="62" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
-                        <Button text="SUBL" onAction="#btnSUBL" prefWidth="62" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
-                        
-                        <Button text="JNEG" onAction="#btnJNEG" prefWidth="62" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                        <Button text="JNZE" onAction="#btnJNZE" prefWidth="62" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                        <Button text="CALL" onAction="#btnCALL" prefWidth="62" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
-                        <Button text="RETN" onAction="#btnRETN" prefWidth="62" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="3" GridPane.rowIndex="3"/>
-                        
-                        <Button text="PUSH" onAction="#btnPUSH" prefWidth="62" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                        <Button text="POP" onAction="#btnPOP" prefWidth="62" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                        <Button text="PSHI" onAction="#btnPSHI" prefWidth="62" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="2" GridPane.rowIndex="4"/>
-                        <Button text="POPI" onAction="#btnPOPI" prefWidth="62" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="3" GridPane.rowIndex="4"/>
-                        
-                        <Button text="SWAP" onAction="#btnSWAP" prefWidth="62" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <Button text="INSP" onAction="#btnINSP" prefWidth="62" style="-fx-background-color: #e84393; -fx-text-fill: white; -fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                        <VBox spacing="8.0" style="-fx-background-color: #000000; -fx-padding: 10;-fx-border-color: #077d29;">
+                            <Label text="Console Macroinstruções" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
+                            <TextArea fx:id="consoleMacro" prefWidth="380.0" prefHeight="130.0" style="-fx-font-family: 'Monospaced'; -fx-control-inner-background: #000000; -fx-text-fill: white;" promptText="Exemplo:&#10;LOCO 15&#10;STOD 50&#10;JUMP 0"/>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Button text="Montar e Gravar na RAM" onAction="#montarCodigo" style="-fx-background-color: #077d29; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                                <Label fx:id="labelAssemblerStatus" text="Aguardando código..." textFill="#d2d5d5" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
+                            </HBox>
+                        </VBox>
+
+                        <HBox spacing="15.0" alignment="CENTER">
+                            <VBox alignment="CENTER" prefWidth="180.0" spacing="4.0" style="-fx-background-color: #000000; -fx-padding: 10; -fx-border-color: #077d29;">
+                                <Label text="Subciclo Atual" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 13;"/>
+                                <Label fx:id="labelStatus" text="---" textFill="#077d29">
+                                    <font><Font name="Monospaced Bold" size="22.0"/></font>
+                                </Label>
+                            </VBox>
+                            
+                            <Button text="RESET CPU" onAction="#resetCpu" prefHeight="60.0" prefWidth="120.0" style="-fx-background-color: #077d29; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14;"/>
+                        </HBox>
+
+                        <VBox alignment="TOP_LEFT" prefWidth="400.0" prefHeight="180.0" style="-fx-background-color: #000000; -fx-padding: 10;  -fx-border-color: #077d29;">
+                            <Label text="MICROPROGRAMA (Control Store)" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 11; -fx-padding: 0 0 5 0;"/>
+                            <ScrollPane fx:id="scrollMPC" fitToWidth="true" style="-fx-background: black; -fx-background-color: black;" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+                                <content>
+                                    <Label fx:id="labelMPC" text="---" textFill="#bdc3c7" wrapText="true" maxWidth="370.0">
+                                        <font><Font name="Monospaced" size="12.0"/></font>
+                                    </Label>
+                                </content>
+                            </ScrollPane>
+                        </VBox>
+
+                        <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: #000000; -fx-padding: 15; -fx-border-color: #7f8c8d;">
+                            <Button fx:id="btnSubciclo" prefWidth="380.0" text="SUBCICLO 1" onAction="#execSubciclo" style="-fx-background-color: #c23616; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20;"/>
+                            <Button text="CICLO COMPLETO" prefWidth="380.0" onAction="#execCicloCompleto" style="-fx-background-color: #077d29; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20;"/>
+                        </VBox>
+
                     </children>
-                </GridPane>
-                
-                <VBox alignment="CENTER" prefWidth="130.0" spacing="4.0" style="-fx-background-color: #2c3e50; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #7f8c8d; -fx-border-radius: 5;">
-                    <Label text="Subciclo" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 13;"/>
-                    <Label fx:id="labelStatus" text="---" textFill="#2ecc71">
-                        <font>
-                            <Font name="Monospaced Bold" size="22.0"/>
-                        </font>
-                    </Label>
                 </VBox>
                 
-                <VBox alignment="TOP_LEFT" prefWidth="400.0" prefHeight="150.0" style="-fx-background-color: #000000; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #7f8c8d; -fx-border-radius: 5;">
-                    <Label text="MICROPROGRAMA (Control Store)" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 11; -fx-padding: 0 0 5 0;"/>
-                    <ScrollPane fx:id="scrollMPC" fitToWidth="true" style="-fx-background: black; -fx-background-color: black;" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
-                        <content>
-                            <Label fx:id="labelMPC" text="---" textFill="#f1c40f" wrapText="true" maxWidth="370.0">
-                                <font>
-                                    <Font name="Monospaced" size="11.0"/>
-                                </font>
-                            </Label>
-                        </content>
-                    </ScrollPane>
-                </VBox>
-            </children>
-        </HBox>
-
-        <HBox alignment="CENTER" spacing="10.0">
-            <Label text="Endereço:" textFill="#ecf0f1"/>
-            <TextField fx:id="inputEndereco" promptText="0" prefWidth="55.0" style="-fx-font-family: 'Monospaced';"/>
-            
-            <Label text="Binário (16 bits):" textFill="#ecf0f1"/>
-            <StackPane alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-background-radius: 3;">
-                <Label fx:id="labelPlaceholder" text="0000000000000000" textFill="#bdc3c7" style="-fx-font-family: 'Monospaced'; -fx-padding: 4 8 4 8;"/>
-                <TextField fx:id="inputInstrucao" prefWidth="190.0" style="-fx-font-family: 'Monospaced'; -fx-background-color: transparent; -fx-text-fill: black; -fx-padding: 4 8 4 8;"/>
-            </StackPane>
-            
-            <Button text="Gravar na RAM" onAction="#ramWrite" style="-fx-background-color: #44bd32; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            <Button text="RESET CPU" onAction="#resetCpu" style="-fx-background-color: #8e44ad; -fx-text-fill: white; -fx-font-weight: bold;"/>
-        </HBox>
-
-        <HBox alignment="CENTER" spacing="20.0">
-            <children>
-                <Button fx:id="btnSubciclo" text="SUBCICLO 1" onAction="#execSubciclo" style="-fx-background-color: #c23616; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20;"/>
-                <Button text="CICLO COMPLETO (4 subciclos)" onAction="#execCicloCompleto" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20;"/>
             </children>
         </HBox>
     </children>

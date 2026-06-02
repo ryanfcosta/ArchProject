@@ -66,8 +66,8 @@ public class CPU {
         cs[ 1] = mi(0, 0, 0, 0,  0, 0, 1, 0, 1, PC,  P1, PC,   2);  // pc:=pc+1; rd;
         cs[ 2] = mi(1, 1, 2, 0,  1, 0, 0, 0, 1, IR,   0,  0,  28);  // ir:=mbr; if n goto 28
         cs[ 3] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR,  IR, IR,  19);  // tir:=lshift(ir+ir); if n goto 19
-        cs[ 4] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  11);  // tir:=lshift(tir);   if n goto 11
-        cs[ 5] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,   9);  // alu:=tir;           if n goto 9
+        cs[ 4] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  11);  // tir:=lshift(tir); if n goto 11
+        cs[ 5] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,   9);  // alu:=tir; if n goto 9
         
         // LODD: mar:=ir; rd → ac:=mbr; goto 0
         cs[ 6] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  IR, IR,   7);  // mar:=ir; rd;
@@ -110,7 +110,8 @@ public class CPU {
         
         // LODL: a:=ir+sp; mar:=a; rd → ac:=mbr; goto 0
         cs[31] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  SP, IR,  32);  // a:=ir+sp;
-        cs[32] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  A,   7);  // mar:=a; rd; goto 7 (→8=ac:=mbr)
+        cs[32] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  A,   7);  // mar:=a; rd; goto 7 
+        // (→8=ac:=mbr)
         
         // STOL: a:=ir+sp; mar:=a; mbr:=ac; wr
         cs[33] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  38);  // alu:=tir; if n goto 38
@@ -120,7 +121,8 @@ public class CPU {
         // ADDL / SUBL
         cs[36] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  38);  // tir:=lshift(tir); if n goto 38
         cs[37] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  SP, IR,  38);  // a:=ir+sp;
-        cs[38] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  A,  13);  // mar:=a; rd; goto 13 (→14=ac:=mbr+ac)
+        cs[38] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  A,  13);  // mar:=a; rd; goto 13 
+        // (→14=ac:=mbr+ac)
         //  SUBL: a:=ir+sp; mar:=a; rd (MPC 39) → usa sequência SUBD (16-19)
         cs[39] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  A,  16);  // mar:=a; rd; goto 16
         
