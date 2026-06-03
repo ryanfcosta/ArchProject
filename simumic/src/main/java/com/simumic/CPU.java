@@ -47,6 +47,10 @@ public class CPU {
     private int shifterResult;    // resultado após o shifter (vai para busC)
     private boolean flagN_latched, flagZ_latched; // travadas até o sub4
 
+    private long totalSubciclos = 0;
+    private long totalCiclos = 0;
+    private long instrucoesExecutadas = 0;
+
     
     private boolean rdPending, wrPending; // booleano em vez de salvar a prev em uma variável
 
@@ -64,129 +68,129 @@ public class CPU {
         // Fetch / Decode
         cs[ 0] = mi(0, 0, 2, 0,  0, 1, 1, 0, 1, PC,  P1, PC,   1);  // mar:=pc; rd;
         cs[ 1] = mi(0, 0, 0, 0,  0, 0, 1, 0, 1, PC,  P1, PC,   2);  // pc:=pc+1; rd;
-        cs[ 2] = mi(1, 1, 2, 0,  1, 0, 0, 0, 1, IR,   0,  0,  28);  // ir:=mbr; if n goto 28
-        cs[ 3] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR,  IR, IR,  19);  // tir:=lshift(ir+ir); if n goto 19
-        cs[ 4] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  11);  // tir:=lshift(tir); if n goto 11
+        cs[ 2] = mi(1, 1, 2, 0,  0, 0, 0, 0, 1, IR,   0,  0,  28);  // ir:=mbr; if n goto 28
+        cs[ 3] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR,  IR, IR,  20);  // tir:=ir+ir; if n goto 20
+        cs[ 4] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  11);  // tir:=tir+tir; if n goto 11
         cs[ 5] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,   9);  // alu:=tir; if n goto 9
         
         // LODD: mar:=ir; rd → ac:=mbr; goto 0
-        cs[ 6] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  IR, IR,   7);  // mar:=ir; rd;
-        cs[ 7] = mi(0, 0, 2, 0,  0, 0, 1, 0, 0,  0,   0,  0,   8);  // rd;
-        cs[ 8] = mi(1, 3, 2, 0,  0, 0, 0, 0, 1, AC,   0,  0,   0);  // ac:=mbr; goto 0;
+        cs[ 6] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  IR, IR,   7);  
+        cs[ 7] = mi(0, 0, 2, 0,  0, 0, 1, 0, 0,  0,   0,  0,   8);  
+        cs[ 8] = mi(1, 3, 2, 0,  0, 0, 0, 0, 1, AC,   0,  0,   0);  
         
         // STOD: mar:=ir; mbr:=ac; wr → wr; goto 0
-        cs[ 9] = mi(0, 0, 2, 0,  1, 1, 0, 1, 0,  0,  AC, IR,  10);  // mar:=ir; mbr:=ac; wr;
-        cs[10] = mi(0, 3, 0, 0,  0, 0, 0, 1, 0,  0,   0,  0,   0);  // wr; goto 0;
+        cs[ 9] = mi(0, 0, 2, 0,  1, 1, 0, 1, 0,  0,  AC, IR,  10);  
+        cs[10] = mi(0, 3, 0, 0,  0, 0, 0, 1, 0,  0,   0,  0,   0);  
         
         // Decode bit 13
-        cs[11] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  15);  // tir:=lshift(tir); if n goto 15
+        cs[11] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  15);  
         
         // ADDD: mar:=ir; rd → ac:=mbr+ac; goto 0
-        cs[12] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  IR, IR,  13);  // mar:=ir; rd;
-        cs[13] = mi(0, 0, 2, 0,  0, 0, 1, 0, 0,  0,   0,  0,  14);  // rd;
-        cs[14] = mi(1, 3, 0, 0,  0, 0, 0, 0, 1, AC,  AC,  0,   0);  // ac:=mbr+ac; goto 0;
+        cs[12] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  IR, IR,  13);  
+        cs[13] = mi(0, 0, 2, 0,  0, 0, 1, 0, 0,  0,   0,  0,  14);  
+        cs[14] = mi(1, 3, 0, 0,  0, 0, 0, 0, 1, AC,  AC,  0,   0);  
         
         // SUBD: mar:=ir; rd → a:=inv(mbr) → ac:=ac+a; goto 0
-        cs[15] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  25);  // tir:=lshift(tir); if n goto 25
-        cs[16] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  IR, IR,  17);  // mar:=ir; rd;
-        cs[17] = mi(0, 0, 2, 0,  0, 0, 1, 0, 0,  0,   0,  0,  18);  // rd;
-        cs[18] = mi(1, 0, 3, 0,  0, 0, 0, 0, 1,  A,   0,  0,  19);  // a:=inv(mbr);
-        cs[19] = mi(0, 3, 0, 0,  0, 0, 0, 0, 1, AC,  AC,  A,   0);  // ac:=ac+a; goto 0;
-        
-        // Decode bit 12
-        cs[20] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  25);  // tir:=lshift(tir); if n goto 25
-        cs[21] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  23);  // tir:=lshift(tir); if n goto 23
-        cs[22] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0,  AC, AC,   0);  // alu:=ac; if n goto 0;
-        cs[23] = mi(0, 3, 2, 0,  0, 0, 0, 0, 1, PC,AMASK,IR,   0);  // pc:=band(ir,amask); goto 0;
-        cs[24] = mi(0, 2, 2, 0,  0, 0, 0, 0, 0,  0,  AC, AC,  22);  // alu:=ac; if z goto 22;
-        cs[25] = mi(0, 3, 0, 0,  0, 0, 0, 0, 0,  0,   0,  0,   0);  // goto 0;
-        cs[26] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  27);  // tir:=lshift(tir); if n goto 27
-        cs[27] = mi(0, 3, 2, 0,  0, 0, 0, 0, 1, AC,AMASK,IR,   0);  // ac:=band(ir,amask); goto 0;
+        cs[15] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  25);  
+        cs[16] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  IR, IR,  17);  
+        cs[17] = mi(0, 0, 2, 0,  0, 0, 1, 0, 0,  0,   0,  0,  18);  
+        cs[18] = mi(1, 0, 3, 0,  0, 0, 0, 0, 1,  A,   0,  0,  19);  
+        cs[19] = mi(0, 3, 0, 0,  0, 0, 0, 0, 1, AC,  AC,  A,   0);  
+
+        // Decode JUMPS
+        cs[20] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  26);  
+        cs[21] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  24);  
+        cs[22] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0,  AC, AC,   0);  
+        cs[23] = mi(0, 3, 1, 0,  0, 0, 0, 0, 1, PC,AMASK,IR,   0);  
+        cs[24] = mi(0, 2, 2, 0,  0, 0, 0, 0, 0,  0,  AC, AC,  23);  
+        cs[25] = mi(0, 3, 0, 0,  0, 0, 0, 0, 0,  0,   0,  0,   0);  
+        cs[26] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  77);  
+        cs[27] = mi(0, 3, 1, 0,  0, 0, 0, 0, 1, PC,AMASK,IR,   0);  
         
         // Decode bit 15
-        cs[28] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR,  IR, IR,  40);  // tir:=lshift(ir+ir); if n goto 40
-        cs[29] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  35);  // tir:=lshift(tir);   if n goto 35
-        cs[30] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  33);  // alu:=tir;        if n goto 33
+        cs[28] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR,  IR, IR,  40);  
+        cs[29] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  35);  
+        cs[30] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  33);  
         
         // LODL: a:=ir+sp; mar:=a; rd → ac:=mbr; goto 0
-        cs[31] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  SP, IR,  32);  // a:=ir+sp;
-        cs[32] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  A,   7);  // mar:=a; rd; goto 7 
-        // (→8=ac:=mbr)
+        cs[31] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  SP, IR,  32);  
+        cs[32] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  A,   7);  
         
         // STOL: a:=ir+sp; mar:=a; mbr:=ac; wr
-        cs[33] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  38);  // alu:=tir; if n goto 38
-        cs[34] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  SP, IR,  35);  // a:=ir+sp;
-        cs[35] = mi(0, 0, 2, 0,  1, 1, 0, 1, 0,  0,  AC,  A,  10);  // mar:=a; mbr:=ac; wr; goto 10
+        cs[33] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  38);  
+        cs[34] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  SP, IR,  35);  
+        cs[35] = mi(0, 0, 2, 0,  1, 1, 0, 1, 0,  0,  AC,  A,  10);  
         
         // ADDL / SUBL
-        cs[36] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  38);  // tir:=lshift(tir); if n goto 38
-        cs[37] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  SP, IR,  38);  // a:=ir+sp;
-        cs[38] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  A,  13);  // mar:=a; rd; goto 13 
-        // (→14=ac:=mbr+ac)
-        //  SUBL: a:=ir+sp; mar:=a; rd (MPC 39) → usa sequência SUBD (16-19)
-        cs[39] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  A,  16);  // mar:=a; rd; goto 16
+        cs[36] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  38);  
+        cs[37] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  SP, IR,  38);  
+        cs[38] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  A,  13);   
+        cs[39] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  A,  16);  
         
         // Decode 2º nível
-        cs[40] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR,  IR, IR,  52);  // tir:=lshift(ir+ir); if n goto 52
-        cs[41] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  46);  // tir:=lshift(tir);   if n goto 46
-        cs[42] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  44);  // alu:=tir;           if n goto 44
+        cs[40] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR,  IR, IR,  52);  
+        cs[41] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  46);  
+        cs[42] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  44);  
 
         // JNEG
-        cs[43] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0,  AC, AC,  22);  // alu:=ac; if n goto 22;
-        cs[44] = mi(0, 2, 2, 0,  0, 0, 0, 0, 0,  0,  AC, AC,   0);  // alu:=ac; if z goto 0;
-        cs[45] = mi(0, 3, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  50);  // tir:=lshift(tir); if n goto 50
-        cs[46] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  IR, IR,  47);  // a:=ir+sp; (dummy decode)
-        cs[47] = mi(0, 3, 2, 0,  0, 0, 0, 0, 1, PC,AMASK,IR,   0);  // pc:=band(ir,amask); goto 0;
+        cs[43] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0,  AC, AC,  22);  
+        cs[44] = mi(0, 2, 2, 0,  0, 0, 0, 0, 0,  0,  AC, AC,   0);  
+        cs[45] = mi(0, 3, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  50);  
+        cs[46] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  IR, IR,  47);  
+        cs[47] = mi(0, 3, 2, 0,  0, 0, 0, 0, 1, PC,AMASK,IR,   0);  
         
         // CALL
-        cs[48] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1, SP,  SP, M1,  49);  // sp:=sp+(-1);
-        cs[49] = mi(0, 0, 2, 0,  1, 1, 0, 1, 0,  0,  PC, SP,  50);  // mar:=sp; mbr:=pc; wr;
-        cs[50] = mi(0, 3, 2, 0,  0, 0, 0, 1, 1, PC,AMASK,IR,   0);  // pc:=band(ir,amask); wr; goto 0;
+        cs[48] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1, SP,  SP, M1,  49);  
+        cs[49] = mi(0, 0, 2, 0,  1, 1, 0, 1, 0,  0,  PC, SP,  50);  
+        cs[50] = mi(0, 3, 2, 0,  0, 0, 0, 1, 1, PC,AMASK,IR,   0);  
         
         // Decode grupo 1111
-        cs[51] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR,  IR, IR,  65);  // tir:=lshift(ir+ir); if n goto 65
-        cs[52] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  59);  // tir:=lshift(tir);   if n goto 59
-        cs[53] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  56);  // alu:=tir;           if n goto 56
+        cs[51] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR,  IR, IR,  65);  
+        cs[52] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  59);  
+        cs[53] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  56);  
         
         // PSHI
-        cs[54] = mi(0, 0, 2, 0,  0, 1, 1, 0, 1, SP,  SP, M1,  55);  // mar:=ac; rd; (sp-=1 em paralelo)
-        cs[55] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  SP,  SP, 10);  // sp:=sp+(-1); rd; goto 10
+        cs[54] = mi(0, 0, 2, 0,  0, 1, 1, 0, 1, SP,  SP, M1,  55);  
+        cs[55] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  SP,  SP, 10);  
         
         // POPI
-        cs[56] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  62);  // alu:=tir; if n goto 62
-        cs[57] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  SP, SP,  58);  // mar:=sp; sp:=sp+1; rd;
-        cs[58] = mi(0, 0, 2, 0,  0, 1, 0, 1, 0,  0,  AC, AC,  10);  // mar:=ac; wr; goto 10
+        cs[56] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  62);  
+        cs[57] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  SP, SP,  58);  
+        cs[58] = mi(0, 0, 2, 0,  0, 1, 0, 1, 0,  0,  AC, AC,  10);  
         
         // PUSH
-        cs[59] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  62);  // tir:=lshift(tir); if n goto 62
-        cs[60] = mi(0, 0, 2, 0,  1, 0, 0, 0, 1, SP,  SP, M1,  61);  // sp:=sp+(-1);
-        cs[61] = mi(0, 0, 2, 0,  1, 1, 0, 1, 0,  0,  AC, SP,  10);  // mar:=sp; mbr:=ac; wr; goto 10
+        cs[59] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  62);  
+        cs[60] = mi(0, 0, 2, 0,  1, 0, 0, 0, 1, SP,  SP, M1,  61);  
+        cs[61] = mi(0, 0, 2, 0,  1, 1, 0, 1, 0,  0,  AC, SP,  10);  
         
         // POP
-        cs[62] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR, TIR,TIR,  73);  // tir:=lshift(tir); if n goto 73
-        cs[63] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  SP, SP,  64);  // mar:=sp; sp:=sp+1; rd;
-        cs[64] = mi(0, 3, 2, 0,  0, 0, 0, 0, 1, AC,   0,  0,   0);  // ac:=mbr; goto 0;
+        cs[62] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  73);  
+        cs[63] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  SP, SP,  64);  
+        cs[64] = mi(0, 3, 2, 0,  0, 0, 0, 0, 1, AC,   0,  0,   0);  
         
         // RETN
-        cs[65] = mi(0, 1, 0, 1,  0, 0, 0, 0, 1,TIR,  IR, IR,  73);  // tir:=lshift(ir+ir); if n goto 73
-        cs[66] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  SP, SP,  67);  // mar:=sp; sp:=sp+1; rd;
-        cs[67] = mi(1, 3, 2, 0,  0, 0, 0, 0, 1, PC,   0,  0,   0);  // pc:=mbr; goto 0;
+        cs[65] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR,  IR, IR,  73);  
+        cs[66] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  SP, SP,  67);  
+        cs[67] = mi(1, 3, 2, 0,  0, 0, 0, 0, 1, PC,   0,  0,   0);  
         
         // SWAP
-        cs[68] = mi(0, 0, 2, 0,  0, 0, 0, 0, 1,  A,  AC, AC,  69);  // a:=ac;
-        cs[69] = mi(0, 0, 2, 0,  0, 0, 0, 0, 1, AC,  SP, SP,  70);  // ac:=sp;
-        cs[70] = mi(0, 3, 2, 0,  0, 0, 0, 0, 1, SP,   A,  A,   0);  // sp:=a; goto 0;
+        cs[68] = mi(0, 0, 2, 0,  0, 0, 0, 0, 1,  A,  AC, AC,  69);  
+        cs[69] = mi(0, 0, 2, 0,  0, 0, 0, 0, 1, AC,  SP, SP,  70);  
+        cs[70] = mi(0, 3, 2, 0,  0, 0, 0, 0, 1, SP,   A,  A,   0);  
         
         // Decode INSP/DESP
-        cs[71] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  76);  // alu:=tir; if n goto 76
-        cs[72] = mi(0, 0, 2, 0,  0, 0, 0, 0, 1,  A,SMASK,IR,  73);  // a:=band(ir,smask);
-        cs[73] = mi(0, 3, 0, 0,  0, 0, 0, 0, 1, SP,  SP,  A,   0);  // sp:=sp+a; goto 0;
+        cs[71] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  76);  
+        cs[72] = mi(0, 0, 2, 0,  0, 0, 0, 0, 1,  A,SMASK,IR,  73);  
+        cs[73] = mi(0, 3, 0, 0,  0, 0, 0, 0, 1, SP,  SP,  A,   0);  
         
         // DESP
-        cs[74] = mi(0, 0, 2, 0,  0, 0, 0, 0, 1,  A,SMASK,IR,  75);  // a:=band(ir,smask);
-        cs[75] = mi(0, 0, 3, 0,  0, 0, 0, 0, 1,  A,   0,  A,  76);  // a:=inv(a);
-        cs[76] = mi(0, 3, 0, 0,  0, 0, 0, 0, 1, SP,  SP,  A,   0);  // a:=a+1; goto 75 — revisão: ac:=a+1; sp:=sp+ac
-        // Restante da control store (77-255) → NOP / nunca alcançado
+        cs[74] = mi(0, 0, 2, 0,  0, 0, 0, 0, 1,  A,SMASK,IR,  75);  
+        cs[75] = mi(0, 0, 3, 0,  0, 0, 0, 0, 1,  A,   0,  A,  76);  
+        cs[76] = mi(0, 3, 0, 0,  0, 0, 0, 0, 1, SP,  SP,  A,   0);   
+        
+        // LOCO EXECUTION
+        cs[77] = mi(0, 3, 1, 0,  0, 0, 0, 0, 1, AC,AMASK,IR,   0);  
+        
         return cs;
     }
 
@@ -308,6 +312,9 @@ public class CPU {
         opcodeAtual = -1;
         latchA = 0; latchB = 0;
         aluResult = 0; shifterResult = 0;
+        totalSubciclos = 0;
+        totalCiclos = 0;
+        instrucoesExecutadas = 0;
 
         // Carrega MIR inicial
         carregarMIR(mpc);
@@ -327,6 +334,7 @@ public class CPU {
     }
 
     public void executarSubciclo() {
+        totalSubciclos++;
         switch (subcicloAtual) {
             case 1: sub1(); break;
             case 2: sub2(); break;
@@ -345,6 +353,7 @@ public class CPU {
         - Registradores A e B selecionados pelos decoders A e B
     */
     private void sub1() {
+        if (mpc == 0) instrucoesExecutadas++;
         statusCiclo = "SUB1";
         msgMPC = String.format("MPC %02d: [%s]", mpc, mpcStrings[mpc]);
         
@@ -428,9 +437,10 @@ public class CPU {
         - Buffer de escrita completa: RAM[MAR] ← MBR (se wrPending)
     */
     private void sub4() {
+        totalCiclos++;
         statusCiclo = "SUB4";
         
-        if (enc_ctrl == 1 && (c_reg >= 10 || c_reg <= 4)) regs[c_reg] = busC; //constantes 0, P1, M1, AMASK e SMASK não escrevem
+        if (enc_ctrl == 1 && (c_reg < ZERO || c_reg > SMASK)) regs[c_reg] = busC; //constantes 0, P1, M1, AMASK e SMASK não escrevem
 
         flagN = flagN_latched; flagZ = flagZ_latched; // armazena flags travadas
 
@@ -469,6 +479,9 @@ public class CPU {
     public String getMsgMPC()       { return msgMPC; }
     public String getstatusCiclo()  { return statusCiclo; }
     public int getOpcodeAtual()     { return opcodeAtual; }
+    public long getTotalSubciclos() { return totalSubciclos; }
+    public long getTotalCiclos() { return totalCiclos; }
+    public long getInstrucoesExecutadas() { return instrucoesExecutadas; }
     public int getBusA()            { return busA; }
     public int getBusB()            { return busB; }
     public int getBusC()            { return busC; }
@@ -481,7 +494,7 @@ public class CPU {
         return (idx >= 0 && idx < 16) ? regs[idx] : 0;
     }
 
-    // HM pras labels da interface
+// HM pras labels da interface
     public Map<String, Integer> getRegs() {
         Map<String, Integer> m = new HashMap<>();
         m.put("PC",    regs[PC]);
@@ -489,7 +502,17 @@ public class CPU {
         m.put("SP",    regs[SP]);
         m.put("IR",    regs[IR]);
         m.put("TIR",   regs[TIR]);
-        m.put("LV",    regs[A]);
+        m.put("ZERO",  regs[ZERO]);
+        m.put("P1",    regs[P1]);
+        m.put("M1",    regs[M1]);
+        m.put("AMASK", regs[AMASK]);
+        m.put("SMASK", regs[SMASK]);
+        m.put("LV",    regs[A]); // LV mapeado no A Tanembaum
+        m.put("B",     regs[B]);
+        m.put("C",     regs[C]);
+        m.put("D",     regs[D]);
+        m.put("E",     regs[E]);
+        m.put("F",     regs[F]);
         m.put("MAR",   mar);
         m.put("MBR",   mbr);
         return m;

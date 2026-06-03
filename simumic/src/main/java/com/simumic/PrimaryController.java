@@ -8,10 +8,10 @@ import java.util.Map;
 
 public class PrimaryController {
 
-    @FXML private Label    labelPC, labelAC, labelIR, labelMAR, labelMBR;
-    @FXML private Label    labelLV, labelSP, labelTIR;
-    @FXML private Rectangle rectPC, rectAC, rectIR, rectMAR, rectMBR;
-    @FXML private Rectangle rectLV, rectSP, rectTIR;
+    @FXML private Label labelPC, labelAC, labelIR, labelMAR, labelMBR, labelLV, labelSP, labelTIR, labelB, labelC, labelD, labelE, labelF, labelAMASK, labelSMASK;
+    @FXML private Rectangle rectPC, rectAC, rectIR, rectMAR, rectMBR, rectLV, rectSP, rectTIR, rectB, rectC, rectD, rectE, rectF, rectAMASK, rectSMASK;
+    @FXML private Label labelZERO, labelP1, labelM1;
+    @FXML private Rectangle rectZERO, rectP1, rectM1;
     @FXML private Label    labelFlagN, labelFlagZ;
     @FXML private Rectangle rectFlagN, rectFlagZ;
     @FXML private Label    labelControl;
@@ -30,6 +30,7 @@ public class PrimaryController {
 
     @FXML private TextArea consoleMacro;
     @FXML private Label labelAssemblerStatus;
+    @FXML private Label labelEstatisticas, labelInstr;
 
     // Cores
     private static final Color COR_FUNDO     = Color.web("#000000");
@@ -61,7 +62,9 @@ public class PrimaryController {
     private void execSubciclo() {
         cpu.executarSubciclo();
         atualizarLabels();
-        atualizarBotaoSubciclo();
+        int sb = atualizarBotaoSubciclo();
+        if(sb == 1)
+            imprimirConsoleMPC();
     }
 
     @FXML
@@ -69,9 +72,27 @@ public class PrimaryController {
         cpu.executarCicloCompleto();
         atualizarLabels();
         atualizarBotaoSubciclo();
+        imprimirConsoleMPC();
     }
 
-    private void atualizarBotaoSubciclo() {
+private void imprimirConsoleMPC() {
+        if (labelMPC != null) {
+            String mpcMsg = cpu.getMsgMPC();
+            if (mpcMsg.startsWith("MPC 77") || mpcMsg.startsWith("MPC 27")) {
+                return; 
+            }
+
+            if (mpcMsg.startsWith("MPC 00")) {
+                mpcMsg = "\n" + mpcMsg;
+            }
+
+            String atual = labelMPC.getText();
+            labelMPC.setText(atual.equals("---") ? mpcMsg : atual + "\n" + mpcMsg);
+            
+            if (scrollMPC != null) scrollMPC.setVvalue(1.0); // Desce a barra de scroll automaticamente
+        }
+    }
+    private int atualizarBotaoSubciclo() {
         int proximo = cpu.getSubcicloAtual();// estadoClock já aponta para o PRÓXIMO subciclo a ser executado
         String[] nomes = {
             "SUBCICLO 1",
@@ -86,6 +107,8 @@ public class PrimaryController {
             "-fx-text-fill: white; -fx-font-weight: bold; " +
             "-fx-font-size: 12; -fx-padding: 10 20;"
         );
+
+        return proximo;
     }
 
     //  ATUALIZA TODAS AS LABELS DA UI
@@ -99,6 +122,16 @@ public class PrimaryController {
         preencherReg(labelMBR, rectMBR, cpu.getMBR());
         preencherReg(labelSP,  rectSP,  regs.get("SP"));
         preencherReg(labelLV,  rectLV,  regs.get("LV"));
+        preencherReg(labelZERO,  rectZERO,  regs.get("ZERO"));
+        preencherReg(labelP1,    rectP1,    regs.get("P1"));
+        preencherReg(labelM1,    rectM1,    regs.get("M1"));
+        preencherReg(labelAMASK, rectAMASK, regs.get("AMASK"));
+        preencherReg(labelSMASK, rectSMASK, regs.get("SMASK"));
+        preencherReg(labelB,     rectB,     regs.get("B"));
+        preencherReg(labelC,     rectC,     regs.get("C"));
+        preencherReg(labelD,     rectD,     regs.get("D"));
+        preencherReg(labelE,     rectE,     regs.get("E"));
+        preencherReg(labelF,     rectF,     regs.get("F"));
         if (labelTIR != null)
             preencherReg(labelTIR, rectTIR, regs.get("TIR"));
 
@@ -129,15 +162,6 @@ public class PrimaryController {
         };
         labelStatus.setTextFill(corStatus);
 
-        // Microprograma
-        String mpcMsg = cpu.getMsgMPC();
-        if (labelMPC != null && status == "SUB1") {
-            String atual = labelMPC.getText();
-            labelMPC.setText(atual.equals("---") ? mpcMsg : atual + "\n" + mpcMsg);
-            scrollMPC.setVvalue(1.0);
-        }
-
-        // Barramentos
         if (labelBusA != null)    labelBusA.setText(String.format("%04X", cpu.getBusA()));
         if (labelBusB != null)    labelBusB.setText(String.format("%04X", cpu.getBusB()));
         if (labelBusC != null)    labelBusC.setText(String.format("%04X", cpu.getBusC()));
@@ -145,6 +169,11 @@ public class PrimaryController {
         if (labelLatchB != null)  labelLatchB.setText(String.format("%04X", cpu.getLatchB()));
         if (labelALU != null)     labelALU.setText(String.format("%04X", cpu.getAluResult()));
         if (labelShifter != null) labelShifter.setText(String.format("%04X", cpu.getShifterResult()));
+    
+        if (labelEstatisticas != null) {
+            labelEstatisticas.setText(cpu.getTotalCiclos() + " Ciclos | " + cpu.getTotalSubciclos() + " Sub");
+            labelInstr.setText(cpu.getInstrucoesExecutadas() + " Instr. Executadas");
+        }
     }
 
     private void preencherReg(Label label, Rectangle rect, Integer valor) {
