@@ -1,0 +1,42 @@
+.reg-rect {
+    -fx-stroke: #d2d5d5;
+    stroke: #d2d5d5;
+    -fx-stroke-width: 1.5;
+    stroke-width: 1.5;
+    -fx-fill: #000;
+    fill: #000;
+}
+
+.reg-label {
+    -fx-font-family: 'Monospaced';
+    font-family: 'Monospaced';
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: d2d5d5;
+    -fx-font-size: 13;
+    font-size: 13;
+}
+
+.bank-case {
+    -fx-stroke: #077d29;
+    stroke: #077d29;
+    -fx-stroke-width: 2;
+    stroke-width: 2;
+    -fx-fill: #000;
+    fill: #000;
+}
+
+.bus-line {
+    -fx-stroke: #d2d5d5;
+    stroke: #d2d5d5;
+    -fx-stroke-width: 3;
+    stroke-width: 3;
+}
+.logic-component {
+    -fx-stroke: #d2d5d5;
+    stroke: #d2d5d5;
+    -fx-stroke-width: 2;
+    stroke-width: 2;
+    -fx-fill: #000000;
+    fill: #000000;
+}

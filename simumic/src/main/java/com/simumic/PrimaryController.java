@@ -3,40 +3,51 @@ package com.simumic;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+
+import java.nio.charset.CodingErrorAction;
 import java.util.Map;
 
 public class PrimaryController {
 
-    @FXML private Label labelPC, labelAC, labelIR, labelMAR, labelMBR, labelLV, labelSP, labelTIR, labelB, labelC, labelD, labelE, labelF, labelAMASK, labelSMASK;
-    @FXML private Rectangle rectPC, rectAC, rectIR, rectMAR, rectMBR, rectLV, rectSP, rectTIR, rectB, rectC, rectD, rectE, rectF, rectAMASK, rectSMASK;
-    @FXML private Label labelZERO, labelP1, labelM1;
-    @FXML private Rectangle rectZERO, rectP1, rectM1;
-    @FXML private Label    labelFlagN, labelFlagZ;
-    @FXML private Rectangle rectFlagN, rectFlagZ;
-    @FXML private Label    labelControl;
-    @FXML private Rectangle rectControl;
-    @FXML private Label      labelMPC;
+@FXML private Label labelPC, labelAC, labelSP, labelIR, labelTIR, labelLV, 
+                        labelB, labelC, labelD, labelE, labelF, 
+                        labelAMASK, labelSMASK, labelMAR, labelMBR, 
+                        labelZERO, labelP1, labelM1;
+
+    @FXML private Rectangle rectPC, rectAC, rectSP, rectIR, rectTIR, rectLV, 
+                            rectB, rectC, rectD, rectE, rectF, 
+                            rectAMASK, rectSMASK, rectMAR, rectMBR, 
+                            rectZERO, rectP1, rectM1;
+
+    @FXML private Label labelBusA, labelBusB, labelBusC, labelLatchA, labelLatchB, 
+                        labelALU, labelShifter, labelStatus, 
+                        labelFlagN, labelFlagZ;
+    
+    @FXML private Rectangle rectLatchA, rectLatchB, rectAMUX, rectShifter,rectControl, 
+                            rectFlagN, rectFlagZ;
+
+    @FXML private Rectangle rectFlagRD, rectFlagWR;
+    @FXML private Polygon polygonALU;
+    
+    @FXML private Rectangle rectDecA, rectDecB, rectDecC;
+
+    // I/O
+    @FXML private TextArea consoleMacro;
     @FXML private ScrollPane scrollMPC;
-    @FXML private Label      labelStatus;
-    @FXML private Label labelBusA, labelBusB, labelBusC;
-    @FXML private Label labelLatchA, labelLatchB;
-    @FXML private Label labelALU, labelShifter;
+    @FXML private Label labelMPC, labelAssemblerStatus, labelEstatisticas, labelInstr;
+    @FXML private Button btnSubciclo;
 
-    @FXML private Button     btnSubciclo;
 
-    private CPU    cpu;
+    private CPU cpu;
     private Memoria ram;
 
-    @FXML private TextArea consoleMacro;
-    @FXML private Label labelAssemblerStatus;
-    @FXML private Label labelEstatisticas, labelInstr;
-
-    // Cores
-    private static final Color COR_FUNDO     = Color.web("#000000");
-    private static final Color COR_CINZA     = Color.web("#d2d5d5");
-    private static final Color COR_VERDE     = Color.web("#077d29");
-    private static final Color COR_VERMELHO  = Color.web("#c3150e");
+    // CORES
+    private static final Color COR_FUNDO    = Color.web("#000000");
+    private static final Color COR_CINZA    = Color.web("#d2d5d5");
+    private static final Color COR_VERDE    = Color.web("#077d29");
+    private static final Color COR_VERMELHO = Color.web("#c3150e");
 
     @FXML
     public void initialize() {
@@ -58,12 +69,14 @@ public class PrimaryController {
         atualizarLabels();
     }
 
-    @FXML
+   @FXML
     private void execSubciclo() {
+        
         cpu.executarSubciclo();
         atualizarLabels();
-        int sb = atualizarBotaoSubciclo();
-        if(sb == 1)
+        atualizarBotaoSubciclo();
+        
+        if ((cpu.getSubcicloAtual() == 1)) 
             imprimirConsoleMPC();
     }
 
@@ -82,7 +95,7 @@ private void imprimirConsoleMPC() {
                 return; 
             }
 
-            if (mpcMsg.startsWith("MPC 00")) {
+            if (mpcMsg.startsWith("MPC 00") && cpu.getInstrucoesExecutadas() != 1) {
                 mpcMsg = "\n" + mpcMsg;
             }
 
@@ -111,6 +124,28 @@ private void imprimirConsoleMPC() {
         return proximo;
     }
 
+    private Rectangle getRectByIndex(int index) {
+        switch(index) {
+            case 0: return rectPC;
+            case 1: return rectAC;
+            case 2: return rectSP;
+            case 3: return rectIR;
+            case 4: return rectTIR;
+            case 5: return rectZERO;
+            case 6: return rectP1;
+            case 7: return rectM1;
+            case 8: return rectAMASK;
+            case 9: return rectSMASK;
+            case 10: return rectLV; 
+            case 11: return rectB;
+            case 12: return rectC;
+            case 13: return rectD;
+            case 14: return rectE;
+            case 15: return rectF;
+            default: return null;
+        }
+    }
+
     //  ATUALIZA TODAS AS LABELS DA UI
     private void atualizarLabels() {
         Map<String, Integer> regs = cpu.getRegs();
@@ -132,23 +167,27 @@ private void imprimirConsoleMPC() {
         preencherReg(labelD,     rectD,     regs.get("D"));
         preencherReg(labelE,     rectE,     regs.get("E"));
         preencherReg(labelF,     rectF,     regs.get("F"));
-        if (labelTIR != null)
-            preencherReg(labelTIR, rectTIR, regs.get("TIR"));
+        preencherReg(labelTIR, rectTIR, regs.get("TIR"));
+        
+        polygonALU.setStroke(COR_CINZA);
+        rectShifter.setStroke(COR_CINZA);
+
 
         boolean n = cpu.isFlagN();
         boolean z = cpu.isFlagZ();
         labelFlagN.setText(n ? "1" : "0");
         labelFlagZ.setText(z ? "1" : "0");
-        rectFlagN.setFill(n ? COR_VERDE : COR_FUNDO);
-        rectFlagZ.setFill(z ? COR_VERDE : COR_FUNDO);
+        rectFlagN.setFill(n ? COR_VERDE : COR_FUNDO); rectFlagN.setStroke(n ? COR_VERDE : COR_CINZA);
+        rectFlagZ.setFill(z ? COR_VERDE : COR_FUNDO); rectFlagZ.setStroke(z ? COR_VERDE : COR_CINZA);
+        
 
+        rectFlagRD.setFill(COR_FUNDO); rectFlagRD.setStroke(COR_CINZA);
+        rectFlagWR.setFill(COR_FUNDO); rectFlagWR.setStroke(COR_CINZA);
         String sinal = cpu.getSinalControle();
-        labelControl.setText(sinal);
-        switch (sinal) {
-            case "READ":    { rectControl.setFill(COR_VERDE); rectControl.setStroke(COR_VERDE);break; }
-            case "WRITE":   { rectControl.setFill(COR_VERMELHO); rectControl.setStroke(COR_VERMELHO);break; }
-            default:        { rectControl.setFill(COR_FUNDO); rectControl.setStroke(COR_CINZA);break; }
-        }
+        
+        if (sinal == "READ") {rectFlagRD.setFill(COR_VERDE);rectFlagRD.setStroke(COR_VERDE);}
+        else if (sinal == "WRITE") {rectFlagWR.setFill(COR_VERDE); rectFlagWR.setStroke(COR_VERDE);}
+
 
         String status = cpu.getstatusCiclo();
         labelStatus.setText(status);
@@ -169,6 +208,58 @@ private void imprimirConsoleMPC() {
         if (labelLatchB != null)  labelLatchB.setText(String.format("%04X", cpu.getLatchB()));
         if (labelALU != null)     labelALU.setText(String.format("%04X", cpu.getAluResult()));
         if (labelShifter != null) labelShifter.setText(String.format("%04X", cpu.getShifterResult()));
+        if (rectLatchA != null) rectLatchA.setStroke(COR_CINZA);
+        if (rectLatchB != null) rectLatchB.setStroke(COR_CINZA);
+        if (rectAMUX != null) rectAMUX.setStroke(COR_CINZA);
+        rectDecA.setStroke(COR_CINZA);
+        rectDecB.setStroke(COR_CINZA);
+        rectDecC.setStroke(COR_CINZA);
+
+        if ("SUB1".equals(status)) {
+            // No SUB1, ocorre a leitura dos registradores para os barramentos A e B
+            Rectangle rA = getRectByIndex(cpu.getAReg());
+            if (rA != null) rA.setStroke(COR_VERDE);
+            
+            Rectangle rB = getRectByIndex(cpu.getBReg());
+            if (rB != null) rB.setStroke(COR_VERDE);
+            
+            // Se acabou de ler um dado da memória RAM (O MBR é o recetor)
+            if ("READ".equals(sinal)) rectMBR.setStroke(COR_VERDE);
+            
+        } else if ("SUB2".equals(status)) {
+            // No SUB2, os Latches seguram os dados, e o AMUX encaminha para a ULA
+            if (rectDecA != null) rectDecA.setStroke(COR_VERDE);
+            if (rectDecB != null) rectDecB.setStroke(COR_VERDE);
+            if (rectLatchA != null) rectLatchA.setStroke(COR_VERDE);
+            if (rectLatchB != null) rectLatchB.setStroke(COR_VERDE);
+            if (rectAMUX != null) rectAMUX.setStroke(COR_VERDE);
+            if (polygonALU != null) polygonALU.setStroke(COR_VERDE);
+            if (rectShifter != null) rectShifter.setStroke(COR_VERDE);
+            
+            // O AMUX decide se a entrada A da ULA vem do Latch A (0) ou do MBR (1)
+            if (cpu.getAmuxCtrl() == 1) {
+                if (rectMBR != null) rectMBR.setStroke(COR_VERDE);
+            }
+            
+        } else if ("SUB3".equals(status)) {
+            if (polygonALU != null) polygonALU.setStroke(COR_CINZA);    
+            // No SUB3, os resultados viajam do Barramento C para o MAR e MBR
+            if (cpu.getMarCtrl() == 1) rectMAR.setStroke(COR_VERDE);
+            if (cpu.getMbrCtrl() == 1) rectMBR.setStroke(COR_VERDE);
+            
+        } else if ("SUB4".equals(status)) {
+            // No SUB4, ocorre a Escrita de volta no Banco de Registradores (Bus C)
+            if (rectDecC != null && cpu.getEncCtrl() == 1) rectDecC.setStroke(COR_VERDE);
+            if (cpu.getEncCtrl() == 1) {
+                Rectangle rC = getRectByIndex(cpu.getCReg());
+                if (rC != null) rC.setStroke(COR_VERDE);
+            }
+            // Se está a escrever os dados finais na RAM
+            if ("WRITE".equals(sinal)) {
+                rectMAR.setStroke(COR_VERDE);
+                rectMBR.setStroke(COR_VERDE);
+            }
+        }
     
         if (labelEstatisticas != null) {
             labelEstatisticas.setText(cpu.getTotalCiclos() + " Ciclos | " + cpu.getTotalSubciclos() + " Sub");
@@ -180,7 +271,7 @@ private void imprimirConsoleMPC() {
         if (label == null) return;
         int v = (valor == null) ? 0 : valor;
         label.setText(String.format("%04X", v & 0xFFFF));
-        if (rect != null) rect.setStroke(COR_CINZA);
+        rect.setStroke(COR_CINZA);
     }
     @FXML
     private void montarCodigo() {
