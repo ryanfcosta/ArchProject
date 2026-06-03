@@ -1,290 +1,262 @@
 package com.simumic;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-//import javafx.scene.layout.HBox;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import java.util.Map;
 
 public class PrimaryController {
-    // Labels XML do registrador
-    @FXML private Label labelPC, labelAC, labelIR, labelMAR, labelMBR;
-    @FXML private Rectangle rectPC, rectAC, rectIR, rectMAR, rectMBR, rectLV, rectSP;
-    
-    // Registradores da Pilha
-    @FXML private Label labelLV; 
-    @FXML private Label labelSP; 
 
-    // Labels XML das flags
+    @FXML private Label labelPC, labelAC, labelIR, labelMAR, labelMBR, labelLV, labelSP, labelTIR, labelB, labelC, labelD, labelE, labelF, labelAMASK, labelSMASK;
+    @FXML private Rectangle rectPC, rectAC, rectIR, rectMAR, rectMBR, rectLV, rectSP, rectTIR, rectB, rectC, rectD, rectE, rectF, rectAMASK, rectSMASK;
+    @FXML private Label labelZERO, labelP1, labelM1;
+    @FXML private Rectangle rectZERO, rectP1, rectM1;
+    @FXML private Label    labelFlagN, labelFlagZ;
     @FXML private Rectangle rectFlagN, rectFlagZ;
-    @FXML private Label labelFlagN, labelFlagZ;
-
-    // Barramento de Controle
+    @FXML private Label    labelControl;
     @FXML private Rectangle rectControl;
-    @FXML private Label labelControl;
+    @FXML private Label      labelMPC;
+    @FXML private ScrollPane scrollMPC;
+    @FXML private Label      labelStatus;
+    @FXML private Label labelBusA, labelBusB, labelBusC;
+    @FXML private Label labelLatchA, labelLatchB;
+    @FXML private Label labelALU, labelShifter;
 
-    // Input instrução e Botão
-    @FXML private TextField inputInstrucao;
-    @FXML private Button btnSubciclo; 
-    @FXML private TextField inputEndereco;
-    @FXML private Label labelPlaceholder;
+    @FXML private Button     btnSubciclo;
 
-    // MPC e Assembly
-    @FXML private Label labelStatus, labelMPC;
+    private CPU    cpu;
+    private Memoria ram;
 
-    // Instancia CPU e RAM
-    private Memoria ram = new Memoria();
-    private CPU cpu = new CPU(ram); 
+    @FXML private TextArea consoleMacro;
+    @FXML private Label labelAssemblerStatus;
+    @FXML private Label labelEstatisticas, labelInstr;
 
-    // Clock de 4 Fases (0 = Fetch, 1 = Decode, 2 = Memória, 3 = Execute)
-    private int estadoClock = 0;
+    // Cores
+    private static final Color COR_FUNDO     = Color.web("#000000");
+    private static final Color COR_CINZA     = Color.web("#d2d5d5");
+    private static final Color COR_VERDE     = Color.web("#077d29");
+    private static final Color COR_VERMELHO  = Color.web("#c3150e");
 
-    @FXML private void resetCpu() {
-        cpu.reset(); // Reseta a lógica interna da CPU
-        estadoClock = 0; // Reseta clock para a fase 0 (Fetch)
-        
-        // Volta o botão
-        btnSubciclo.setText("SUBCICLO 1: FETCH");
-        btnSubciclo.setStyle("-fx-background-color: #c23616; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
-        
-        attLabels(); 
+    @FXML
+    public void initialize() {
+        ram = new Memoria();
+        cpu = new CPU(ram);
+
+        if (scrollMPC != null) {
+            scrollMPC.heightProperty().addListener((obs, o, n) -> scrollMPC.setVvalue(1.0));
+        }
+
+        atualizarLabels();
     }
 
-    @FXML private void ramWrite() {
-        String endTrim = inputEndereco.getText().trim();
-        String instTrim = inputInstrucao.getText().trim(); // Pega e tira os espaços do input
-
-        // Escreve na RAM usando try catch para evitar diferente de 0/1
-        try {
-            int endDec = endTrim.isEmpty() ? 0 : Integer.parseInt(endTrim); // Grava no endereço (0 por padrão)
-            int dataDec = Integer.parseInt(instTrim, 2); // Converte para decimal
-
-            ram.write(endDec, dataDec); 
-            System.out.println("Sucesso! Memoria[" + endDec + "] = " + dataDec);
-            
-            labelControl.setText("WR: RAM[" + endDec + "]");
-            rectControl.setFill(Color.web("#e67e22"));
-        } catch (NumberFormatException e) {
-            System.out.println("Erro: Digite apenas 0 e 1.");
-        }
+    @FXML
+    private void resetCpu() {
+        cpu.reset();
+        btnSubciclo.setText("SUBCICLO 1");
+        btnSubciclo.setStyle("-fx-background-color: #c23616; -fx-text-fill: white; " + "-fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
+        atualizarLabels();
     }
 
     @FXML
     private void execSubciclo() {
-        if (estadoClock == 0) {
-            cpu.fetch();
-            btnSubciclo.setText("SUBCICLO 2: DECODE");
-            btnSubciclo.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
-            estadoClock = 1;
-
-        } else if (estadoClock == 1) {
-            cpu.decode();
-            btnSubciclo.setText("SUBCICLO 3: ACESSA MEMÓRIA");
-            btnSubciclo.setStyle("-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
-            estadoClock = 2;
-
-        } else if (estadoClock == 2) {
-            cpu.memoria();
-            btnSubciclo.setText("SUBCICLO 4: EXECUTE");
-            btnSubciclo.setStyle("-fx-background-color: #8e44ad; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
-            estadoClock = 3;
-
-        } else {
-            cpu.executeULA();
-            btnSubciclo.setText("SUBCICLO 1: FETCH");
-            btnSubciclo.setStyle("-fx-background-color: #c23616; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
-            estadoClock = 0;
-        }
-        
-        attLabels();
+        cpu.executarSubciclo();
+        atualizarLabels();
+        int sb = atualizarBotaoSubciclo();
+        if(sb == 1)
+            imprimirConsoleMPC();
     }
 
-
-    @FXML private void execCicloCompleto() {
-        if (estadoClock == 0) {
-            cpu.fetch(); cpu.decode(); cpu.memoria(); cpu.executeULA();
-        } else if (estadoClock == 1) {
-            cpu.decode(); cpu.memoria(); cpu.executeULA();
-        } else if (estadoClock == 2) {
-            cpu.memoria(); cpu.executeULA();
-        } else if (estadoClock == 3) {
-            cpu.executeULA();
-        }
-        
-        btnSubciclo.setText("SUBCICLO 1: FETCH");
-        btnSubciclo.setStyle("-fx-background-color: #c23616; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
-        estadoClock = 0;
-        
-        attLabels();
+    @FXML
+    private void execCicloCompleto() {
+        cpu.executarCicloCompleto();
+        atualizarLabels();
+        atualizarBotaoSubciclo();
+        imprimirConsoleMPC();
     }
 
-    private void attLabels() {
-        // Atualiza as labels dos registradores básicos
-        labelPC.setText(String.format("%04X", cpu.getPC()));
-        labelAC.setText(String.format("%04X", cpu.getAC()));
-        labelIR.setText(String.format("%04X", cpu.getIR()));
-        labelMAR.setText(String.format("%04X", cpu.getMAR()));
-        labelMBR.setText(String.format("%04X", cpu.getMBR()));
-        
-        // Atualiza as labels da Pilha 
-        if (labelLV != null) labelLV.setText(String.format("%04X", cpu.getLV()));
-        if (labelSP != null) labelSP.setText(String.format("%04X", cpu.getSP()));
-        
-        // Atualiza Barramento de Controle (Sinal RD/WR)
+private void imprimirConsoleMPC() {
+        if (labelMPC != null) {
+            String mpcMsg = cpu.getMsgMPC();
+            if (mpcMsg.startsWith("MPC 77") || mpcMsg.startsWith("MPC 27")) {
+                return; 
+            }
+
+            if (mpcMsg.startsWith("MPC 00")) {
+                mpcMsg = "\n" + mpcMsg;
+            }
+
+            String atual = labelMPC.getText();
+            labelMPC.setText(atual.equals("---") ? mpcMsg : atual + "\n" + mpcMsg);
+            
+            if (scrollMPC != null) scrollMPC.setVvalue(1.0); // Desce a barra de scroll automaticamente
+        }
+    }
+    private int atualizarBotaoSubciclo() {
+        int proximo = cpu.getSubcicloAtual();// estadoClock já aponta para o PRÓXIMO subciclo a ser executado
+        String[] nomes = {
+            "SUBCICLO 1",
+            "SUBCICLO 2",
+            "SUBCICLO 3",
+            "SUBCICLO 4"
+        };
+        String[] cores = { "#c23616", "#8e44ad", "#2980b9", "#27ae60" };
+        btnSubciclo.setText(nomes[proximo - 1]);
+        btnSubciclo.setStyle(
+            "-fx-background-color: " + cores[proximo - 1] + "; " +
+            "-fx-text-fill: white; -fx-font-weight: bold; " +
+            "-fx-font-size: 12; -fx-padding: 10 20;"
+        );
+
+        return proximo;
+    }
+
+    //  ATUALIZA TODAS AS LABELS DA UI
+    private void atualizarLabels() {
+        Map<String, Integer> regs = cpu.getRegs();
+
+        preencherReg(labelPC,  rectPC,  regs.get("PC"));
+        preencherReg(labelAC,  rectAC,  regs.get("AC"));
+        preencherReg(labelIR,  rectIR,  regs.get("IR"));
+        preencherReg(labelMAR, rectMAR, cpu.getMAR());
+        preencherReg(labelMBR, rectMBR, cpu.getMBR());
+        preencherReg(labelSP,  rectSP,  regs.get("SP"));
+        preencherReg(labelLV,  rectLV,  regs.get("LV"));
+        preencherReg(labelZERO,  rectZERO,  regs.get("ZERO"));
+        preencherReg(labelP1,    rectP1,    regs.get("P1"));
+        preencherReg(labelM1,    rectM1,    regs.get("M1"));
+        preencherReg(labelAMASK, rectAMASK, regs.get("AMASK"));
+        preencherReg(labelSMASK, rectSMASK, regs.get("SMASK"));
+        preencherReg(labelB,     rectB,     regs.get("B"));
+        preencherReg(labelC,     rectC,     regs.get("C"));
+        preencherReg(labelD,     rectD,     regs.get("D"));
+        preencherReg(labelE,     rectE,     regs.get("E"));
+        preencherReg(labelF,     rectF,     regs.get("F"));
+        if (labelTIR != null)
+            preencherReg(labelTIR, rectTIR, regs.get("TIR"));
+
+        boolean n = cpu.isFlagN();
+        boolean z = cpu.isFlagZ();
+        labelFlagN.setText(n ? "1" : "0");
+        labelFlagZ.setText(z ? "1" : "0");
+        rectFlagN.setFill(n ? COR_VERDE : COR_FUNDO);
+        rectFlagZ.setFill(z ? COR_VERDE : COR_FUNDO);
+
         String sinal = cpu.getSinalControle();
         labelControl.setText(sinal);
+        switch (sinal) {
+            case "READ":    { rectControl.setFill(COR_VERDE); rectControl.setStroke(COR_VERDE);break; }
+            case "WRITE":   { rectControl.setFill(COR_VERMELHO); rectControl.setStroke(COR_VERMELHO);break; }
+            default:        { rectControl.setFill(COR_FUNDO); rectControl.setStroke(COR_CINZA);break; }
+        }
+
+        String status = cpu.getstatusCiclo();
+        labelStatus.setText(status);
+        Color corStatus;
+        switch (status) {
+            case "SUB1":  corStatus = COR_VERDE; break;
+            case "SUB2":  corStatus = COR_VERDE; break;
+            case "SUB3" : corStatus = COR_VERDE; break;
+            case "SUB4" : corStatus = COR_VERDE; break; 
+            default:      corStatus = COR_CINZA; break;
+        };
+        labelStatus.setTextFill(corStatus);
+
+        if (labelBusA != null)    labelBusA.setText(String.format("%04X", cpu.getBusA()));
+        if (labelBusB != null)    labelBusB.setText(String.format("%04X", cpu.getBusB()));
+        if (labelBusC != null)    labelBusC.setText(String.format("%04X", cpu.getBusC()));
+        if (labelLatchA != null)  labelLatchA.setText(String.format("%04X", cpu.getLatchA()));
+        if (labelLatchB != null)  labelLatchB.setText(String.format("%04X", cpu.getLatchB()));
+        if (labelALU != null)     labelALU.setText(String.format("%04X", cpu.getAluResult()));
+        if (labelShifter != null) labelShifter.setText(String.format("%04X", cpu.getShifterResult()));
+    
+        if (labelEstatisticas != null) {
+            labelEstatisticas.setText(cpu.getTotalCiclos() + " Ciclos | " + cpu.getTotalSubciclos() + " Sub");
+            labelInstr.setText(cpu.getInstrucoesExecutadas() + " Instr. Executadas");
+        }
+    }
+
+    private void preencherReg(Label label, Rectangle rect, Integer valor) {
+        if (label == null) return;
+        int v = (valor == null) ? 0 : valor;
+        label.setText(String.format("%04X", v & 0xFFFF));
+        if (rect != null) rect.setStroke(COR_CINZA);
+    }
+    @FXML
+    private void montarCodigo() {
+        String texto = consoleMacro.getText();
+        if (texto == null || texto.trim().isEmpty()) {
+            labelAssemblerStatus.setTextFill(COR_VERMELHO);
+            labelAssemblerStatus.setText("Console vazio!");
+            return;
+        }
+
+        String[] linhas = texto.split("\\n");
+        int endereco = 0; // O programa sempre começa a gravar no endereço 0 da RAM
+        int sucesso = 0;
+
+        for (String linha : linhas) {
+            linha = linha.trim();
+            // Ignora linhas vazias ou comentários (iniciados com ponto e vírgula)
+            if (linha.isEmpty() || linha.startsWith(";")) continue; 
+
+            try {
+                int instrucaoMontada = parseLinha(linha);
+                ram.write(endereco, instrucaoMontada);
+                endereco++;
+                sucesso++;
+            } catch (Exception e) {
+                labelAssemblerStatus.setTextFill(COR_VERMELHO);
+                labelAssemblerStatus.setText("Erro de sintaxe na linha " + (sucesso + 1) + "!");
+                return;
+            }
+        }
+
+        labelAssemblerStatus.setTextFill(COR_VERDE);
+        labelAssemblerStatus.setText(sucesso + " instruções na RAM!");
+        System.out.println("Montagem concluída com sucesso.");
+    }
+
+    // Tradutor de Mnemônicos para Binário
+    private int parseLinha(String linha) {
+        String[] partes = linha.trim().split("\\s+");
+        String mnem = partes[0].toUpperCase();
+        int arg = 0;
+
+        if (partes.length > 1) arg = Integer.parseInt(partes[1]); // Se a instrução tiver argumento pega o valor
+
+        int opcode = 0;
         
-        if (sinal.equals("READ")) {
-            rectControl.setFill(Color.web("#2ecc71")); // Verde
-            rectControl.setStroke(Color.web("#27ae60"));
-        } else if (sinal.equals("WRITE")) {
-            rectControl.setFill(Color.web("#e74c3c")); // Vermelho
-            rectControl.setStroke(Color.web("#c0392b"));
-        } else {
-            rectControl.setFill(Color.web("#34495e")); // Cinza (IDLE)
-            rectControl.setStroke(Color.web("#7f8c8d"));
+        switch (mnem) {
+            case "LODD": opcode = 0x0000; break;
+            case "STOD": opcode = 0x1000; break;
+            case "ADDD": opcode = 0x2000; break;
+            case "SUBD": opcode = 0x3000; break;
+            case "JPOS": opcode = 0x4000; break;
+            case "JZER": opcode = 0x5000; break;
+            case "JUMP": opcode = 0x6000; break;
+            case "LOCO": opcode = 0x7000; break;
+            case "LODL": opcode = 0x8000; break;
+            case "STOL": opcode = 0x9000; break;
+            case "ADDL": opcode = 0xA000; break;
+            case "SUBL": opcode = 0xB000; break;
+            case "JNEG": opcode = 0xC000; break;
+            case "JNZE": opcode = 0xD000; break;
+            case "CALL": opcode = 0xE000; break;
+            // Família Estendida (Opcode 15 = 1111)
+            case "PSHI": opcode = 0xF000; break; // 1111 000
+            case "POPI": opcode = 0xF200; break; // 1111 001
+            case "PUSH": opcode = 0xF400; break; // 1111 010
+            case "POP":  opcode = 0xF600; break; // 1111 011
+            case "RETN": opcode = 0xF800; break; // 1111 100
+            case "SWAP": opcode = 0xFA00; break; // 1111 101
+            case "INSP": opcode = 0xFC00; break; // 1111 110
+            case "DESP": opcode = 0xFE00; break; // 1111 111
+            default: 
+                throw new IllegalArgumentException("Mnemônico desconhecido: " + mnem);
         }
 
-        // Container flag N
-        if (cpu.isFlagN()) {
-            labelFlagN.setText("1");
-            rectFlagN.setFill(Color.web("#e74c3c")); 
-            rectFlagN.setStroke(Color.web("#c0392b"));
-        } else {
-            labelFlagN.setText("0");
-            rectFlagN.setFill(Color.web("#34495e")); 
-            rectFlagN.setStroke(Color.web("#7f8c8d"));
-        }
-
-        // Container flag Z 
-        if (rectFlagZ != null && labelFlagZ != null) {
-            if (cpu.isFlagZ()) {
-                labelFlagZ.setText("1");
-                rectFlagZ.setFill(Color.web("#3498db"));
-                rectFlagZ.setStroke(Color.web("#2980b9"));
-            } else {
-                labelFlagZ.setText("0");
-                rectFlagZ.setFill(Color.web("#34495e")); 
-                rectFlagZ.setStroke(Color.web("#7f8c8d"));
-            }
-        }
-
-        // Atualiza status, mpc e preenche registrador
-        labelStatus.setText(cpu.getstatusCiclo());
-        // Label MPC vai ser um console que salva o MPC anterior
-        labelMPC.setText(cpu.getMsgMPC());
-        fillReg();
-        System.out.println(cpu.getMPC());
+        // Funde o Opcode (4 bits mais significativos) com o Argumento (12 bits) usando OR Lógico
+        return opcode | (arg & 0x0FFF);
     }
-    
-    private void fillReg() {
-        Color corFundoApagado = Color.web("#2c3e50");
-        Color corAmarelo = Color.web("#fbc531"); // PC, IR
-        Color corVerde   = Color.web("#2ecc71"); // MAR
-        Color corAzul    = Color.web("#3498db"); // MBR
-        Color corRoxo    = Color.web("#9b59b6"); // AC
-        Color corRosa    = Color.web("#e84393"); // LV, SP
-
-        // Apaga
-        rectMAR.setFill(corFundoApagado); labelMAR.setTextFill(corVerde);
-        rectPC.setFill(corFundoApagado);  labelPC.setTextFill(corAmarelo);
-        rectMBR.setFill(corFundoApagado); labelMBR.setTextFill(corAzul);
-        rectIR.setFill(corFundoApagado);  labelIR.setTextFill(corAmarelo);
-        rectAC.setFill(corFundoApagado);  labelAC.setTextFill(corRoxo);
-        
-        if (rectLV != null) rectLV.setFill(corFundoApagado);
-        if (labelLV != null) labelLV.setTextFill(corRosa);
-        if (rectSP != null) rectSP.setFill(corFundoApagado);
-        if (labelSP != null) labelSP.setTextFill(corRosa);
-
-        // Acende
-        if (estadoClock == 1) { 
-            // FETCH 
-            rectPC.setFill(corAmarelo); labelPC.setTextFill(Color.WHITE);
-            rectMAR.setFill(corVerde);  labelMAR.setTextFill(Color.WHITE);
-            rectMBR.setFill(corAzul);   labelMBR.setTextFill(Color.WHITE);
-            rectIR.setFill(corAmarelo); labelIR.setTextFill(Color.WHITE);
-        } 
-        else if (estadoClock == 2) { 
-            // DECODE
-            rectIR.setFill(corAmarelo); labelIR.setTextFill(Color.WHITE);
-        } 
-        else if (estadoClock == 3) { 
-            // MEMÓRIA
-            rectMAR.setFill(corVerde); labelMAR.setTextFill(Color.WHITE);
-            rectMBR.setFill(corAzul);  labelMBR.setTextFill(Color.WHITE);
-            
-            // Instrução de pilha, acende o LV ou SP
-            int op = cpu.getOpcodeAtual();
-            if (op == 8 || op == 9 || op == 10 || op == 11) { 
-                if (rectLV != null) rectLV.setFill(corRosa);
-                if (labelLV != null) labelLV.setTextFill(Color.WHITE);
-            } else if (op == 14) { // CALL
-                if (rectSP != null) rectSP.setFill(corRosa);
-                if (labelSP != null) labelSP.setTextFill(Color.WHITE);
-            }
-        } 
-        else if (estadoClock == 0) { 
-            // EXECUTE
-            rectAC.setFill(corRoxo); labelAC.setTextFill(Color.WHITE);
-            
-            // JUMP mexe PC
-            int op = cpu.getOpcodeAtual();
-            if (op >= 4 && op <= 6 || op >= 12 && op <= 14) {
-                rectPC.setFill(corAmarelo); labelPC.setTextFill(Color.WHITE);
-            }
-        }
-    }
-
-    // Placeholder/Ghost text
-    @FXML public void initialize() {
-        inputInstrucao.textProperty().addListener((observable, oldValue, newValue) -> {
-            int tamanho = newValue.length();
-            
-            if (tamanho == 0) {
-                labelPlaceholder.setText("0000000000000000");
-                labelPlaceholder.setTextFill(Color.web("#bdc3c7")); 
-            } else if (tamanho < 16) {
-                // Append vazio
-                StringBuilder espacos = new StringBuilder();
-                for (int i = 0; i < tamanho; i++) espacos.append(" ");
-                // Zeros que faltam
-                StringBuilder zeros = new StringBuilder();
-                for (int i = 0; i < 16 - tamanho; i++) zeros.append("0");
-                
-                labelPlaceholder.setText(espacos.toString() + zeros.toString());
-                labelPlaceholder.setTextFill(Color.web("#f39c12")); 
-            } else {
-                labelPlaceholder.setText(""); 
-            }
-        });
-    }
-
-    // Botão preenche opcode
-    @FXML private void btnLODD() { inputInstrucao.setText("0000"); inputInstrucao.requestFocus(); }
-    @FXML private void btnSTOD() { inputInstrucao.setText("0001"); inputInstrucao.requestFocus(); }
-    @FXML private void btnADDD() { inputInstrucao.setText("0010"); inputInstrucao.requestFocus(); }
-    @FXML private void btnSUBD() { inputInstrucao.setText("0011"); inputInstrucao.requestFocus(); }
-    @FXML private void btnJPOS() { inputInstrucao.setText("0100"); inputInstrucao.requestFocus(); }
-    @FXML private void btnJZER() { inputInstrucao.setText("0101"); inputInstrucao.requestFocus(); }
-    @FXML private void btnJUMP() { inputInstrucao.setText("0110"); inputInstrucao.requestFocus(); }
-    @FXML private void btnLOCO() { inputInstrucao.setText("0111"); inputInstrucao.requestFocus(); }
-    
-    @FXML private void btnLODL() { inputInstrucao.setText("1000"); inputInstrucao.requestFocus(); }
-    @FXML private void btnSTOL() { inputInstrucao.setText("1001"); inputInstrucao.requestFocus(); }
-    @FXML private void btnADDL() { inputInstrucao.setText("1010"); inputInstrucao.requestFocus(); }
-    @FXML private void btnSUBL() { inputInstrucao.setText("1011"); inputInstrucao.requestFocus(); }
-    @FXML private void btnJNEG() { inputInstrucao.setText("1100"); inputInstrucao.requestFocus(); }
-    @FXML private void btnJNZE() { inputInstrucao.setText("1101"); inputInstrucao.requestFocus(); }
-    @FXML private void btnCALL() { inputInstrucao.setText("1110"); inputInstrucao.requestFocus(); }
-    
-    @FXML private void btnPSHI() { inputInstrucao.setText("1111000"); inputInstrucao.requestFocus(); }
-    @FXML private void btnPOPI() { inputInstrucao.setText("1111001"); inputInstrucao.requestFocus(); }
-    @FXML private void btnPUSH() { inputInstrucao.setText("1111010"); inputInstrucao.requestFocus(); }
-    @FXML private void btnPOP()  { inputInstrucao.setText("1111011"); inputInstrucao.requestFocus(); }
-    @FXML private void btnRETN() { inputInstrucao.setText("1111100"); inputInstrucao.requestFocus(); }
-    @FXML private void btnSWAP() { inputInstrucao.setText("1111101"); inputInstrucao.requestFocus(); }
-    @FXML private void btnINSP() { inputInstrucao.setText("1111110"); inputInstrucao.requestFocus(); }
 }
