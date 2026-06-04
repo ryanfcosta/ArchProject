@@ -1,12 +1,20 @@
 package com.simumic;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
-import java.nio.charset.CodingErrorAction;
+import java.io.IOException;
 import java.util.Map;
 
 public class PrimaryController {
@@ -38,10 +46,17 @@ public class PrimaryController {
     @FXML private ScrollPane scrollMPC;
     @FXML private Label labelMPC, labelAssemblerStatus, labelEstatisticas, labelInstr;
     @FXML private Button btnSubciclo;
-
+    // Botão e spinner para execução automática
+    @FXML private Button btnAutoRun;
+    @FXML private Spinner<Integer> spinnerDelay;
 
     private CPU cpu;
     private Memoria ram;
+
+    // Timeline para o auto run — roda um ciclo completo a cada N ms
+    private Timeline autoRunTimeline;
+    // Referência à janela de memória, para não abrir duplicata
+    private Stage janelaMemoria;
 
     // CORES
     private static final Color COR_FUNDO    = Color.web("#000000");
@@ -61,11 +76,17 @@ public class PrimaryController {
         atualizarLabels();
     }
 
-    @FXML
+@FXML
     private void resetCpu() {
         cpu.reset();
         btnSubciclo.setText("SUBCICLO 1");
-        btnSubciclo.setStyle("-fx-background-color: #c23616; -fx-text-fill: white; " + "-fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;");
+        
+        btnSubciclo.setStyle(
+            "-fx-background-color: linear-gradient(to right, #077d29 25%, #000000 25%); " +
+            "-fx-text-fill: white; -fx-font-weight: bold; " +
+            "-fx-font-size: 12; -fx-padding: 10 20; -fx-background-radius: 0;"
+        );
+        
         atualizarLabels();
     }
 
@@ -88,6 +109,83 @@ public class PrimaryController {
         imprimirConsoleMPC();
     }
 
+
+    @FXML
+    private void toggleAutoRun() {
+        if (autoRunTimeline != null && autoRunTimeline.getStatus() == Animation.Status.RUNNING) {
+            // ── PAUSAR ────────────────────────────────────────────────────────
+            autoRunTimeline.stop();
+            autoRunTimeline = null;
+            btnAutoRun.setText("▶  AUTO RUN");
+            btnAutoRun.setStyle(
+                "-fx-background-color: #1a5276; -fx-text-fill: white; " +
+                "-fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-background-radius: 0;"
+            );
+        } else {
+            int delay = spinnerDelay.getValue(); // ms entre cada ciclo
+            autoRunTimeline = new Timeline(
+                new KeyFrame(Duration.millis(delay), e -> {
+                    execSubciclo();
+                    atualizarLabels();
+                    atualizarBotaoSubciclo();
+                    
+                    // Atualiza a janela de memória se estiver aberta
+                    if (janelaMemoria != null && janelaMemoria.isShowing()) {
+                        Object ctrl = janelaMemoria.getScene().getUserData();
+                        if (ctrl instanceof SecondaryController) {
+                            ((SecondaryController) ctrl).atualizar();
+                        }
+                    }
+                })
+            );
+            autoRunTimeline.setCycleCount(Timeline.INDEFINITE);
+            autoRunTimeline.play();
+            btnAutoRun.setText("⏹  PARAR");
+            btnAutoRun.setStyle(
+                "-fx-background-color: #922b21; -fx-text-fill: white; " +
+                "-fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-background-radius: 0;"
+            );
+        }
+    }
+
+    // ─── JANELA DE MEMÓRIA ────────────────────────────────────────────────────
+    // Abre (ou traz ao foco) uma janela secundária com o dump da RAM.
+    // Passa a referência da Memoria para o SecondaryController via setter,
+    // evitando acoplamento direto entre controladores.
+    @FXML
+    private void abrirJanelaMemoria() {
+        // Se já está aberta, só traz para frente
+        if (janelaMemoria != null && janelaMemoria.isShowing()) {
+            janelaMemoria.toFront();
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/com/simumic/secondary.fxml")
+            );
+            Parent root = loader.load();
+
+            // Injeta a RAM no SecondaryController
+            SecondaryController ctrl = loader.getController();
+            ctrl.setMemoria(ram);
+            ctrl.atualizar();
+
+            // Guarda referência ao controller na cena para o auto run atualizá-la
+            Scene cena = new Scene(root, 900, 600);
+            cena.setUserData(ctrl);
+
+            janelaMemoria = new Stage();
+            janelaMemoria.setTitle("Inspetor de Memória RAM — SimuMIC");
+            janelaMemoria.setScene(cena);
+            janelaMemoria.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            labelAssemblerStatus.setTextFill(COR_VERMELHO);
+            labelAssemblerStatus.setText("Erro ao abrir janela de memória.");
+        }
+    }
+
 private void imprimirConsoleMPC() {
         if (labelMPC != null) {
             String mpcMsg = cpu.getMsgMPC();
@@ -105,20 +203,26 @@ private void imprimirConsoleMPC() {
             if (scrollMPC != null) scrollMPC.setVvalue(1.0); // Desce a barra de scroll automaticamente
         }
     }
-    private int atualizarBotaoSubciclo() {
-        int proximo = cpu.getSubcicloAtual();// estadoClock já aponta para o PRÓXIMO subciclo a ser executado
+private int atualizarBotaoSubciclo() {
+        int proximo = cpu.getSubcicloAtual();
         String[] nomes = {
             "SUBCICLO 1",
             "SUBCICLO 2",
             "SUBCICLO 3",
             "SUBCICLO 4"
         };
-        String[] cores = { "#c23616", "#8e44ad", "#2980b9", "#27ae60" };
+        int porcentagem = proximo * 25;
+        
+        String gradient = String.format(
+            "linear-gradient(to right, #077d29 %d%%, #333333 %d%%)", 
+            porcentagem, porcentagem
+        );
+
         btnSubciclo.setText(nomes[proximo - 1]);
         btnSubciclo.setStyle(
-            "-fx-background-color: " + cores[proximo - 1] + "; " +
+            "-fx-background-color: " + gradient + "; " +
             "-fx-text-fill: white; -fx-font-weight: bold; " +
-            "-fx-font-size: 12; -fx-padding: 10 20;"
+            "-fx-font-size: 12; -fx-padding: 10 20; -fx-background-radius: 0;"
         );
 
         return proximo;
