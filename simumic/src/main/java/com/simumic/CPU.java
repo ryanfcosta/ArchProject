@@ -360,6 +360,7 @@ private static int[][] buildControlStore() {
                 
         // Captura de dado de leitura anterior
         if (rdPending) {
+            System.out.println("É PRA LERRRR");
             mbr = ram.read(mar) & 0xFFFF;   // MBR ← RAM[MAR]
             rdPending = false;
             sinalControle = "READ";
@@ -441,6 +442,7 @@ private static int[][] buildControlStore() {
 
         // Completa escrita na memória (RAM[MAR] ← MBR)
         if (wrPending) {
+        System.out.println("É PRA ESCREVER");
             ram.write(mar, mbr & 0xFFFF);
             wrPending = false;
             sinalControle = "WRITE";

@@ -245,7 +245,7 @@
                             <Label text="Console Macroinstruções" textFill="#bdc3c7" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
                             <TextArea fx:id="consoleMacro" prefWidth="380.0" prefHeight="130.0" style="-fx-font-family: 'Monospaced'; -fx-control-inner-background: #000000; -fx-text-fill: white;" promptText="Exemplo:&#10;LOCO 15&#10;STOD 50&#10;JUMP 0"/>
                             <HBox spacing="10" alignment="CENTER_LEFT">
-                                <Button text="Montar e Gravar na RAM" onAction="#montarCodigo" style="-fx-background-color: #077d29; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                                <Button text="Montar e Gravar na RAM" onAction="#montarCodigo" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-color: #077d29; -fx-border-width: 2;"/>
                                 <Label fx:id="labelAssemblerStatus" text="Aguardando código..." textFill="#d2d5d5" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
                             </HBox>
                         </VBox>
@@ -262,7 +262,7 @@
                                 <Label fx:id="labelInstr" text="0 Instr" textFill="#bdc3c7"><font><Font name="Monospaced" size="11.0"/></font></Label>
                             </VBox>
                             
-                            <Button text="RESET" onAction="#resetCpu" prefHeight="55.0" prefWidth="100.0" style="-fx-background-color: #077d29; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-background-radius: 0;"/>
+                            <Button text="RESET" onAction="#resetCpu" prefHeight="55.0" prefWidth="100.0" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-border-color: #077d29; -fx-border-width: 2;"/>
                         </HBox>
 
                         <VBox alignment="TOP_LEFT" prefWidth="400.0" prefHeight="180.0" style="-fx-padding: 10; -fx-border-color: #077d29;">
@@ -275,16 +275,18 @@
                         </VBox>
 
                         <VBox alignment="CENTER" spacing="10.0" style="-fx-padding: 15;">
-                            <Button fx:id="btnSubciclo" prefWidth="380.0" text="SUBCICLO 1" onAction="#execSubciclo" style="-fx-background-color: #077d29; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-background-radius: 0;"/>
-                            <Button text="CICLO COMPLETO" prefWidth="380.0" onAction="#execCicloCompleto" style="-fx-background-color: #077d29; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-background-radius: 0;"/>
+                            <Button fx:id="btnSubciclo" prefWidth="380.0" text="SUBCICLO 1" onAction="#execSubciclo" style="-fx-background-color: linear-gradient(to right, #077d29 25%, transparent 25%); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-border-color: #077d29; -fx-border-width: 2;"/>
+                            <Button text="CICLO COMPLETO" prefWidth="380.0" onAction="#execCicloCompleto" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-border-color: #077d29; -fx-border-width: 2;"/>
                             <HBox spacing="8.0" alignment="CENTER">
-                                <Button fx:id="btnAutoRun" prefWidth="230.0" text="▶ AUTO RUN" onAction="#toggleAutoRun" style="-fx-background-color: #077d29; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-background-radius: 0;"/>
-                                <VBox alignment="CENTER" spacing="2.0">
-                                    <Label text="Delay (ms)" textFill="#bdc3c7" style="-fx-font-size: 10;"/>
-                                    <Spinner fx:id="spinnerDelay" prefWidth="130.0" min="50" max="2000" initialValue="300" style="-fx-background-color: #000; -fx-text-fill: white; -fx-background-radius: 0;"/>
-                                </VBox>
+                                <Button fx:id="btnAutoRun" prefWidth="230.0" text="▶ AUTO RUN" onAction="#toggleAutoRun" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-border-color: #077d29; -fx-border-width: 2;"/>
+                                
+                                <HBox alignment="CENTER" prefWidth="142.0" prefHeight="39.0" style="-fx-border-color: #077d29; -fx-border-width: 2; -fx-background-color: #000000;">
+                                    <TextField fx:id="txtDelay" text="300" prefWidth="70.0" alignment="CENTER_RIGHT" style="-fx-background-color: #000000; -fx-control-inner-background: #000000; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12;"/>
+                                    <Label text="ms" textFill="#bdc3c7" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-padding: 0 10 0 2;"/>
+                                </HBox>
+
                             </HBox>
-                            <Button text="VER MEMÓRIA RAM" prefWidth="380.0" onAction="#abrirJanelaMemoria" style="-fx-background-color: #077d29; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-background-radius: 0;"/>
+                            <Button text="VER MEMÓRIA RAM" prefWidth="380.0" onAction="#abrirJanelaMemoria" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-border-color: #077d29; -fx-border-width: 2;"/>
                         </VBox>
                     </children>
                 </VBox>

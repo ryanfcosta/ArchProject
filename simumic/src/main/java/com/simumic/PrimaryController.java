@@ -48,7 +48,7 @@ public class PrimaryController {
     @FXML private Button btnSubciclo;
     // Botão e spinner para execução automática
     @FXML private Button btnAutoRun;
-    @FXML private Spinner<Integer> spinnerDelay;
+   @FXML private TextField txtDelay;
 
     private CPU cpu;
     private Memoria ram;
@@ -113,17 +113,16 @@ public class PrimaryController {
     @FXML
     private void toggleAutoRun() {
         if (autoRunTimeline != null && autoRunTimeline.getStatus() == Animation.Status.RUNNING) {
-            // ── PAUSAR ────────────────────────────────────────────────────────
             autoRunTimeline.stop();
             autoRunTimeline = null;
             btnAutoRun.setText("▶  AUTO RUN");
             btnAutoRun.setStyle(
-                "-fx-background-color: #1a5276; -fx-text-fill: white; " +
+                "-fx-background-color: #00000000; -fx-text-fill: white; " +
                 "-fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-background-radius: 0;"
             );
         } else {
-            int delay = spinnerDelay.getValue(); // ms entre cada ciclo
-            autoRunTimeline = new Timeline(
+                int delay = Integer.parseInt(txtDelay.getText());            
+                autoRunTimeline = new Timeline(
                 new KeyFrame(Duration.millis(delay), e -> {
                     execSubciclo();
                     atualizarLabels();
@@ -148,10 +147,6 @@ public class PrimaryController {
         }
     }
 
-    // ─── JANELA DE MEMÓRIA ────────────────────────────────────────────────────
-    // Abre (ou traz ao foco) uma janela secundária com o dump da RAM.
-    // Passa a referência da Memoria para o SecondaryController via setter,
-    // evitando acoplamento direto entre controladores.
     @FXML
     private void abrirJanelaMemoria() {
         // Se já está aberta, só traz para frente
@@ -204,17 +199,18 @@ private void imprimirConsoleMPC() {
         }
     }
 private int atualizarBotaoSubciclo() {
-        int proximo = cpu.getSubcicloAtual();
+        int proximo = cpu.getSubcicloAtual(); 
         String[] nomes = {
             "SUBCICLO 1",
             "SUBCICLO 2",
             "SUBCICLO 3",
             "SUBCICLO 4"
         };
+        
         int porcentagem = proximo * 25;
         
         String gradient = String.format(
-            "linear-gradient(to right, #077d29 %d%%, #333333 %d%%)", 
+            "linear-gradient(to right, #077d29 %d%%, #000000 %d%%)", 
             porcentagem, porcentagem
         );
 
@@ -222,7 +218,8 @@ private int atualizarBotaoSubciclo() {
         btnSubciclo.setStyle(
             "-fx-background-color: " + gradient + "; " +
             "-fx-text-fill: white; -fx-font-weight: bold; " +
-            "-fx-font-size: 12; -fx-padding: 10 20; -fx-background-radius: 0;"
+            "-fx-font-size: 12; -fx-padding: 10 20; " +
+            "-fx-border-color: #077d29; -fx-border-width: 2;"
         );
 
         return proximo;
