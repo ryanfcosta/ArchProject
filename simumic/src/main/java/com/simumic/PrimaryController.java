@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -19,7 +20,7 @@ import java.util.Map;
 
 public class PrimaryController {
 
-@FXML private Label labelPC, labelAC, labelSP, labelIR, labelTIR, labelLV, 
+    @FXML private Label labelPC, labelAC, labelSP, labelIR, labelTIR, labelLV, 
                         labelB, labelC, labelD, labelE, labelF, 
                         labelAMASK, labelSMASK, labelMAR, labelMBR, 
                         labelZERO, labelP1, labelM1;
@@ -41,14 +42,21 @@ public class PrimaryController {
     
     @FXML private Rectangle rectDecA, rectDecB, rectDecC;
 
-    // I/O
+    @FXML private Line lBusC1, lBusC2, lBusC3, lBusA1, lBusA2, lBusA3, lBusB1, lBusB2,
+                       lMem1, lMem2, lMarB, lMbrC, lRegC, lAmux1, lAmux2,
+                       lAluA, lAluB, lShifter, lCtrl1, lCtrl2, lCtrl3, lCtrl4,
+                       lCond, lFlags1, lFlags2, lAddr1, lAddr2, lAddr3, lAddr4, lAddr5,
+                       lDecA, lDecB, lDecC;
+
+    private Line[] todasLinhas;
+
     @FXML private TextArea consoleMacro;
     @FXML private ScrollPane scrollMPC;
     @FXML private Label labelMPC, labelAssemblerStatus, labelEstatisticas, labelInstr;
     @FXML private Button btnSubciclo;
     // Botão e spinner para execução automática
     @FXML private Button btnAutoRun;
-   @FXML private TextField txtDelay;
+    @FXML private TextField txtDelay;
 
     private CPU cpu;
     private Memoria ram;
@@ -72,6 +80,14 @@ public class PrimaryController {
         if (scrollMPC != null) {
             scrollMPC.heightProperty().addListener((obs, o, n) -> scrollMPC.setVvalue(1.0));
         }
+
+        todasLinhas = new Line[] {
+            lBusC1, lBusC2, lBusC3, lBusA1, lBusA2, lBusA3, lBusB1, lBusB2,
+            lMem1, lMem2, lMarB, lMbrC, lRegC, lAmux1, lAmux2,
+            lAluA, lAluB, lShifter, lCtrl1, lCtrl2, lCtrl3, lCtrl4,
+            lCond, lFlags1, lFlags2, lAddr1, lAddr2, lAddr3, lAddr4, lAddr5,
+            lDecA, lDecB, lDecC
+        };
 
         atualizarLabels();
     }
@@ -139,7 +155,7 @@ public class PrimaryController {
             );
             autoRunTimeline.setCycleCount(Timeline.INDEFINITE);
             autoRunTimeline.play();
-            btnAutoRun.setText("⏹  PARAR");
+            btnAutoRun.setText("⏹ PARAR");
             btnAutoRun.setStyle(
                 "-fx-background-color: #922b21; -fx-text-fill: white; " +
                 "-fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-background-radius: 0;"
@@ -181,7 +197,7 @@ public class PrimaryController {
         }
     }
 
-private void imprimirConsoleMPC() {
+    private void imprimirConsoleMPC() {
         if (labelMPC != null) {
             String mpcMsg = cpu.getMsgMPC();
             if (mpcMsg.startsWith("MPC 77") || mpcMsg.startsWith("MPC 27")) {
@@ -195,7 +211,7 @@ private void imprimirConsoleMPC() {
             String atual = labelMPC.getText();
             labelMPC.setText(atual.equals("---") ? mpcMsg : atual + "\n" + mpcMsg);
             
-            if (scrollMPC != null) scrollMPC.setVvalue(1.0); // Desce a barra de scroll automaticamente
+            if (scrollMPC != null) scrollMPC.setVvalue(1.0);
         }
     }
 private int atualizarBotaoSubciclo() {
@@ -247,7 +263,23 @@ private int atualizarBotaoSubciclo() {
         }
     }
 
-    //  ATUALIZA TODAS AS LABELS DA UI
+    private void acenderBusA() {
+        if (lBusA1 != null) lBusA1.setStroke(COR_VERDE);
+        if (lBusA2 != null) lBusA2.setStroke(COR_VERDE);
+        if (lBusA3 != null) lBusA3.setStroke(COR_VERDE);
+    }
+
+    private void acenderBusB() {
+        if (lBusB1 != null) lBusB1.setStroke(COR_VERDE);
+        if (lBusB2 != null) lBusB2.setStroke(COR_VERDE);
+    }
+
+    private void acenderBusC() {
+        if (lBusC1 != null) lBusC1.setStroke(COR_VERDE);
+        if (lBusC2 != null) lBusC2.setStroke(COR_VERDE);
+        if (lBusC3 != null) lBusC3.setStroke(COR_VERDE);
+    }
+
     private void atualizarLabels() {
         Map<String, Integer> regs = cpu.getRegs();
 
@@ -273,6 +305,11 @@ private int atualizarBotaoSubciclo() {
         polygonALU.setStroke(COR_CINZA);
         rectShifter.setStroke(COR_CINZA);
 
+        if (todasLinhas != null) {
+            for (Line l : todasLinhas) {
+                if (l != null) l.setStroke(COR_CINZA);
+            }
+        }
 
         boolean n = cpu.isFlagN();
         boolean z = cpu.isFlagZ();
@@ -359,7 +396,21 @@ private int atualizarBotaoSubciclo() {
             if ("WRITE".equals(sinal)) {
                 rectMAR.setStroke(COR_VERDE);
                 rectMBR.setStroke(COR_VERDE);
+                if (lMem1 != null) lMem1.setStroke(COR_VERDE);
+                if (lMem2 != null) lMem2.setStroke(COR_VERDE);
             }
+            
+            if (lCtrl1 != null) lCtrl1.setStroke(COR_VERDE);
+            if (lCtrl2 != null) lCtrl2.setStroke(COR_VERDE);
+            if (lCtrl3 != null) lCtrl3.setStroke(COR_VERDE);
+            if (lCtrl4 != null) lCtrl4.setStroke(COR_VERDE);
+            if (lCond != null) lCond.setStroke(COR_VERDE);
+            if (lFlags2 != null) lFlags2.setStroke(COR_VERDE);
+            if (lAddr1 != null) lAddr1.setStroke(COR_VERDE);
+            if (lAddr2 != null) lAddr2.setStroke(COR_VERDE);
+            if (lAddr3 != null) lAddr3.setStroke(COR_VERDE);
+            if (lAddr4 != null) lAddr4.setStroke(COR_VERDE);
+            if (lAddr5 != null) lAddr5.setStroke(COR_VERDE);
         }
     
         if (labelEstatisticas != null) {

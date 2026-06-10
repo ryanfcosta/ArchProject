@@ -235,10 +235,10 @@ private static int[][] buildControlStore() {
         s[30] = "alu:=tir; if n then goto 33;";
         s[31] = "a:=ir + sp;";
         s[32] = "mar:=a; rd; goto 7;";
-        s[33] = "alu:=tir; if n then goto 38;";
-        s[34] = "a:=ir + sp;";
-        s[35] = "mar:=a; mbr:=ac; wr; goto 10;";
-        s[36] = "alu:=tir; if n then goto 38;";
+        s[33] = "a:=ir + sp;";
+        s[34] = "mar:=a; mbr:=ac; wr; goto 10;";
+        s[35] = "alu:=tir; if n then goto 38;";
+        s[36] = "a:=ir + sp;";
         s[37] = "mar:=a; rd; goto 13;";
         s[38] = "mar:=a; rd; goto 16;";
         s[39] = "tir:=lshift(tir); if n then goto 46;";
