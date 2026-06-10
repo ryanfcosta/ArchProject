@@ -4,7 +4,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-
+import javafx.scene.layout.HBox;
+import javafx.geometry.Pos; // IMPORTANTE PARA O ALINHAMENTO
 
 public class SecondaryController {
 
@@ -16,7 +17,7 @@ public class SecondaryController {
     @FXML private Label             labelTotalExibido;
     @FXML private Label             labelEnderecoAtual;
 
-    private Memoria memoria; // ram compartilhada
+    private Memoria memoria; 
 
     private int  filtroInicio = 0;
     private int  filtroFim    = 4095;
@@ -47,7 +48,6 @@ public class SecondaryController {
             String sf = txtRangeFim.getText().trim();
             filtroInicio = si.isEmpty() ? 0    : Integer.parseInt(si);
             filtroFim    = sf.isEmpty() ? 4095 : Integer.parseInt(sf);
-            // Clamp
             filtroInicio = Math.max(0,    Math.min(4095, filtroInicio));
             filtroFim    = Math.max(0,    Math.min(4095, filtroFim));
             if (filtroInicio > filtroFim) { int tmp = filtroInicio; filtroInicio = filtroFim; filtroFim = tmp; }
@@ -57,7 +57,6 @@ public class SecondaryController {
 
         carregarLista(filtroInicio, filtroFim, soNaoZero);
     }
-
 
     @FXML
     private void limparFiltro() {
@@ -70,20 +69,17 @@ public class SecondaryController {
         carregarLista(0, 4095, false);
     }
 
-
     @FXML
     private void irParaEndereco() {
         try {
             int end = Integer.parseInt(txtBusca.getText().trim());
             end = Math.max(0, Math.min(4095, end));
-            // Destaca o endereço no rodapé
             int valor = memoria.read(end);
             labelEnderecoAtual.setText(
                 String.format("► [%04d]  %04X  %s", end, valor, decodificarMnemonico(valor))
             );
-            // Seleciona a linha correspondente na lista (se estiver visível)
             ObservableList<String> items = listaMemoria.getItems();
-            String prefixo = String.format("[%04d]", end);
+            String prefixo = String.format("[%04d];", end);
             for (int i = 0; i < items.size(); i++) {
                 if (items.get(i).startsWith(prefixo)) {
                     listaMemoria.scrollTo(i);
@@ -96,7 +92,6 @@ public class SecondaryController {
         }
     }
 
-
     private void carregarLista(int inicio, int fim, boolean apenasNaoZero) {
         ObservableList<String> linhas = FXCollections.observableArrayList();
 
@@ -104,9 +99,8 @@ public class SecondaryController {
             int valor = memoria.read(i);
             if (apenasNaoZero && valor == 0) continue;
 
-            // Formato: [endereço decimal] | HEX | BINÁRIO | DECIMAL | MNEMÔNICO
             String linha = String.format(
-                "[%04d]  %04X  %s  %5d  %s",
+                "[%04d];%04X;%s;%d;%s",
                 i,
                 valor,
                 toBin16(valor),
@@ -118,23 +112,63 @@ public class SecondaryController {
 
         listaMemoria.setItems(linhas);
 
-        // Estiliza células: endereços com valor não-zero ficam em verde
         listaMemoria.setCellFactory(lv -> new ListCell<>() {
+            private final HBox hbox = new HBox(15.0); 
+            private final Label lblEnd = new Label();
+            private final Label lblHex = new Label();
+            private final Label lblBin = new Label();
+            private final Label lblDec = new Label();
+            private final Label lblMnem = new Label();
+
+            {
+                // CENTRALIZAÇÃO DOS DADOS NAS LARGURAS EXATAS
+                lblEnd.setPrefWidth(70.0);
+                lblEnd.setAlignment(Pos.CENTER);
+                
+                lblHex.setPrefWidth(50.0);
+                lblHex.setAlignment(Pos.CENTER);
+                
+                lblBin.setPrefWidth(150.0);
+                lblBin.setAlignment(Pos.CENTER);
+                
+                lblDec.setPrefWidth(60.0);
+                lblDec.setAlignment(Pos.CENTER);
+                
+                lblMnem.setPrefWidth(120.0);
+                lblMnem.setAlignment(Pos.CENTER);
+                
+                hbox.getChildren().addAll(lblEnd, lblHex, lblBin, lblDec, lblMnem);
+            }
+
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
-                    setStyle("-fx-background-color: #000;");
+                    setGraphic(null);
+                    setStyle("-fx-background-color: #000; -fx-padding: 2 10 2 10;");
                 } else {
-                    setText(item);
-                    // Extrai hex da célula para saber se é zero
-                    boolean ehZero = item.contains("  0000  ");
-                    setStyle(
-                        "-fx-background-color: #000; " +
-                        "-fx-text-fill: " + (ehZero ? "#555555" : "#d2d5d5") + "; " +
-                        "-fx-font-family: Monospaced; -fx-font-size: 12;"
-                    );
+                    setText(null);
+                    String[] partes = item.split(";"); 
+                    
+                    lblEnd.setText(partes[0]);
+                    lblHex.setText(partes[1]);
+                    lblBin.setText(partes[2]);
+                    lblDec.setText(partes[3]);
+                    lblMnem.setText(partes[4]);
+                    
+                    boolean ehZero = partes[1].equals("0000");
+                    String cor = ehZero ? "#555555" : "#d2d5d5";
+                    String cssFonte = "-fx-font-family: Monospaced; -fx-font-size: 12; -fx-text-fill: " + cor + ";";
+                    
+                    lblEnd.setStyle(cssFonte);
+                    lblHex.setStyle(cssFonte);
+                    lblBin.setStyle(cssFonte);
+                    lblDec.setStyle(cssFonte);
+                    lblMnem.setStyle(cssFonte);
+
+                    setGraphic(hbox);
+                    setStyle("-fx-background-color: #000; -fx-padding: 2 10 2 10;");
                 }
             }
         });
@@ -142,27 +176,21 @@ public class SecondaryController {
         labelTotalExibido.setText("Exibindo " + linhas.size() + " entrada(s)");
     }
 
-
     private String toBin16(int valor) {
-        String b = String.format("%16s", Integer.toBinaryString(valor & 0xFFFF))
-                         .replace(' ', '0');
-        // Agrupa em 4 bits para facilitar leitura: "0000 0000 0000 0000"
-        return b.substring(0,4) + " " + b.substring(4,8) + " "
-             + b.substring(8,12) + " " + b.substring(12,16);
+        String b = String.format("%16s", Integer.toBinaryString(valor & 0xFFFF)).replace(' ', '0');
+        return b.substring(0,4) + " " + b.substring(4,8) + " " + b.substring(8,12) + " " + b.substring(12,16);
     }
-
 
     private String decodificarMnemonico(int valor) {
         int opcode4 = (valor >> 12) & 0xF;
         if (opcode4 != 0xF) {
             int arg = valor & 0x0FFF;
-            return String.format("%-4s %d", MNEMONICOS[opcode4], arg);
+            return String.format("%s %d", MNEMONICOS[opcode4], arg);
         }
-        // Família estendida — bits 11..9
         int sub = (valor >> 9) & 0x7;
         String[] ext = {"PSHI","POPI","PUSH","POP ","RETN","SWAP","INSP","DESP"};
         int arg8 = valor & 0xFF;
-        if (sub >= 6) return ext[sub] + " " + arg8;  // INSP/DESP têm arg de 8 bits
+        if (sub >= 6) return ext[sub] + " " + arg8;  
         return ext[sub];
     }
 }

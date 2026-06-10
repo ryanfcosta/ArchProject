@@ -3,8 +3,6 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.geometry.Insets?>
 
-<!-- Janela de inspeção da memória RAM -->
-<!-- Exibe os endereços não-zero + filtros de busca e range -->
 <VBox spacing="10.0" style="-fx-background-color: #000000;"
       xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
@@ -15,16 +13,14 @@
     <Label text="INSPETOR DE MEMÓRIA RAM" textFill="#077d29"
            style="-fx-font-weight: bold; -fx-font-size: 16; -fx-font-family: Monospaced;"/>
 
-    <!-- Barra de controles: filtro e range -->
     <HBox spacing="12.0" alignment="CENTER_LEFT">
 
-        <!-- Só exibir endereços não-zero -->
         <CheckBox fx:id="chkSoNaoZero" text="Só não-zero" textFill="#d2d5d5"
                   selected="true" onAction="#aplicarFiltro"
                   style="-fx-font-size: 12;"/>
 
         <Label text="Endereço:" textFill="#bdc3c7" style="-fx-font-size: 12;"/>
-        <!-- Campo de busca por endereço exato -->
+        
         <TextField fx:id="txtBusca" prefWidth="80.0" promptText="0..4095"
                    style="-fx-background-color: #111; -fx-text-fill: white;
                           -fx-font-family: Monospaced; -fx-border-color: #077d29;"/>
@@ -40,6 +36,7 @@
         <TextField fx:id="txtRangeFim" prefWidth="60.0" promptText="fim"
                    style="-fx-background-color: #111; -fx-text-fill: white;
                           -fx-font-family: Monospaced; -fx-border-color: #555;"/>
+        
         <Button text="Filtrar" onAction="#aplicarFiltro"
                 style="-fx-background-color: #333; -fx-text-fill: white;
                        -fx-font-weight: bold; -fx-background-radius: 0;"/>
@@ -47,7 +44,6 @@
                 style="-fx-background-color: #333; -fx-text-fill: white;
                        -fx-font-weight: bold; -fx-background-radius: 0;"/>
 
-        <!-- Espaçador -->
         <Region HBox.hgrow="ALWAYS"/>
 
         <Button text="↻ Atualizar" onAction="#atualizar"
@@ -55,26 +51,23 @@
                        -fx-font-weight: bold; -fx-background-radius: 0;"/>
     </HBox>
 
-    <!-- Cabeçalho da tabela -->
-    <HBox style="-fx-border-color: #077d29; -fx-border-width: 0 0 1 0; -fx-padding: 4 0 4 0;">
-        <Label text="Endereço" prefWidth="100.0" textFill="#077d29"
+    <HBox spacing="15.0" style="-fx-border-color: #077d29; -fx-border-width: 0 0 1 0; -fx-padding: 4 10 4 10;">
+        <Label text="Endereço" prefWidth="70.0" alignment="CENTER" textFill="#077d29"
                style="-fx-font-weight: bold; -fx-font-family: Monospaced; -fx-font-size: 12;"/>
-        <Label text="Hex" prefWidth="80.0" textFill="#077d29"
+        <Label text="Hex" prefWidth="50.0" alignment="CENTER" textFill="#077d29"
                style="-fx-font-weight: bold; -fx-font-family: Monospaced; -fx-font-size: 12;"/>
-        <Label text="Binário (16 bits)" prefWidth="160.0" textFill="#077d29"
+        <Label text="Binário" prefWidth="150.0" alignment="CENTER" textFill="#077d29"
                style="-fx-font-weight: bold; -fx-font-family: Monospaced; -fx-font-size: 12;"/>
-        <Label text="Decimal" prefWidth="80.0" textFill="#077d29"
+        <Label text="Decimal" prefWidth="60.0" alignment="CENTER" textFill="#077d29"
                style="-fx-font-weight: bold; -fx-font-family: Monospaced; -fx-font-size: 12;"/>
-        <Label text="Mnemônico" textFill="#077d29"
+        <Label text="Mnemônico" prefWidth="120.0" alignment="CENTER" textFill="#077d29"
                style="-fx-font-weight: bold; -fx-font-family: Monospaced; -fx-font-size: 12;"/>
     </HBox>
 
-    <!-- Lista virtual — suporta 4096 linhas sem custo de layout -->
     <ListView fx:id="listaMemoria" VBox.vgrow="ALWAYS"
               style="-fx-background-color: #000000; -fx-border-color: #333;
                      -fx-font-family: Monospaced; -fx-font-size: 12;"/>
 
-    <!-- Rodapé: total de entradas exibidas e endereço destacado -->
     <HBox spacing="20.0" alignment="CENTER_LEFT">
         <Label fx:id="labelTotalExibido" text="Exibindo 0 entradas"
                textFill="#bdc3c7" style="-fx-font-size: 11;"/>

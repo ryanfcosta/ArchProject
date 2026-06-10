@@ -61,7 +61,7 @@ public class CPU {
     ULA:  0=A+B     1=A AND B   2=A         3=NOT A
     SH:   0=nenhum  1=lshift    2=rshift
     */
-private static int[][] buildControlStore() {
+    private static int[][] buildControlStore() {
         int[][] cs = new int[256][13];// amux cond alu sh mbr mar rd wr enc C   B   A   addr
         
         // Fetch / Decode
@@ -70,7 +70,7 @@ private static int[][] buildControlStore() {
         cs[ 2] = mi(1, 1, 2, 0,  0, 0, 0, 0, 1, IR,   0,  0,  28);  // ir:=mbr; if n goto 28
         cs[ 3] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR,  IR, IR,  20);  // tir:=ir+ir; if n goto 20
         cs[ 4] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  11);  // tir:=tir+tir; if n goto 11
-        cs[ 5] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,   9);  // alu:=tir; if n goto 9
+        cs[ 5] = mi(0, 1, 0, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,   9);  // alu:=tir+tir; if n goto 9 (STOD)
         
         // LODD: mar:=ir; rd → ac:=mbr; goto 0
         cs[ 6] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  IR,  0,   7);  // mar:=ir; rd;
@@ -108,28 +108,28 @@ private static int[][] buildControlStore() {
         
         // Decode bit 15
         cs[28] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR,  IR, IR,  40);  // tir:=ir+ir; if n goto 40
-        cs[29] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  35);  // tir:=tir+tir; if n goto 35
-        cs[30] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  33);  // alu:=tir; if n goto 33
+        cs[29] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  36);  // tir:=tir+tir; if n goto 36
+        cs[30] = mi(0, 1, 0, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  33);  // alu:=tir+tir; if n goto 33 (STOL)
         
         // LODL: a:=ir+sp; mar:=a; rd → ac:=mbr; goto 0
         cs[31] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  SP, IR,  32);  // a:=ir+sp;
         cs[32] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  0,   7);  // mar:=a; rd; goto 7 
         
         // STOL: a:=ir+sp; mar:=a; mbr:=ac; wr
-        cs[33] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  38);  // alu:=tir; if n goto 38
-        cs[34] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  SP, IR,  35);  // a:=ir+sp;
-        cs[35] = mi(0, 0, 2, 0,  1, 1, 0, 1, 0,  0,   A, AC,  10);  // mar:=a (B); mbr:=ac (C via A); wr; goto 10
+        cs[33] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  SP, IR,  34);  // a:=ir+sp;
+        cs[34] = mi(0, 0, 2, 0,  1, 1, 0, 1, 0,  0,   A, AC,  10);  // mar:=a (B); mbr:=ac (C via A); wr; goto 10
+        cs[35] = mi(0, 3, 0, 0,  0, 0, 0, 0, 0,  0,   0,  0,   0);  // goto 0
         
         // ADDL / SUBL
-        cs[36] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  38);  // tir:=tir+tir; if n goto 38
-        cs[37] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  SP, IR,  38);  // a:=ir+sp;
-        cs[38] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  0,  13);  // mar:=a; rd; goto 13 
-        cs[39] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  0,  16);  // mar:=a; rd; goto 16
+        cs[36] = mi(0, 0, 0, 0,  0, 0, 0, 0, 1,  A,  SP, IR,  37);  // a:=ir+sp;
+        cs[37] = mi(0, 1, 0, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  39);  // alu:=tir+tir; if n goto 39 (SUBL)
+        cs[38] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  0,  13);  // mar:=a; rd; goto 13 (ADDD completion)
+        cs[39] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  0,  16);  // mar:=a; rd; goto 16 (SUBD completion)
         
         // Decode 2º nível
-        cs[40] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR,  IR, IR,  52);  // tir:=ir+ir; if n goto 52
+        cs[40] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  52);  // tir:=tir+tir; if n goto 52
         cs[41] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  46);  // tir:=tir+tir; if n goto 46
-        cs[42] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  44);  // alu:=tir; if n goto 44
+        cs[42] = mi(0, 1, 0, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  44);  // alu:=tir+tir; if n goto 44
 
         // JNEG
         cs[43] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0,  AC, AC,  22);  // alu:=ac; if n goto 22;
@@ -144,16 +144,16 @@ private static int[][] buildControlStore() {
         cs[50] = mi(0, 3, 2, 0,  0, 0, 0, 1, 1, PC,AMASK,IR,   0);  // pc:=band(ir,amask); wr; goto 0;
         
         // Decode grupo 1111
-        cs[51] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR,  IR, IR,  65);  // tir:=ir+ir; if n goto 65
+        cs[51] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  65);  // tir:=tir+tir; if n goto 65
         cs[52] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  59);  // tir:=tir+tir; if n goto 59
-        cs[53] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  56);  // alu:=tir; if n goto 56
+        cs[53] = mi(0, 1, 0, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  56);  // alu:=tir+tir; if n goto 56
         
         // PSHI
         cs[54] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  AC,  0,  55);  // mar:=ac; rd;
         cs[55] = mi(0, 0, 0, 0,  0, 1, 0, 0, 1, SP,  SP, M1,  10);  // sp:=sp-1; goto 10
         
         // POPI
-        cs[56] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  62);  // alu:=tir; if n goto 62
+        cs[56] = mi(0, 1, 0, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  62);  // alu:=tir+tir; if n goto 62
         cs[57] = mi(0, 0, 0, 0,  0, 1, 1, 0, 1, SP,  SP, P1,  58);  // mar:=sp; sp:=sp+1; rd;
         cs[58] = mi(0, 0, 2, 0,  0, 1, 0, 1, 0,  0,  AC,  0,  10);  // mar:=ac; wr; goto 10
         
@@ -178,7 +178,7 @@ private static int[][] buildControlStore() {
         cs[70] = mi(0, 3, 2, 0,  0, 0, 0, 0, 1, SP,   A,  A,   0);  // sp:=a; goto 0;
         
         // INSP / DESP
-        cs[71] = mi(0, 1, 2, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  76);  // alu:=tir; if n goto 76
+        cs[71] = mi(0, 1, 0, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  76);  // alu:=tir+tir; if n goto 76
         cs[72] = mi(0, 0, 2, 0,  0, 0, 0, 0, 1,  A,SMASK,IR,  73);  // a:=band(ir,smask);
         cs[73] = mi(0, 3, 0, 0,  0, 0, 0, 0, 1, SP,  SP,  A,   0);  // sp:=sp+a; goto 0;
         
@@ -240,11 +240,11 @@ private static int[][] buildControlStore() {
         s[35] = "alu:=tir; if n then goto 38;";
         s[36] = "a:=ir + sp;";
         s[37] = "mar:=a; rd; goto 13;";
-        s[38] = "mar:=a; rd; goto 16;";
-        s[39] = "tir:=lshift(tir); if n then goto 46;";
-        s[40] = "tir:=lshift(ir + ir); if n then goto 52;";
+        s[38] = "mar:=a; rd; goto 13;";
+        s[39] = "mar:=a; rd; goto 16;";
+        s[40] = "tir:=lshift(tir); if n then goto 52;";
         s[41] = "tir:=lshift(tir); if n then goto 46;";
-        s[42] = "alu:=tir; if n then goto 44;";
+        s[42] = "alu:=tir+tir; if n then goto 44;";
         s[43] = "alu:=ac; if n then goto 22;";
         s[44] = "alu:=ac; if z then goto 0;";
         s[45] = "tir:=lshift(tir); if n then goto 50";
@@ -253,12 +253,12 @@ private static int[][] buildControlStore() {
         s[48] = "sp:=sp + (-1);";
         s[49] = "mar:=sp; mbr:=pc; wr;";
         s[50] = "pc:=band(ir,amask); wr; goto 0;";
-        s[51] = "tir:=lshift(ir+ir); if n then goto 65;";
+        s[51] = "tir:=lshift(tir); if n then goto 65;";
         s[52] = "tir:=lshift(tir); if n then goto 59;";
-        s[53] = "alu:=tir; if n then goto 56;";
+        s[53] = "alu:=tir+tir; if n then goto 56;";
         s[54] = "mar:=ac; rd;";
         s[55] = "sp:=sp + (-1); rd;";
-        s[56] = "mar:=sp; wr; goto 10;";
+        s[56] = "alu:=tir+tir; if n then goto 62;";
         s[57] = "mar:=sp; sp:=sp + 1; rd;";
         s[58] = "mar:=ac; wr; goto 10;";
         s[59] = "alu:=tir; if n then goto 62;";
@@ -273,7 +273,7 @@ private static int[][] buildControlStore() {
         s[68] = "a:=ac;";
         s[69] = "ac:=sp;";
         s[70] = "sp:=a; goto 0;";
-        s[71] = "alu:=tir; if n then goto 76;";
+        s[71] = "alu:=tir+tir; if n then goto 76;";
         s[72] = "a:=band(ir,smask);";
         s[73] = "sp:=sp + a; goto 0;";
         s[74] = "a:=band(ir, smask);";
@@ -282,7 +282,6 @@ private static int[][] buildControlStore() {
         return s;
     }
 
-    // Classe construtora
     public CPU(Memoria ram) {
         this.ram = ram;
         this.mpcStrings = buildMpcStrings();
