@@ -20,6 +20,7 @@ import java.util.Map;
 
 public class PrimaryController {
 
+    // DECLARANDO OS ELEMENTOS BASEADO NO FX:ID DO FXML
     @FXML private Label labelPC, labelAC, labelSP, labelIR, labelTIR, labelLV, 
                         labelB, labelC, labelD, labelE, labelF, 
                         labelAMASK, labelSMASK, labelMAR, labelMBR, 
@@ -48,7 +49,10 @@ public class PrimaryController {
                        lCond, lFlags1, lFlags2, lAddr1, lAddr2, lAddr3, lAddr4, lAddr5,
                        lDecA, lDecB, lDecC;
 
+    @FXML private Label num1, num2, num3, num4;
+
     private Line[] todasLinhas;
+    private Label[] numsClock;
 
     @FXML private TextArea consoleMacro;
     @FXML private ScrollPane scrollMPC;
@@ -63,9 +67,10 @@ public class PrimaryController {
     private Timeline autoRunTimeline;
     private Stage janelaMemoria;
 
+    // PALETA PARA ALTERAÇÕES DE COR
     private static final Color COR_FUNDO    = Color.web("#000000");
-    private static final Color COR_CINZA    = Color.web("#d2d5d5");
-    private static final Color COR_VERDE    = Color.web("#077d29");
+    private static final Color COR_CINZA    = Color.web("#d2d5d5"); private static final String CSS_CINZA = "#d2d5d5";
+    private static final Color COR_VERDE    = Color.web("#077d29"); private static final String CSS_VERDE = "#077d29";
     private static final Color COR_VERMELHO = Color.web("#c3150e");
 
     @FXML
@@ -77,13 +82,14 @@ public class PrimaryController {
             scrollMPC.heightProperty().addListener((obs, o, n) -> scrollMPC.setVvalue(1.0));
         }
 
-        todasLinhas = new Line[] {
+        todasLinhas = new Line[] { // DEFINE PARA APAGAR TUDO QUANDO RESETAR
             lBusC1, lBusC2, lBusC3, lBusA1, lBusA2, lBusA3, lBusB1, lBusB2,
             lMem1, lMem2, lMarB, lMbrC, lRegC, lAmux1, lAmux2,
             lAluA, lAluB, lShifter, lCtrl1, lCtrl2, lCtrl3, lCtrl4,
             lCond, lFlags1, lFlags2, lAddr1, lAddr2, lAddr3, lAddr4, lAddr5,
             lDecA, lDecB, lDecC
         };
+        numsClock = new Label [] { num1, num2, num3, num4};
 
         atualizarLabels();
     }
@@ -91,16 +97,11 @@ public class PrimaryController {
     @FXML
     private void resetCpu() {
         cpu.reset();
-        btnSubciclo.setText("SUBCICLO 1");
+        btnSubciclo.setText("SUBCICLO 0");
         
-        btnSubciclo.setStyle(
-            "-fx-background-color: linear-gradient(to right, #077d29 25%, transparent 25%); " +
-            "-fx-text-fill: white; -fx-font-weight: bold; " +
-            "-fx-font-size: 12; -fx-border-color: #077d29; -fx-border-width: 2;"
-        );
-        
+        atualizarBotaoSubciclo();
         atualizarLabels();
-    }
+    }   
 
     @FXML
     private void execSubciclo() {
@@ -206,26 +207,16 @@ public class PrimaryController {
     }
 
     private int atualizarBotaoSubciclo() {
-        int proximo = cpu.getSubcicloAtual(); 
-        String[] nomes = {
-            "SUBCICLO 1",
-            "SUBCICLO 2",
-            "SUBCICLO 3",
-            "SUBCICLO 4"
-        };
+        int proximo = cpu.getSubcicloAtual();
+        String[] nomes = {"SUBCICLO 1", "SUBCICLO 2", "SUBCICLO 3", "SUBCICLO 4"};
         
+        btnSubciclo.setText(nomes[proximo - 1]);
+
+        // CALCULA A PORCENTAGEM DO PREENCHIMENTO
         int porcentagem = proximo * 25;
         
-        String gradient = String.format(
-            "linear-gradient(to right, #077d29 %d%%, transparent %d%%)", 
-            porcentagem, porcentagem
-        );
-
-        btnSubciclo.setText(nomes[proximo - 1]);
         btnSubciclo.setStyle(
-            "-fx-background-color: " + gradient + "; " +
-            "-fx-text-fill: white; -fx-font-weight: bold; " +
-            "-fx-font-size: 12; -fx-border-color: #077d29; -fx-border-width: 2;"
+            "-fx-background-color: linear-gradient(to right, #077d29 " + porcentagem + "%, #000000 " + porcentagem + "%);"
         );
 
         return proximo;
@@ -298,12 +289,8 @@ public class PrimaryController {
         rectShifter.setStroke(COR_CINZA);
         rectMicroSeq.setStroke(COR_CINZA);
 
-
-        if (todasLinhas != null) {
-            for (Line l : todasLinhas) {
-                if (l != null) l.setStroke(COR_CINZA);
-            }
-        }
+        for (Line l : todasLinhas) l.setStroke(COR_CINZA);
+        for (Label n: numsClock)  n.setStyle("-fx-text-fill:"+ CSS_CINZA +";");        
 
         boolean n = cpu.isFlagN();
         boolean z = cpu.isFlagZ();
@@ -314,22 +301,20 @@ public class PrimaryController {
 
         rectFlagRD.setFill(COR_FUNDO); rectFlagRD.setStroke(COR_CINZA);
         rectFlagWR.setFill(COR_FUNDO); rectFlagWR.setStroke(COR_CINZA);
+
+
         String sinal = cpu.getSinalControle();
-        
         if ("READ".equals(sinal)) {rectFlagRD.setFill(COR_VERDE);rectFlagRD.setStroke(COR_VERDE);}
         else if ("WRITE".equals(sinal)) {rectFlagWR.setFill(COR_VERDE); rectFlagWR.setStroke(COR_VERDE);}
 
         String status = cpu.getstatusCiclo();
+ 
+        
         labelStatus.setText(status);
-        Color corStatus;
-        switch (status) {
-            case "SUB1":  corStatus = COR_VERDE; break;
-            case "SUB2":  corStatus = COR_VERDE; break;
-            case "SUB3" : corStatus = COR_VERDE; break;
-            case "SUB4" : corStatus = COR_VERDE; break; 
-            default:      corStatus = COR_CINZA; break;
-        };
-        labelStatus.setTextFill(corStatus);
+        if(status.equals("IDLE"))
+            labelStatus.setTextFill(COR_CINZA);
+        else
+            labelStatus.setTextFill(COR_VERDE);
 
         labelBusA.setText(String.format("%04X", cpu.getBusA()));
         labelBusB.setText(String.format("%04X", cpu.getBusB()));
@@ -347,6 +332,7 @@ public class PrimaryController {
         
 
         if ("SUB1".equals(status)) {
+            num1.setStyle("-fx-text-fill: " + CSS_VERDE + ";");
             Rectangle rA = getRectByIndex(cpu.getAReg());
             rA.setStroke(COR_VERDE);
             Rectangle rB = getRectByIndex(cpu.getBReg());
@@ -366,6 +352,7 @@ public class PrimaryController {
             }
             
         } else if ("SUB2".equals(status)) {
+            num2.setStyle("-fx-text-fill: "+ CSS_VERDE +";");
             rectDecA.setStroke(COR_VERDE);
             rectDecB.setStroke(COR_VERDE);
             rectLatchA.setStroke(COR_VERDE);
@@ -388,6 +375,7 @@ public class PrimaryController {
             }
             
         } else if ("SUB3".equals(status)) {
+            num3.setStyle("-fx-text-fill: "+ CSS_VERDE +";");
             polygonALU.setStroke(COR_CINZA);    
             
             acenderBusC();
@@ -403,7 +391,9 @@ public class PrimaryController {
             }
             
         } else if ("SUB4".equals(status)) {
+            num4.setStyle("-fx-text-fill: "+ CSS_VERDE +";");
             acenderBusC();
+
             rectMicroSeq.setStroke(COR_VERDE);
 
 

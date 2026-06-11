@@ -5,7 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.geometry.Pos; // IMPORTANTE PARA O ALINHAMENTO
+import javafx.geometry.Pos;
 
 public class SecondaryController {
 
