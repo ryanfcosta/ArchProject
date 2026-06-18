@@ -16,7 +16,7 @@ public class CPU {
     private final int[] regs = new int[16];
 
     private static final int 
-     PC = 0, AC = 1, SP = 2, IR = 3, TIR = 4, ZERO = 5, P1 /*+1*/ = 6, M1 /*+1*/ = 7, AMASK = 8, SMASK = 9,
+     PC = 0, AC = 1, SP = 2, IR = 3, TIR = 4, ZERO = 5, P1 /*+1*/ = 6, M1 /*-1*/ = 7, AMASK = 8, SMASK = 9,
      A = 10, B = 11, C = 12, D = 13, E = 14, F = 15;
 
     private int mar, mbr;
@@ -92,7 +92,7 @@ public class CPU {
         // SUBD: mar:=ir; rd → a:=inv(mbr) → ac:=ac+a; goto 0
         cs[15] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  25);  // tir:=tir+tir; if n goto 25
         cs[16] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,  IR,  0,  17);  // mar:=ir; rd;
-        cs[17] = mi(0, 0, 2, 0,  0, 0, 1, 0, 0,  0,   0,  0,  18);  // rd;
+        cs[17] = mi(0, 0,0, 0,  0, 0, 1, 0, 1,  AC,   P1,  AC,  18);  // rd; ac =ac+1;
         cs[18] = mi(1, 0, 3, 0,  0, 0, 0, 0, 1,  A,   0,  0,  19);  // a:=inv(mbr);
         cs[19] = mi(0, 3, 0, 0,  0, 0, 0, 0, 1, AC,  AC,  A,   0);  // ac:=ac+a; goto 0;
 
@@ -127,7 +127,7 @@ public class CPU {
         cs[39] = mi(0, 0, 2, 0,  0, 1, 1, 0, 0,  0,   A,  0,  16);  // mar:=a; rd; goto 16 (SUBD completion)
         
         // Decode 2º nível
-        cs[40] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  52);  // tir:=tir+tir; if n goto 52
+        cs[40] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  51);  // tir:=tir+tir; if n goto 52
         cs[41] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  46);  // tir:=tir+tir; if n goto 46
         cs[42] = mi(0, 1, 0, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  44);  // alu:=tir+tir; if n goto 44
 
@@ -167,10 +167,11 @@ public class CPU {
         cs[63] = mi(0, 0, 0, 0,  0, 1, 1, 0, 1, SP,  SP, P1,  64);  // mar:=sp; sp:=sp+1; rd;
         cs[64] = mi(0, 3, 2, 0,  0, 0, 0, 0, 1, AC,   0,  0,   0);  // ac:=mbr; goto 0;
         
-        // RETN
-        cs[65] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR,  IR, IR,  73);  // tir:=ir+ir; if n goto 73
-        cs[66] = mi(0, 0, 0, 0,  0, 1, 1, 0, 1, SP,  SP, P1,  67);  // mar:=sp; sp:=sp+1; rd;
-        cs[67] = mi(1, 3, 2, 0,  0, 0, 0, 0, 1, PC,   0,  0,   0);  // pc:=mbr; goto 0;
+        //RETN 
+        cs[65] = mi(0, 1, 0, 0,  0, 0, 0, 0, 1,TIR, TIR,TIR,  71);  // tir:=tir+tir; if n goto 71
+        cs[66] = mi(0, 1, 0, 0,  0, 0, 0, 0, 0,  0, TIR,TIR,  68);  // alu:=tir+tir; se n=1 (SWAP) goto 68
+        cs[67] = mi(0, 3, 0, 0,  0, 1, 1, 0, 1, SP,  SP, P1,  78);  // mar:=sp; sp:=sp+1; rd; goto 78
+        cs[78] = mi(1, 3, 2, 0,  0, 0, 0, 0, 1, PC,   0,  0,   0);  // pc:=mbr; goto 0;  GHOST
         
         // SWAP
         cs[68] = mi(0, 0, 2, 0,  0, 0, 0, 0, 1,  A,  AC, AC,  69);  // a:=ac;
@@ -219,7 +220,7 @@ public class CPU {
         s[14] = "ac:=mbr + ac; goto 0;";
         s[15] = "tir:=lshift(tir); if n then goto 25;";
         s[16] = "mar:=ir; rd;";
-        s[17] = "rd;";
+        s[17] = "rd; ac = ac +1;";
         s[18] = "a:=inv(mbr);";
         s[19] = "ac:=ac + a; goto 0;";
         s[20] = "tir:=lshift(tir); if n then goto 25;";
@@ -228,8 +229,9 @@ public class CPU {
         s[23] = "pc:=band(ir,amask); goto 0;";
         s[24] = "alu:=ac; if z then goto 22;";
         s[25] = "goto 0;";
-        s[26] = "alu:=tir; if n then goto 27;";
-        s[27] = "ac:=band(ir,amask); goto 0;";
+        s[26] = "tir:=lshift(tir); if n then goto 77;";
+        s[27] = "pc:=band(ir,amask); goto 0;";
+        s[77] = "ac:=band(ir,amask); goto 0;";
         s[28] = "tir:=lshift(ir + ir); if n then goto 40;";
         s[29] = "tir:=lshift(tir); if n then goto 35;";
         s[30] = "alu:=tir; if n then goto 33;";
@@ -242,7 +244,7 @@ public class CPU {
         s[37] = "mar:=a; rd; goto 13;";
         s[38] = "mar:=a; rd; goto 13;";
         s[39] = "mar:=a; rd; goto 16;";
-        s[40] = "tir:=lshift(tir); if n then goto 52;";
+        s[40] = "tir:=lshift(tir); if n then goto 51;";
         s[41] = "tir:=lshift(tir); if n then goto 46;";
         s[42] = "alu:=tir+tir; if n then goto 44;";
         s[43] = "alu:=ac; if n then goto 22;";
@@ -267,7 +269,7 @@ public class CPU {
         s[62] = "tir:=lshift(tir); if n then goto 73;";
         s[63] = "alu:=tir; if n then goto 70;";
         s[64] = "mar:=sp; sp:=sp + 1; rd;";
-        s[65] = "tir:=lshift(ir+ir); if n then goto 73;";
+        s[65] = "tir:=lshift(ir+ir); if n then goto 71;";
         s[66] = "mar:=sp; sp:=sp + 1; rd;";
         s[67] = "pc:=mbr; goto 0;";
         s[68] = "a:=ac;";

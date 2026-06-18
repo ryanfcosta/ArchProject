@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
@@ -61,10 +62,16 @@ public class PrimaryController {
     @FXML private Button btnAutoRun;
     @FXML private TextField txtDelay;
 
+    @FXML private StackPane paneCacheL1;
+    @FXML private CheckBox chkCacheL1;
+    @FXML private StackPane paneCacheL2;
+    @FXML private CheckBox chkCacheL2;
+
     private CPU cpu;
     private Memoria ram;
 
     private Timeline autoRunTimeline;
+    private int ultimoEnderecoPrograma = 0;
     private Stage janelaMemoria;
 
     // PALETA PARA ALTERAÇÕES DE COR
@@ -73,7 +80,7 @@ public class PrimaryController {
     private static final Color COR_VERDE    = Color.web("#077d29"); private static final String CSS_VERDE = "#077d29";
     private static final Color COR_VERMELHO = Color.web("#c3150e");
 
-    @FXML
+    @FXML 
     public void initialize() {
         ram = new Memoria();
         cpu = new CPU(ram);
@@ -94,7 +101,7 @@ public class PrimaryController {
         atualizarLabels();
     }
 
-    @FXML
+    @FXML 
     private void resetCpu() {
         cpu.reset();
         btnSubciclo.setText("SUBCICLO 0");
@@ -103,7 +110,7 @@ public class PrimaryController {
         atualizarLabels();
     }   
 
-    @FXML
+    @FXML 
     private void execSubciclo() {
         cpu.executarSubciclo();
         atualizarLabels();
@@ -113,7 +120,7 @@ public class PrimaryController {
             imprimirConsoleMPC();
     }
 
-    @FXML
+    @FXML 
     private void execCicloCompleto() {
         cpu.executarCicloCompleto();
         atualizarLabels();
@@ -121,16 +128,10 @@ public class PrimaryController {
         imprimirConsoleMPC();
     }
 
-    @FXML
+@FXML 
     private void toggleAutoRun() {
         if (autoRunTimeline != null && autoRunTimeline.getStatus() == Animation.Status.RUNNING) {
-            autoRunTimeline.stop();
-            autoRunTimeline = null;
-            btnAutoRun.setText("▶ AUTO RUN");
-            btnAutoRun.setStyle(
-                "-fx-background-color: transparent; -fx-text-fill: white; " +
-                "-fx-font-weight: bold; -fx-font-size: 12; -fx-border-color: #077d29; -fx-border-width: 2;"
-            );
+            pararAutoRun();
         } else {
             int delay = Integer.parseInt(txtDelay.getText());            
             autoRunTimeline = new Timeline(
@@ -145,6 +146,12 @@ public class PrimaryController {
                             ((SecondaryController) ctrl).atualizar();
                         }
                     }
+                    if (cpu.getSubcicloAtual() == 1) { 
+                        int pcAtual = cpu.getRegs().get("PC");
+                        if (pcAtual > ultimoEnderecoPrograma + 1) {
+                            pararAutoRun();
+                        }
+                    }
                 })
             );
             autoRunTimeline.setCycleCount(Timeline.INDEFINITE);
@@ -156,8 +163,19 @@ public class PrimaryController {
             );
         }
     }
+    private void pararAutoRun() {
+        if (autoRunTimeline != null) {
+            autoRunTimeline.stop();
+            autoRunTimeline = null;
+        }
+        btnAutoRun.setText("▶ AUTO RUN");
+        btnAutoRun.setStyle(
+            "-fx-background-color: transparent; -fx-text-fill: white; " +
+            "-fx-font-weight: bold; -fx-font-size: 12; -fx-border-color: #077d29; -fx-border-width: 2;"
+        );
+    }
 
-    @FXML
+    @FXML 
     private void abrirJanelaMemoria() {
         if (janelaMemoria != null && janelaMemoria.isShowing()) {
             janelaMemoria.toFront();
@@ -436,7 +454,8 @@ public class PrimaryController {
         rect.setStroke(COR_CINZA);
     }
     
-    @FXML private void montarCodigo() {
+    @FXML 
+    private void montarCodigo() {
         String texto = consoleMacro.getText();
         if (texto == null || texto.trim().isEmpty()) {
             labelAssemblerStatus.setTextFill(COR_VERMELHO);
@@ -455,6 +474,7 @@ public class PrimaryController {
             try {
                 int instrucaoMontada = parseLinha(linha);
                 ram.write(endereco, instrucaoMontada);
+                ultimoEnderecoPrograma = Math.max(ultimoEnderecoPrograma, endereco);
                 endereco++;
                 sucesso++;
             } catch (Exception e) {
@@ -507,5 +527,23 @@ public class PrimaryController {
         }
 
         return opcode | (arg & 0x0FFF);
+    }
+
+    @FXML
+    private void toggleCacheL1() {
+        boolean cache1Ativada = chkCacheL1.isSelected();
+
+        paneCacheL1.setVisible(cache1Ativada);
+        paneCacheL1.setManaged(cache1Ativada);
+        
+    }
+
+    @FXML
+    private void toggleCacheL2() {
+        boolean cache2Ativada = chkCacheL2.isSelected();
+
+        paneCacheL2.setVisible(cache2Ativada);
+        paneCacheL2.setManaged(cache2Ativada);
+        
     }
 }
