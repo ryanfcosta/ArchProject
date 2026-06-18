@@ -436,8 +436,7 @@ public class PrimaryController {
         rect.setStroke(COR_CINZA);
     }
     
-    @FXML
-    private void montarCodigo() {
+    @FXML private void montarCodigo() {
         String texto = consoleMacro.getText();
         if (texto == null || texto.trim().isEmpty()) {
             labelAssemblerStatus.setTextFill(COR_VERMELHO);
