@@ -82,6 +82,8 @@ public class PrimaryController {
     @FXML
     private CheckBox chkCacheL1;
     @FXML
+        private Rectangle rectL1;
+    @FXML
     private StackPane paneCacheL2;
     @FXML
     private CheckBox chkCacheL2;
@@ -102,7 +104,8 @@ public class PrimaryController {
     private static final Color COR_VERDE = Color.web("#077d29");
     private static final String CSS_VERDE = "#077d29";
     private static final Color COR_VERMELHO = Color.web("#c3150e");
-
+    private static final Color COR_AMARELO = Color.web("#f1c40f");
+    
     @FXML
     public void initialize() {
         ram = new Memoria();
@@ -365,6 +368,20 @@ public class PrimaryController {
         rectFlagRD.setStroke(COR_CINZA);
         rectFlagWR.setFill(COR_FUNDO);
         rectFlagWR.setStroke(COR_CINZA);
+
+        int cacheStaus = cacheL1.getCacheStatus();
+
+        if (cacheStaus == 1){
+            rectL1.setFill(COR_AMARELO);
+            rectL1.setStroke(COR_AMARELO);
+        }else if(cacheStaus == 2){
+            rectL1.setFill(COR_VERMELHO);
+            rectL1.setStroke(COR_VERMELHO);
+        }else{
+            rectL1.setFill(COR_FUNDO);
+            rectL1.setStroke(COR_AMARELO);
+        }
+
 
         String sinal = cpu.getSinalControle();
         if ("READ".equals(sinal)) {

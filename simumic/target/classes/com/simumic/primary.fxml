@@ -85,7 +85,7 @@
                                 </VBox>
 
                                 <StackPane fx:id="paneCacheL1" layoutX="220.0" layoutY="570" visible="false" managed="false">
-                                    <Rectangle width="30.0" height="150.0" stroke="#f1c40f" strokeWidth="2.0" fill="#000000" strokeType="INSIDE"/>
+                                    <Rectangle  fx:id="rectL1" width="30.0" height="150.0" stroke="#f1c40f" strokeWidth="2.0" fill="#000000" strokeType="INSIDE"/>
                                     <VBox alignment="CENTER" spacing="5.0">
                                         <Label text="L1" textFill="#d2d5d5" style="-fx-font-weight: bold; -fx-font-size: 13;"/>
                                     </VBox>

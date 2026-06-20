@@ -397,7 +397,7 @@ public class CPU {
 
         // Captura de dado de leitura anterior
         if (rdPending) {
-            System.out.println("É PRA LERRRR");
+
             mbr = memoria.read(mar) & 0xFFFF; // MBR ← memória[MAR]
             rdPending = false;
             sinalControle = "READ";
@@ -502,7 +502,6 @@ public class CPU {
 
         // Completa escrita na memória (RAM[MAR] ← MBR)
         if (wrPending) {
-            System.out.println("É PRA ESCREVER");
             memoria.write(mar, mbr & 0xFFFF);
             wrPending = false;
             sinalControle = "WRITE";

@@ -8,6 +8,7 @@ public class Cache implements AcessoMemoria {
     private final int tamCache;
     private final int tamBloco;
     private final AcessoMemoria proximoNivel;
+    private int cacheStatus;
 
     public Cache(AcessoMemoria proximoNivel, int tamCache, int tamBloco) {
         if (tamCache <= 0 || tamBloco <= 0) {
@@ -24,6 +25,7 @@ public class Cache implements AcessoMemoria {
 
     @Override
     public int read(int endereco) {
+        cacheStatus = 0; // 1 = HIT 2 = MISS
         if (endereco < 0) {
             return 0;
         }
@@ -33,7 +35,12 @@ public class Cache implements AcessoMemoria {
         int offset = endereco % tamBloco;
 
         if (!validos[linha] || tags[linha] != bloco) {
-            carregarBloco(bloco, linha);
+            carregarBloco(bloco, linha); // Cache Miss
+            cacheStatus = 2;
+            System.out.println("CACHE MISS");
+        }else{
+            cacheStatus = 1;
+            System.out.println("CACHE HIT");
         }
 
         return dados[linha][offset] & 0xFFFF;
@@ -70,4 +77,6 @@ public class Cache implements AcessoMemoria {
         tags[linha] = bloco;
         validos[linha] = true;
     }
+
+    public int getCacheStatus(){ return cacheStatus;}
 }
