@@ -1,6 +1,7 @@
 package com.simumic;
 
 public class Cache implements AcessoMemoria {
+    private final String nome;
     private final int[] tags;
     private final int[][] dados;
     private final boolean[] validos;
@@ -8,13 +9,20 @@ public class Cache implements AcessoMemoria {
     private final int tamCache;
     private final int tamBloco;
     private final AcessoMemoria proximoNivel;
-    private int cacheStatus;
+
+    private long hits;
+    private long misses;
 
     public Cache(AcessoMemoria proximoNivel, int tamCache, int tamBloco) {
+        this("CACHE", proximoNivel, tamCache, tamBloco);
+    }
+
+    public Cache(String nome, AcessoMemoria proximoNivel, int tamCache, int tamBloco) {
         if (tamCache <= 0 || tamBloco <= 0) {
             throw new IllegalArgumentException("Tamanhos da cache devem ser positivos.");
         }
 
+        this.nome = (nome == null || nome.trim().isEmpty()) ? "CACHE" : nome.trim();
         this.proximoNivel = proximoNivel;
         this.tamCache = tamCache;
         this.tamBloco = tamBloco;
@@ -25,7 +33,6 @@ public class Cache implements AcessoMemoria {
 
     @Override
     public int read(int endereco) {
-        cacheStatus = 0; // 1 = HIT 2 = MISS
         if (endereco < 0) {
             return 0;
         }
@@ -34,13 +41,15 @@ public class Cache implements AcessoMemoria {
         int linha = linhaDoBloco(bloco);
         int offset = endereco % tamBloco;
 
-        if (!validos[linha] || tags[linha] != bloco) {
-            carregarBloco(bloco, linha); // Cache Miss
-            cacheStatus = 2;
-            System.out.println("CACHE MISS");
-        }else{
-            cacheStatus = 1;
-            System.out.println("CACHE HIT");
+        boolean hit = validos[linha] && tags[linha] == bloco;
+
+        if (!hit) {
+            misses++;
+            carregarBloco(bloco, linha);
+            logAcesso("READ", endereco, bloco, linha, false);
+        } else {
+            hits++;
+            logAcesso("READ", endereco, bloco, linha, true);
         }
 
         return dados[linha][offset] & 0xFFFF;
@@ -57,12 +66,73 @@ public class Cache implements AcessoMemoria {
         int linha = linhaDoBloco(bloco);
         int offset = endereco % tamBloco;
 
-        if (!validos[linha] || tags[linha] != bloco) {
+        boolean hit = validos[linha] && tags[linha] == bloco;
+
+        if (!hit) {
+            misses++;
             carregarBloco(bloco, linha);
+            logAcesso("WRITE", endereco, bloco, linha, false);
+        } else {
+            hits++;
+            logAcesso("WRITE", endereco, bloco, linha, true);
         }
 
         dados[linha][offset] = valor;
         proximoNivel.write(endereco, valor);
+    }
+
+    public void clear() {
+        for (int i = 0; i < tamCache; i++) {
+            validos[i] = false;
+            tags[i] = 0;
+            for (int j = 0; j < tamBloco; j++) {
+                dados[i][j] = 0;
+            }
+        }
+        hits = 0;
+        misses = 0;
+    }
+
+    public long getHits() {
+        return hits;
+    }
+
+    public long getMisses() {
+        return misses;
+    }
+
+    public String getResumo() {
+        long total = hits + misses;
+        double hitRate = total == 0 ? 0.0 : (hits * 100.0) / total;
+        return String.format("%s H:%d M:%d HIT%%:%.1f", nome, hits, misses, hitRate);
+    }
+
+    public String getVisualizacao() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%s | blocos=%d | bloco=%d\n", nome, tamCache, tamBloco));
+        sb.append(String.format("HITS=%d | MISSES=%d\n\n", hits, misses));
+
+        for (int linha = 0; linha < tamCache; linha++) {
+            int bloco = tags[linha];
+            int inicio = bloco * tamBloco;
+            int fim = inicio + tamBloco - 1;
+            sb.append(String.format("L%02d | V=%d | TAG=%04d | [%04d-%04d] | ",
+                    linha,
+                    validos[linha] ? 1 : 0,
+                    bloco,
+                    inicio,
+                    fim));
+
+            for (int i = 0; i < tamBloco; i++) {
+                sb.append(String.format("%04X", dados[linha][i] & 0xFFFF));
+                if (i < tamBloco - 1) {
+                    sb.append(' ');
+                }
+            }
+            sb.append('\n');
+        }
+
+        return sb.toString();
     }
 
     private int linhaDoBloco(int bloco) {
@@ -78,5 +148,15 @@ public class Cache implements AcessoMemoria {
         validos[linha] = true;
     }
 
-    public int getCacheStatus(){ return cacheStatus;}
+    private void logAcesso(String operacao, int endereco, int bloco, int linha, boolean hit) {
+        System.out.printf(
+                "%s %s %s | end=%04d bloco=%03d linha=%02d tag=%03d%n",
+                nome,
+                operacao,
+                hit ? "HIT" : "MISS",
+                endereco,
+                bloco,
+                linha,
+                tags[linha]);
+    }
 }

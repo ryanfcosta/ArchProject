@@ -9,6 +9,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
@@ -82,8 +85,6 @@ public class PrimaryController {
     @FXML
     private CheckBox chkCacheL1;
     @FXML
-        private Rectangle rectL1;
-    @FXML
     private StackPane paneCacheL2;
     @FXML
     private CheckBox chkCacheL2;
@@ -96,6 +97,9 @@ public class PrimaryController {
     private Timeline autoRunTimeline;
     private int ultimoEnderecoPrograma = 0;
     private Stage janelaMemoria;
+    private Stage janelaCache;
+    private TextArea cacheL1Area;
+    private TextArea cacheL2Area;
 
     // PALETA PARA ALTERAÇÕES DE COR
     private static final Color COR_FUNDO = Color.web("#000000");
@@ -104,13 +108,12 @@ public class PrimaryController {
     private static final Color COR_VERDE = Color.web("#077d29");
     private static final String CSS_VERDE = "#077d29";
     private static final Color COR_VERMELHO = Color.web("#c3150e");
-    private static final Color COR_AMARELO = Color.web("#f1c40f");
-    
+
     @FXML
     public void initialize() {
         ram = new Memoria();
-        cacheL2 = new Cache(ram, 8, 4);
-        cacheL1 = new Cache(cacheL2, 2, 4);
+        cacheL2 = new Cache("L2", ram, 8, 4);
+        cacheL1 = new Cache("L1", cacheL2, 2, 4);
         cpu = new CPU(cacheL1);
 
         if (scrollMPC != null) {
@@ -132,10 +135,17 @@ public class PrimaryController {
     @FXML
     private void resetCpu() {
         cpu.reset();
+        if (cacheL1 != null) {
+            cacheL1.clear();
+        }
+        if (cacheL2 != null) {
+            cacheL2.clear();
+        }
         btnSubciclo.setText("SUBCICLO 0");
 
         atualizarBotaoSubciclo();
         atualizarLabels();
+        atualizarJanelaCache();
     }
 
     @FXML
@@ -229,6 +239,49 @@ public class PrimaryController {
             labelAssemblerStatus.setTextFill(COR_VERMELHO);
             labelAssemblerStatus.setText("Erro ao abrir janela de memória.");
         }
+    }
+
+    @FXML
+    private void abrirJanelaCache() {
+        if (janelaCache != null && janelaCache.isShowing()) {
+            atualizarJanelaCache();
+            janelaCache.toFront();
+            return;
+        }
+
+        VBox root = new VBox(12);
+        root.setStyle("-fx-background-color: #000000; -fx-padding: 16;");
+
+        Label titulo = new Label("Visualização da Cache");
+        titulo.setTextFill(COR_CINZA);
+        titulo.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
+
+        Label resumo = new Label("Acompanhe bloco, tag, validade e conteúdo da L1/L2 em tempo real.");
+        resumo.setTextFill(COR_CINZA);
+        resumo.setStyle("-fx-font-size: 11;");
+
+        cacheL1Area = criarAreaCache();
+        cacheL2Area = criarAreaCache();
+
+        VBox blocoL1 = criarBlocoCache("L1", cacheL1Area, "#f1c40f");
+        VBox blocoL2 = criarBlocoCache("L2", cacheL2Area, "#3498db");
+
+        HBox conteudo = new HBox(14, blocoL1, blocoL2);
+
+        Button btnAtualizar = new Button("ATUALIZAR");
+        btnAtualizar.setOnAction(e -> atualizarJanelaCache());
+        btnAtualizar.setStyle(
+                "-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-color: #077d29; -fx-border-width: 2;");
+
+        root.getChildren().addAll(titulo, resumo, conteudo, btnAtualizar);
+
+        Scene cena = new Scene(root, 980, 620);
+        janelaCache = new Stage();
+        janelaCache.setTitle("Cache - SimuMIC");
+        janelaCache.setScene(cena);
+        janelaCache.setOnShown(e -> atualizarJanelaCache());
+        janelaCache.show();
+        atualizarJanelaCache();
     }
 
     private void imprimirConsoleMPC() {
@@ -369,20 +422,6 @@ public class PrimaryController {
         rectFlagWR.setFill(COR_FUNDO);
         rectFlagWR.setStroke(COR_CINZA);
 
-        int cacheStaus = cacheL1.getCacheStatus();
-
-        if (cacheStaus == 1){
-            rectL1.setFill(COR_AMARELO);
-            rectL1.setStroke(COR_AMARELO);
-        }else if(cacheStaus == 2){
-            rectL1.setFill(COR_VERMELHO);
-            rectL1.setStroke(COR_VERMELHO);
-        }else{
-            rectL1.setFill(COR_FUNDO);
-            rectL1.setStroke(COR_AMARELO);
-        }
-
-
         String sinal = cpu.getSinalControle();
         if ("READ".equals(sinal)) {
             rectFlagRD.setFill(COR_VERDE);
@@ -508,9 +547,16 @@ public class PrimaryController {
         }
 
         if (labelEstatisticas != null) {
-            labelEstatisticas.setText(cpu.getTotalCiclos() + " Ciclos | " + cpu.getTotalSubciclos() + " Sub");
+            String cacheResumo = "";
+            if (cacheL1 != null && cacheL2 != null) {
+                cacheResumo = " | " + cacheL1.getResumo() + " | " + cacheL2.getResumo();
+            }
+            labelEstatisticas
+                    .setText(cpu.getTotalCiclos() + " Ciclos | " + cpu.getTotalSubciclos() + " Sub" + cacheResumo);
             labelInstr.setText(cpu.getInstrucoesExecutadas() + " Instr. Executadas");
         }
+
+        atualizarJanelaCache();
     }
 
     private void preencherReg(Label label, Rectangle rect, Integer valor) {
@@ -660,5 +706,37 @@ public class PrimaryController {
         paneCacheL2.setVisible(cache2Ativada);
         paneCacheL2.setManaged(cache2Ativada);
 
+    }
+
+    private TextArea criarAreaCache() {
+        TextArea area = new TextArea();
+        area.setEditable(false);
+        area.setWrapText(false);
+        area.setPrefRowCount(18);
+        area.setPrefColumnCount(38);
+        area.setStyle(
+                "-fx-control-inner-background: #000000; -fx-text-fill: #d2d5d5; -fx-font-family: 'Consolas'; -fx-font-size: 12; -fx-border-color: #077d29; -fx-border-width: 1.5;");
+        return area;
+    }
+
+    private VBox criarBlocoCache(String nome, TextArea area, String corBorda) {
+        Label label = new Label(nome);
+        label.setTextFill(COR_CINZA);
+        label.setStyle("-fx-font-size: 14; -fx-font-weight: bold;");
+
+        VBox caixa = new VBox(8, label, area);
+        caixa.setStyle("-fx-background-color: #000000; -fx-padding: 10; -fx-border-color: " + corBorda
+                + "; -fx-border-width: 2;");
+        caixa.setPrefWidth(450);
+        return caixa;
+    }
+
+    private void atualizarJanelaCache() {
+        if (cacheL1Area != null && cacheL1 != null) {
+            cacheL1Area.setText(cacheL1.getVisualizacao());
+        }
+        if (cacheL2Area != null && cacheL2 != null) {
+            cacheL2Area.setText(cacheL2.getVisualizacao());
+        }
     }
 }
