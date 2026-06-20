@@ -97,6 +97,8 @@
                                     </VBox>
                                 </StackPane>
 
+                                <Button layoutX="120.0" layoutY="745.0" text="ABRIR CACHE" onAction="#abrirJanelaCache" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11; -fx-border-color: #f1c40f; -fx-border-width: 2;"/>
+
                                 <StackPane layoutX="290.0" layoutY="570.0">
                                     <Rectangle fx:id="rectMAR" width="90.0" height="50.0" stroke="#d2d5d5" strokeWidth="2.0" fill="#000000"/>
                                     <VBox alignment="CENTER">
