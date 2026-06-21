@@ -288,7 +288,7 @@
                             <Label text="Console Macroinstruções" textFill="#d2d5d5" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
                             <TextArea fx:id="consoleMacro" prefWidth="380.0" prefHeight="130.0" style="-fx-font-family: 'Monospaced'; -fx-control-inner-background: #000000; -fx-text-fill: white;" promptText="Exemplo:&#10;LOCO 15&#10;STOD 50&#10;JUMP 0"/>
                             <HBox spacing="10" alignment="CENTER_LEFT">
-                                <Button styleClass="button" text="Montar e Gravar na RAM" onAction="#montarCodigo" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-color: #077d29; -fx-border-width: 2;"/>
+                                <Button styleClass="button-padrao" text="Montar e Gravar na RAM" onAction="#montarCodigo"/>
                                 <Label fx:id="labelAssemblerStatus" text="Aguardando código..." textFill="#d2d5d5" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
                             </HBox>
                         </VBox>
@@ -305,7 +305,7 @@
                                 <Label fx:id="labelInstr" text="0 Instr" textFill="#bdc3c7"><font><Font name="Monospaced" size="11.0"/></font></Label>
                             </VBox>
                             
-                            <Button styleClass="button" text="RESET" onAction="#resetCpu" prefHeight="60.0" prefWidth="100.0" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-border-color: #077d29; -fx-border-width: 2;"/>
+                            <Button styleClass="button-padrao" text="RESET" onAction="#resetCpu" prefHeight="60.0" prefWidth="100.0"/>
                         </HBox>
 
                         <HBox spacing="10.0" alignment="CENTER" style="-fx-padding: 10 0 0 0;">
@@ -330,7 +330,7 @@
 
                         <VBox alignment="CENTER" spacing="10.0" style="-fx-padding: 15;">
                             <Button fx:id="btnSubciclo" text="SUBCICLO 0" onAction="#execSubciclo" styleClass="button-subciclo, subciclo-active"/>
-                            <Button styleClass="button" text="CICLO COMPLETO" prefWidth="380.0" onAction="#execCicloCompleto" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-border-color: #077d29; -fx-border-width: 2;"/>  
+                            <Button styleClass="button-ciclo" text="CICLO COMPLETO" prefWidth="380.0" onAction="#execCicloCompleto"/>  
                             <HBox spacing="8.0" alignment="CENTER">
                                 <Button fx:id="btnAutoRun" prefWidth="230.0" prefHeight="39.0" minHeight="39.0" text="▶ AUTO RUN" onAction="#toggleAutoRun" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-border-color: #077d29; -fx-border-width: 2;"/>
                                 
@@ -340,8 +340,8 @@
                                 </HBox>
 
                             </HBox>
-                            <Button styleClass="button" text="VER MEMÓRIA RAM" prefWidth="380.0" prefHeight="39.0" minHeight="39.0" onAction="#abrirJanelaMemoria" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-border-color: #077d29; -fx-border-width: 2;"/>
-                            <Button  styleClass="button-cache" text="VER MEMÓRIA CACHE" prefWidth="380.0" prefHeight="39.0" minHeight="39.0" onAction="#abrirJanelaCache" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-border-color: #f1c40f; -fx-border-width: 2;"/>
+                            <Button styleClass="button-padrao" text="VER MEMÓRIA RAM" prefWidth="380.0" prefHeight="39.0" minHeight="39.0" onAction="#abrirJanelaMemoria"/>
+                            <Button  styleClass="button-cache" text="VER MEMÓRIA CACHE" prefWidth="380.0" prefHeight="39.0" minHeight="39.0" onAction="#abrirJanelaCache"/>
                         </VBox>
                     </children>
                 </VBox>
