@@ -12,6 +12,7 @@ public class Cache implements AcessoMemoria {
 
     private long hits;
     private long misses;
+    private boolean ultimoAcessoHit = false;
 
     public Cache(AcessoMemoria proximoNivel, int tamCache, int tamBloco) {
         this("CACHE", proximoNivel, tamCache, tamBloco);
@@ -45,10 +46,12 @@ public class Cache implements AcessoMemoria {
 
         if (!hit) {
             misses++;
+            ultimoAcessoHit = false;
             carregarBloco(bloco, linha);
             logAcesso("READ", endereco, bloco, linha, false);
         } else {
             hits++;
+            ultimoAcessoHit = true;
             logAcesso("READ", endereco, bloco, linha, true);
         }
 
@@ -99,6 +102,9 @@ public class Cache implements AcessoMemoria {
 
     public long getMisses() {
         return misses;
+    }
+    public boolean isUltimoAcessoHit() {
+        return ultimoAcessoHit;
     }
 
     public String getResumo() {

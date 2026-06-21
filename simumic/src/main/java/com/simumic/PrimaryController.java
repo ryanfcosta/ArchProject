@@ -8,10 +8,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
@@ -47,7 +45,7 @@ public class PrimaryController {
             rectFlagN, rectFlagZ, rectMicroSeq;
 
     @FXML
-    private Rectangle rectFlagRD, rectFlagWR;
+    private Rectangle rectRAM, rectL1, rectL2, rectFlagRD, rectFlagWR;
     @FXML
     private Polygon polygonALU;
 
@@ -56,7 +54,7 @@ public class PrimaryController {
 
     @FXML
     private Line lBusC1, lBusC2, lBusC3, lBusA1, lBusA2, lBusA3, lBusB1, lBusB2,
-            lMem1, lMem2, lMarB, lMbrC, lRegC, lAmux1, lAmux2,
+            lMarL1, lL1L2_Mar, lL2Ram_Mar, lMbrL1, lL1L2_Mbr, lL2Ram_Mbr, lMarB, lMbrC, lRegC, lAmux1, lAmux2,
             lAluA, lAluB, lShifter, lCtrl1, lCtrl2, lCtrl3, lCtrl4,
             lCond, lFlags1, lFlags2, lAddr1, lAddr2, lAddr3, lAddr4, lAddr5,
             lDecA, lDecB, lDecC;
@@ -80,15 +78,6 @@ public class PrimaryController {
     @FXML
     private TextField txtDelay;
 
-    @FXML
-    private StackPane paneCacheL1;
-    @FXML
-    private CheckBox chkCacheL1;
-    @FXML
-    private StackPane paneCacheL2;
-    @FXML
-    private CheckBox chkCacheL2;
-
     private CPU cpu;
     private Memoria ram;
     private Cache cacheL1;
@@ -101,6 +90,8 @@ public class PrimaryController {
     private TextArea cacheL1Area;
     private TextArea cacheL2Area;
 
+    
+
     // PALETA PARA ALTERAÇÕES DE COR
     private static final Color COR_FUNDO = Color.web("#000000");
     private static final Color COR_CINZA = Color.web("#d2d5d5");
@@ -108,6 +99,7 @@ public class PrimaryController {
     private static final Color COR_VERDE = Color.web("#077d29");
     private static final String CSS_VERDE = "#077d29";
     private static final Color COR_VERMELHO = Color.web("#c3150e");
+    private static final Color COR_AMARELO = Color.web("#f1c40f");
 
     @FXML
     public void initialize() {
@@ -122,7 +114,7 @@ public class PrimaryController {
 
         todasLinhas = new Line[] { // DEFINE PARA APAGAR TUDO QUANDO RESETAR
                 lBusC1, lBusC2, lBusC3, lBusA1, lBusA2, lBusA3, lBusB1, lBusB2,
-                lMem1, lMem2, lMarB, lMbrC, lRegC, lAmux1, lAmux2,
+                lMarL1, lL1L2_Mar, lL2Ram_Mar, lMbrL1, lL1L2_Mbr, lL2Ram_Mbr, lMarB, lMbrC, lRegC, lAmux1, lAmux2,
                 lAluA, lAluB, lShifter, lCtrl1, lCtrl2, lCtrl3, lCtrl4,
                 lCond, lFlags1, lFlags2, lAddr1, lAddr2, lAddr3, lAddr4, lAddr5,
                 lDecA, lDecB, lDecC
@@ -313,8 +305,12 @@ public class PrimaryController {
         int porcentagem = proximo * 25;
 
         btnSubciclo.setStyle(
-                "-fx-background-color: linear-gradient(to right, #077d29 " + porcentagem + "%, #000000 " + porcentagem
-                        + "%);");
+                "-fx-background-color: linear-gradient(to right, #077d29 " + porcentagem + "%, #000000 " + porcentagem + "%); " +
+                "-fx-background-radius: 0; " +
+                "-fx-border-radius: 0; " +
+                "-fx-border-color: #077d29; " +
+                "-fx-border-width: 2;"
+        );
 
         return proximo;
     }
@@ -421,6 +417,9 @@ public class PrimaryController {
         rectFlagRD.setStroke(COR_CINZA);
         rectFlagWR.setFill(COR_FUNDO);
         rectFlagWR.setStroke(COR_CINZA);
+        rectRAM.setStroke(COR_CINZA);
+        rectL1.setStroke(COR_AMARELO);
+        rectL2.setStroke(COR_AMARELO);
 
         String sinal = cpu.getSinalControle();
         if ("READ".equals(sinal)) {
@@ -430,7 +429,18 @@ public class PrimaryController {
             rectFlagWR.setFill(COR_VERDE);
             rectFlagWR.setStroke(COR_VERDE);
         }
-
+                
+        if (cpu.getSinalControle().equals("READ") || cpu.getSinalControle().equals("WRITE")) {
+            
+            rectL1.setStroke(cacheL1.isUltimoAcessoHit() ? COR_VERDE : COR_VERMELHO);
+            rectL2.setStroke(cacheL2.isUltimoAcessoHit() ? COR_VERDE : COR_VERMELHO);
+            
+            if (!cacheL1.isUltimoAcessoHit() && !cacheL2.isUltimoAcessoHit()) {
+                rectRAM.setStroke(COR_VERDE);
+            } else {
+                rectRAM.setStroke(COR_CINZA);
+            }
+}
         String status = cpu.getstatusCiclo();
 
         labelStatus.setText(status);
@@ -469,8 +479,7 @@ public class PrimaryController {
 
             if ("READ".equals(sinal)) {
                 rectMBR.setStroke(COR_VERDE);
-                lMem1.setStroke(COR_VERDE);
-                lMem2.setStroke(COR_VERDE);
+                acenderFiosMemoria();
             }
 
         } else if ("SUB2".equals(status)) {
@@ -529,8 +538,7 @@ public class PrimaryController {
             if ("WRITE".equals(sinal)) {
                 rectMAR.setStroke(COR_VERDE);
                 rectMBR.setStroke(COR_VERDE);
-                lMem1.setStroke(COR_VERDE);
-                lMem2.setStroke(COR_VERDE);
+                acenderFiosMemoria();
             }
 
             lCtrl1.setStroke(COR_VERDE);
@@ -559,6 +567,20 @@ public class PrimaryController {
         atualizarJanelaCache();
     }
 
+    private void acenderFiosMemoria() {
+        lMarL1.setStroke(COR_VERDE);
+        lMbrL1.setStroke(COR_VERDE);
+
+        if (!cacheL1.isUltimoAcessoHit()) {
+            lL1L2_Mar.setStroke(COR_VERDE);
+            lL1L2_Mbr.setStroke(COR_VERDE);
+
+            if (!cacheL2.isUltimoAcessoHit()) {
+                lL2Ram_Mar.setStroke(COR_VERDE);
+                lL2Ram_Mbr.setStroke(COR_VERDE);
+            }
+        }
+    }
     private void preencherReg(Label label, Rectangle rect, Integer valor) {
         if (label == null)
             return;
@@ -687,25 +709,7 @@ public class PrimaryController {
                 throw new IllegalArgumentException("Mnemônico desconhecido: " + mnem);
         }
 
-        return opcode | (arg & 0x0FFF);
-    }
-
-    @FXML
-    private void toggleCacheL1() {
-        boolean cache1Ativada = chkCacheL1.isSelected();
-
-        paneCacheL1.setVisible(cache1Ativada);
-        paneCacheL1.setManaged(cache1Ativada);
-
-    }
-
-    @FXML
-    private void toggleCacheL2() {
-        boolean cache2Ativada = chkCacheL2.isSelected();
-
-        paneCacheL2.setVisible(cache2Ativada);
-        paneCacheL2.setManaged(cache2Ativada);
-
+            return opcode | (arg & 0x0FFF);
     }
 
     private TextArea criarAreaCache() {
