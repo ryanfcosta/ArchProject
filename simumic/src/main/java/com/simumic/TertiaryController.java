@@ -27,11 +27,17 @@ public class TertiaryController {
         this.cacheL2 = cacheL2;
         if (labelTituloL1 != null) labelTituloL1.setText(cacheL1.getNome());
         if (labelTituloL2 != null) labelTituloL2.setText(cacheL2.getNome());
-        configurarCelulas(listaL1);
-        configurarCelulas(listaL2);
         atualizar();
     }
 
+    @FXML
+    public void initialize() {
+        listaL1.setFixedCellSize(20.0);
+        listaL2.setFixedCellSize(20.0);
+        formatarListaCache(listaL1);
+        formatarListaCache(listaL2);
+    }
+    
     @FXML
     public void atualizar() {
         if (cacheL1 != null) {
@@ -63,7 +69,6 @@ public class TertiaryController {
 
             boolean destacada = (linha == linhaDestacada);
 
-            // Formato: linha;V;TAG;rangeBloco;conteudo;destacada
             String item = String.format(
                     "%02d;%d;%s;%04d-%04d;%s;%s",
                     linha,
@@ -78,83 +83,6 @@ public class TertiaryController {
         lista.setItems(linhas);
     }
 
-    private void configurarCelulas(ListView<String> lista) {
-        lista.setCellFactory(lv -> new ListCell<>() {
-            private final HBox hbox = new HBox(12.0);
-            private final Label lblLinha = new Label();
-            private final Label lblV     = new Label();
-            private final Label lblTag   = new Label();
-            private final Label lblBloco = new Label();
-            private final Label lblDados = new Label();
-
-            {
-                lblLinha.setPrefWidth(55.0);
-                lblLinha.setAlignment(Pos.CENTER);
-
-                lblV.setPrefWidth(35.0);
-                lblV.setAlignment(Pos.CENTER);
-
-                lblTag.setPrefWidth(60.0);
-                lblTag.setAlignment(Pos.CENTER);
-
-                lblBloco.setPrefWidth(110.0);
-                lblBloco.setAlignment(Pos.CENTER);
-
-                lblDados.setPrefWidth(200.0);
-                lblDados.setAlignment(Pos.CENTER);
-
-                hbox.getChildren().addAll(lblLinha, lblV, lblTag, lblBloco, lblDados);
-            }
-
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                    setStyle("-fx-background-color: #000; -fx-padding: 2 10 2 10;");
-                    return;
-                }
-
-                String[] p = item.split(";");
-                String linha   = p[0];
-                boolean valido = "1".equals(p[1]);
-                String tag     = p[2];
-                String bloco   = p[3];
-                String dados   = p[4];
-                boolean destacada = "1".equals(p[5]);
-
-                lblLinha.setText(linha);
-                lblV.setText(valido ? "1" : "0");
-                lblTag.setText(tag);
-                lblBloco.setText(bloco);
-                lblDados.setText(dados);
-
-                String corTexto  = valido ? "#d2d5d5" : "#555555";
-                String corV      = valido ? "#077d29" : "#555555";
-                String cssBase   = "-fx-font-family: Monospaced; -fx-font-size: 12; -fx-text-fill: " + corTexto + ";";
-
-                lblLinha.setStyle(cssBase);
-                lblV.setStyle("-fx-font-family: Monospaced; -fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: " + corV + ";");
-                lblTag.setStyle("-fx-font-family: Monospaced; -fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: " +
-                        (valido ? "#e91e8c" : "#555555") + ";"); // tag em magenta, igual ao slide
-                lblBloco.setStyle("-fx-font-family: Monospaced; -fx-font-size: 12; -fx-text-fill: " +
-                        (valido ? "#3498db" : "#555555") + ";"); // bloco em azul, igual ao slide
-                lblDados.setStyle(cssBase);
-
-                setText(null);
-                setGraphic(hbox);
-
-                if (destacada) {
-                    setStyle("-fx-background-color: #1a1a1a; -fx-padding: 2 10 2 10; " +
-                             "-fx-border-color: #077d29; -fx-border-width: 1 0 1 0;");
-                } else {
-                    setStyle("-fx-background-color: #000; -fx-padding: 2 10 2 10;");
-                }
-            }
-        });
-    }
-
     private String formatarStats(Cache c) {
         double total = c.getHits() + c.getMisses();
         double percent = (total == 0) ? 0 : (c.getHits() / total) * 100;
@@ -165,5 +93,75 @@ public class TertiaryController {
                     c.isUltimoAcessoHit() ? "HIT" : "MISS");
         }
         return String.format("HITS=%d  MISSES=%d  (%.1f%%)%s", c.getHits(), c.getMisses(), percent, ultimoHit);
+    }
+    private static final String CSS_MONO = "-fx-font-family: Monospaced; -fx-font-size: 12;";
+
+    private void formatarListaCache(ListView<String> lista) {
+        lista.setCellFactory(lv -> new ListCell<>() {
+            private final HBox hbox = new HBox(8.0);
+            private final Label lblLinha    = new Label();
+            private final Label lblV        = new Label();
+            private final Label lblTag      = new Label();
+            private final Label lblBloco    = new Label();
+            private final Label lblConteudo = new Label();
+
+            {
+                // LARGURAS IDÊNTICAS ao cabeçalho de coluna no FXML (Linha/V/TAG/Bloco(end)/Conteúdo)
+                lblLinha.setPrefWidth(42.0);     lblLinha.setAlignment(Pos.CENTER);
+                lblV.setPrefWidth(22.0);         lblV.setAlignment(Pos.CENTER);
+                lblTag.setPrefWidth(45.0);       lblTag.setAlignment(Pos.CENTER);
+                lblBloco.setPrefWidth(90.0);     lblBloco.setAlignment(Pos.CENTER);
+                lblConteudo.setPrefWidth(175.0); lblConteudo.setAlignment(Pos.CENTER);
+
+                hbox.setAlignment(Pos.CENTER_LEFT);
+                hbox.getChildren().addAll(lblLinha, lblV, lblTag, lblBloco, lblConteudo);
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                    setStyle("-fx-background-color: #000; -fx-padding: 1 0 1 4;");
+                    return;
+                }
+
+                String[] p = item.split(";");
+                String linha      = p[0];
+                boolean valido    = "1".equals(p[1]);
+                String tag        = p[2];
+                String bloco      = p[3];
+                String conteudo   = p[4];
+                boolean destacada = p.length > 5 && "1".equals(p[5]);
+
+                lblLinha.setText(linha);
+                lblV.setText(valido ? "1" : "0");
+                lblTag.setText(tag);
+                lblBloco.setText(bloco);
+                lblConteudo.setText(conteudo);
+
+                String corTexto = valido ? "#d2d5d5" : "#555555";
+                String corV     = valido ? "#077d29" : "#555555";
+                String corTag   = valido ? "#e91e8c" : "#555555"; // magenta, igual ao slide
+                String corBloco = valido ? "#3498db" : "#555555"; // azul, igual ao slide
+
+                lblLinha.setStyle(CSS_MONO + " -fx-text-fill: " + corTexto + ";");
+                lblV.setStyle(CSS_MONO + " -fx-font-weight: bold; -fx-text-fill: " + corV + ";");
+                lblTag.setStyle(CSS_MONO + " -fx-font-weight: bold; -fx-text-fill: " + corTag + ";");
+                lblBloco.setStyle(CSS_MONO + " -fx-text-fill: " + corBloco + ";");
+                lblConteudo.setStyle(CSS_MONO + " -fx-text-fill: " + corTexto + ";");
+
+                setText(null);
+                setGraphic(hbox);
+
+                if (destacada) {
+                    setStyle("-fx-background-color: #1a1a1a; -fx-padding: 1 0 1 4; " +
+                             "-fx-border-color: #077d29; -fx-border-width: 1 0 1 0;");
+                } else {
+                    setStyle("-fx-background-color: #000; -fx-padding: 1 0 1 4;");
+                }
+            }
+        });
     }
 }

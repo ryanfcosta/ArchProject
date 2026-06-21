@@ -94,3 +94,14 @@
 .button-ciclo:pressed {
     -fx-background-color: #077d29; background-color: #077d29;
 }
+.cache-list {
+    -fx-background-color: #000000; background-color: #000000;
+    -fx-border-color: #333; border-color: #333;
+    -fx-font-family: 'Monospaced'; font-family: 'Monospaced';
+    -fx-font-size: 12px; font-size: 12px;
+}
+
+.cache-list .list-cell {
+    -fx-padding: 0; padding: 0;
+    -fx-background-color: transparent; background-color: transparent;
+}

@@ -8,8 +8,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
@@ -169,18 +167,10 @@ public class PrimaryController {
             autoRunTimeline = new Timeline(
                     new KeyFrame(Duration.millis(delay), e -> {
                         execSubciclo();
-                        atualizarLabels();
-                        atualizarBotaoSubciclo();
-
-                        if (janelaMemoria != null && janelaMemoria.isShowing()) {
-                            Object ctrl = janelaMemoria.getScene().getUserData();
-                            if (ctrl instanceof SecondaryController) {
-                                ((SecondaryController) ctrl).atualizar();
-                            }
-                        }
-                        if (cpu.getSubcicloAtual() == 1) {
+                        
+                        if (cpu.getSubcicloAtual() == 1 && cpu.getMPC() == 0) {
                             int pcAtual = cpu.getRegs().get("PC");
-                            if (pcAtual > ultimoEnderecoPrograma + 1) {
+                            if (pcAtual > ultimoEnderecoPrograma) {
                                 pararAutoRun();
                             }
                         }
@@ -234,6 +224,14 @@ public class PrimaryController {
             labelAssemblerStatus.setText("Erro ao abrir janela de memória.");
         }
     }
+    private void atualizarJanelaMemoria() {
+    if (janelaMemoria != null && janelaMemoria.isShowing()) {
+        Object ctrl = janelaMemoria.getScene().getUserData();
+        if (ctrl instanceof SecondaryController) {
+            ((SecondaryController) ctrl).atualizar();
+        }
+    }
+}   
 
     @FXML
     private void abrirJanelaCache() {
@@ -554,6 +552,7 @@ public class PrimaryController {
         }
 
         atualizarJanelaCache();
+        atualizarJanelaMemoria();
     }
 
     private void acenderFiosMemoria() {

@@ -120,8 +120,6 @@ public class Cache implements AcessoMemoria {
     public boolean isUltimoAcessoHit() {
         return ultimoAcessoHit;
     }
-
-    // GETTERS PARA A VISUALIZAÇÃO GRÁFICA
     public String getNome() {
         return nome;
     }
