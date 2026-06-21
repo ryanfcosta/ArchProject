@@ -39,7 +39,18 @@
     -fx-min-height: 39px; min-height: 39px;
     -fx-pref-width: 380px;
     -fx-background-insets: 2;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0; border-radius: 0;
 }
  .subciclo-active {
     -fx-background-color: linear-gradient(to right, #077d29  25%, #000000 25%); background-color: linear-gradient(to right, #077d29 025%, #000000 25%);
+}
+.button:pressed {
+    -fx-background-color: #077d29; background-color: #077d29;
+    -fx-border-color: #077d29; border-color: #077d29;
+}
+.button-cache:pressed {
+    -fx-background-color: #f1c40f; background-color: #f1c40f; 
+    -fx-text-fill: black;          
+    -fx-border-color: #f1c40f; border-color: #f1c40f;
 }

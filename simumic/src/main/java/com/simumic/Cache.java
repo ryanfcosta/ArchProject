@@ -107,12 +107,6 @@ public class Cache implements AcessoMemoria {
         return ultimoAcessoHit;
     }
 
-    public String getResumo() {
-        long total = hits + misses;
-        double hitRate = total == 0 ? 0.0 : (hits * 100.0) / total;
-        return String.format("%s H:%d M:%d HIT%%:%.1f", nome, hits, misses, hitRate);
-    }
-
     public String getVisualizacao() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("%s | blocos=%d | bloco=%d\n", nome, tamCache, tamBloco));

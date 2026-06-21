@@ -135,7 +135,7 @@
                                             <Label text="DEC A" textFill="WHITE" style="-fx-font-size: 9; -fx-font-weight: bold;"/>
                                         </StackPane>
 
-                                        <Rectangle layoutX="435.0" layoutY="135.0" width="145.0" height="550.0" styleClass="bank-case" style="-fx-stroke: #f1c40f;"/>
+                                        <Rectangle layoutX="435.0" layoutY="135.0" width="145.0" height="550.0" styleClass="bank-case" style="-fx-stroke: #3498db;"/>
                                         
                                         <VBox layoutX="450.0" layoutY="150.0" spacing="5.0">
                                             <children>
@@ -288,7 +288,7 @@
                             <Label text="Console Macroinstruções" textFill="#d2d5d5" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
                             <TextArea fx:id="consoleMacro" prefWidth="380.0" prefHeight="130.0" style="-fx-font-family: 'Monospaced'; -fx-control-inner-background: #000000; -fx-text-fill: white;" promptText="Exemplo:&#10;LOCO 15&#10;STOD 50&#10;JUMP 0"/>
                             <HBox spacing="10" alignment="CENTER_LEFT">
-                                <Button text="Montar e Gravar na RAM" onAction="#montarCodigo" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-color: #077d29; -fx-border-width: 2;"/>
+                                <Button styleClass="button" text="Montar e Gravar na RAM" onAction="#montarCodigo" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-color: #077d29; -fx-border-width: 2;"/>
                                 <Label fx:id="labelAssemblerStatus" text="Aguardando código..." textFill="#d2d5d5" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
                             </HBox>
                         </VBox>
@@ -305,7 +305,18 @@
                                 <Label fx:id="labelInstr" text="0 Instr" textFill="#bdc3c7"><font><Font name="Monospaced" size="11.0"/></font></Label>
                             </VBox>
                             
-                            <Button text="RESET" onAction="#resetCpu" prefHeight="55.0" prefWidth="100.0" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-border-color: #077d29; -fx-border-width: 2;"/>
+                            <Button styleClass="button" text="RESET" onAction="#resetCpu" prefHeight="60.0" prefWidth="100.0" style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-border-color: #077d29; -fx-border-width: 2;"/>
+                        </HBox>
+
+                        <HBox spacing="10.0" alignment="CENTER" style="-fx-padding: 10 0 0 0;">
+                            <VBox alignment="CENTER" prefWidth="190.0" spacing="2.0" style="-fx-border-color: #f1c40f; -fx-padding: 5; -fx-border-width: 1;">
+                                <Label text="CACHE L1" textFill="#f1c40f" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                                <Label fx:id="labelL1Stats" text="H: 0 | M: 0 | 0%" textFill="WHITE" style="-fx-font-family: 'Monospaced'; -fx-font-size: 11;"/>
+                            </VBox>
+                            <VBox alignment="CENTER" prefWidth="190.0" spacing="2.0" style="-fx-border-color: #f1c40f; -fx-padding: 5; -fx-border-width: 1;">
+                                <Label text="CACHE L2" textFill="#f1c40f" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                                <Label fx:id="labelL2Stats" text="H: 0 | M: 0 | 0%" textFill="WHITE" style="-fx-font-family: 'Monospaced'; -fx-font-size: 11;"/>
+                            </VBox>
                         </HBox>
 
                         <VBox alignment="TOP_LEFT" prefWidth="400.0" prefHeight="180.0" style="-fx-padding: 10; -fx-border-color: #077d29;">
@@ -319,7 +330,7 @@
 
                         <VBox alignment="CENTER" spacing="10.0" style="-fx-padding: 15;">
                             <Button fx:id="btnSubciclo" text="SUBCICLO 0" onAction="#execSubciclo" styleClass="button-subciclo, subciclo-active"/>
-                            <Button text="CICLO COMPLETO" prefWidth="380.0" onAction="#execCicloCompleto" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-border-color: #077d29; -fx-border-width: 2;"/>  
+                            <Button styleClass="button" text="CICLO COMPLETO" prefWidth="380.0" onAction="#execCicloCompleto" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-padding: 10 20; -fx-border-color: #077d29; -fx-border-width: 2;"/>  
                             <HBox spacing="8.0" alignment="CENTER">
                                 <Button fx:id="btnAutoRun" prefWidth="230.0" prefHeight="39.0" minHeight="39.0" text="▶ AUTO RUN" onAction="#toggleAutoRun" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-border-color: #077d29; -fx-border-width: 2;"/>
                                 
@@ -329,8 +340,8 @@
                                 </HBox>
 
                             </HBox>
-                            <Button text="VER MEMÓRIA RAM" prefWidth="380.0" prefHeight="39.0" minHeight="39.0" onAction="#abrirJanelaMemoria" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-border-color: #077d29; -fx-border-width: 2;"/>
-                            <Button text="VER MEMÓRIA CACHE" prefWidth="380.0" prefHeight="39.0" minHeight="39.0" onAction="#abrirJanelaCache" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-border-color: #f1c40f; -fx-border-width: 2;"/>
+                            <Button styleClass="button" text="VER MEMÓRIA RAM" prefWidth="380.0" prefHeight="39.0" minHeight="39.0" onAction="#abrirJanelaMemoria" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-border-color: #077d29; -fx-border-width: 2;"/>
+                            <Button  styleClass="button-cache" text="VER MEMÓRIA CACHE" prefWidth="380.0" prefHeight="39.0" minHeight="39.0" onAction="#abrirJanelaCache" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12; -fx-border-color: #f1c40f; -fx-border-width: 2;"/>
                         </VBox>
                     </children>
                 </VBox>

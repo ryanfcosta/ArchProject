@@ -70,7 +70,7 @@ public class PrimaryController {
     @FXML
     private ScrollPane scrollMPC;
     @FXML
-    private Label labelMPC, labelAssemblerStatus, labelEstatisticas, labelInstr;
+    private Label labelMPC, labelAssemblerStatus, labelEstatisticas, labelInstr, labelL1Stats, labelL2Stats;
     @FXML
     private Button btnSubciclo;
     @FXML
@@ -126,6 +126,7 @@ public class PrimaryController {
 
     @FXML
     private void resetCpu() {
+        labelAssemblerStatus.setText("");
         cpu.reset();
         if (cacheL1 != null) {
             cacheL1.clear();
@@ -142,6 +143,7 @@ public class PrimaryController {
 
     @FXML
     private void execSubciclo() {
+        labelAssemblerStatus.setText("");
         cpu.executarSubciclo();
         atualizarLabels();
         atualizarBotaoSubciclo();
@@ -152,6 +154,7 @@ public class PrimaryController {
 
     @FXML
     private void execCicloCompleto() {
+        labelAssemblerStatus.setText("");
         cpu.executarCicloCompleto();
         atualizarLabels();
         atualizarBotaoSubciclo();
@@ -301,7 +304,6 @@ public class PrimaryController {
 
         btnSubciclo.setText(nomes[proximo - 1]);
 
-        // CALCULA A PORCENTAGEM DO PREENCHIMENTO
         int porcentagem = proximo * 25;
 
         btnSubciclo.setStyle(
@@ -553,14 +555,14 @@ public class PrimaryController {
             lAddr4.setStroke(COR_VERDE);
             lAddr5.setStroke(COR_VERDE);
         }
+        if (cacheL1 != null && cacheL2 != null) {
+            labelL1Stats.setText(formatarStats(cacheL1));
+            labelL2Stats.setText(formatarStats(cacheL2));
+        }
 
         if (labelEstatisticas != null) {
-            String cacheResumo = "";
-            if (cacheL1 != null && cacheL2 != null) {
-                cacheResumo = " | " + cacheL1.getResumo() + " | " + cacheL2.getResumo();
-            }
             labelEstatisticas
-                    .setText(cpu.getTotalCiclos() + " Ciclos | " + cpu.getTotalSubciclos() + " Sub" + cacheResumo);
+                    .setText(cpu.getTotalCiclos() + " Ciclos | " + cpu.getTotalSubciclos() + " Sub");
             labelInstr.setText(cpu.getInstrucoesExecutadas() + " Instr. Executadas");
         }
 
@@ -742,5 +744,10 @@ public class PrimaryController {
         if (cacheL2Area != null && cacheL2 != null) {
             cacheL2Area.setText(cacheL2.getVisualizacao());
         }
+    }
+    private String formatarStats(Cache c) {
+        double total = c.getHits() + c.getMisses();
+        double percent = (total == 0) ? 0 : (c.getHits() / total) * 100;
+        return String.format("H: %d | M: %d | %.1f%%", c.getHits(), c.getMisses(), percent);
     }
 }
