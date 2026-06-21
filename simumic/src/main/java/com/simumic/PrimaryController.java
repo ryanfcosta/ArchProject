@@ -87,8 +87,7 @@ public class PrimaryController {
     private int ultimoEnderecoPrograma = 0;
     private Stage janelaMemoria;
     private Stage janelaCache;
-    private TextArea cacheL1Area;
-    private TextArea cacheL2Area;
+    private TertiaryController tertiaryController;
 
     
 
@@ -244,39 +243,27 @@ public class PrimaryController {
             return;
         }
 
-        VBox root = new VBox(12);
-        root.setStyle("-fx-background-color: #000000; -fx-padding: 16;");
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/simumic/tertiary.fxml"));
+            Parent root = loader.load();
 
-        Label titulo = new Label("Visualização da Cache");
-        titulo.setTextFill(COR_CINZA);
-        titulo.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
+            tertiaryController = loader.getController();
+            tertiaryController.setCaches(cacheL1, cacheL2);
 
-        Label resumo = new Label("Acompanhe bloco, tag, validade e conteúdo da L1/L2 em tempo real.");
-        resumo.setTextFill(COR_CINZA);
-        resumo.setStyle("-fx-font-size: 11;");
+            Scene cena = new Scene(root, 980, 620);
 
-        cacheL1Area = criarAreaCache();
-        cacheL2Area = criarAreaCache();
+            janelaCache = new Stage();
+            janelaCache.setTitle("Cache - SimuMIC");
+            janelaCache.setScene(cena);
+            janelaCache.setOnShown(e -> atualizarJanelaCache());
+            janelaCache.show();
 
-        VBox blocoL1 = criarBlocoCache("L1", cacheL1Area, "#f1c40f");
-        VBox blocoL2 = criarBlocoCache("L2", cacheL2Area, "#3498db");
-
-        HBox conteudo = new HBox(14, blocoL1, blocoL2);
-
-        Button btnAtualizar = new Button("ATUALIZAR");
-        btnAtualizar.setOnAction(e -> atualizarJanelaCache());
-        btnAtualizar.setStyle(
-                "-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-border-color: #077d29; -fx-border-width: 2;");
-
-        root.getChildren().addAll(titulo, resumo, conteudo, btnAtualizar);
-
-        Scene cena = new Scene(root, 980, 620);
-        janelaCache = new Stage();
-        janelaCache.setTitle("Cache - SimuMIC");
-        janelaCache.setScene(cena);
-        janelaCache.setOnShown(e -> atualizarJanelaCache());
-        janelaCache.show();
-        atualizarJanelaCache();
+        } catch (IOException e) {
+            e.printStackTrace();
+            labelAssemblerStatus.setTextFill(COR_VERMELHO);
+            labelAssemblerStatus.setText("Erro ao abrir janela de cache.");
+        }
     }
 
     private void imprimirConsoleMPC() {
@@ -714,35 +701,9 @@ public class PrimaryController {
             return opcode | (arg & 0x0FFF);
     }
 
-    private TextArea criarAreaCache() {
-        TextArea area = new TextArea();
-        area.setEditable(false);
-        area.setWrapText(false);
-        area.setPrefRowCount(18);
-        area.setPrefColumnCount(38);
-        area.setStyle(
-                "-fx-control-inner-background: #000000; -fx-text-fill: #d2d5d5; -fx-font-family: 'Consolas'; -fx-font-size: 12; -fx-border-color: #077d29; -fx-border-width: 1.5;");
-        return area;
-    }
-
-    private VBox criarBlocoCache(String nome, TextArea area, String corBorda) {
-        Label label = new Label(nome);
-        label.setTextFill(COR_CINZA);
-        label.setStyle("-fx-font-size: 14; -fx-font-weight: bold;");
-
-        VBox caixa = new VBox(8, label, area);
-        caixa.setStyle("-fx-background-color: #000000; -fx-padding: 10; -fx-border-color: " + corBorda
-                + "; -fx-border-width: 2;");
-        caixa.setPrefWidth(450);
-        return caixa;
-    }
-
     private void atualizarJanelaCache() {
-        if (cacheL1Area != null && cacheL1 != null) {
-            cacheL1Area.setText(cacheL1.getVisualizacao());
-        }
-        if (cacheL2Area != null && cacheL2 != null) {
-            cacheL2Area.setText(cacheL2.getVisualizacao());
+        if (tertiaryController != null) {
+            tertiaryController.atualizar();
         }
     }
     private String formatarStats(Cache c) {

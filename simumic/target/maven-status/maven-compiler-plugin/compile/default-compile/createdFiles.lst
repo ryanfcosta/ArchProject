@@ -1,7 +1,9 @@
-module-info.class
-com/simumic/SecondaryController$1.class
 com/simumic/PrimaryController.class
 com/simumic/AcessoMemoria.class
+com/simumic/TertiaryController.class
+com/simumic/TertiaryController$1.class
+module-info.class
+com/simumic/SecondaryController$1.class
 com/simumic/Memoria.class
 com/simumic/CPU.class
 com/simumic/Cache.class

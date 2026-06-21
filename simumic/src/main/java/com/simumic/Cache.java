@@ -13,6 +13,9 @@ public class Cache implements AcessoMemoria {
     private long hits;
     private long misses;
     private boolean ultimoAcessoHit = false;
+    private int ultimoEndereco = -1;
+    private int ultimoBloco = -1;
+    private int ultimaLinha = -1;
 
     public Cache(AcessoMemoria proximoNivel, int tamCache, int tamBloco) {
         this("CACHE", proximoNivel, tamCache, tamBloco);
@@ -55,6 +58,10 @@ public class Cache implements AcessoMemoria {
             logAcesso("READ", endereco, bloco, linha, true);
         }
 
+        ultimoEndereco = endereco;
+        ultimoBloco = bloco;
+        ultimaLinha = linha;
+
         return dados[linha][offset] & 0xFFFF;
     }
 
@@ -80,6 +87,10 @@ public class Cache implements AcessoMemoria {
             logAcesso("WRITE", endereco, bloco, linha, true);
         }
 
+        ultimoEndereco = endereco;
+        ultimoBloco = bloco;
+        ultimaLinha = linha;
+
         dados[linha][offset] = valor;
         proximoNivel.write(endereco, valor);
     }
@@ -94,6 +105,9 @@ public class Cache implements AcessoMemoria {
         }
         hits = 0;
         misses = 0;
+        ultimoEndereco = -1;
+        ultimoBloco = -1;
+        ultimaLinha = -1;
     }
 
     public long getHits() {
@@ -105,6 +119,52 @@ public class Cache implements AcessoMemoria {
     }
     public boolean isUltimoAcessoHit() {
         return ultimoAcessoHit;
+    }
+
+    // GETTERS PARA A VISUALIZAÇÃO GRÁFICA
+    public String getNome() {
+        return nome;
+    }
+
+    public int getTamCache() {
+        return tamCache;
+    }
+
+    public int getTamBloco() {
+        return tamBloco;
+    }
+
+    public boolean isValida(int linha) {
+        return validos[linha];
+    }
+
+    public int getTag(int linha) {
+        return tags[linha];
+    }
+
+    public int getDado(int linha, int offset) {
+        return dados[linha][offset] & 0xFFFF;
+    }
+
+    public int linhaParaEndereco(int endereco) {
+        int bloco = endereco / tamBloco;
+        return linhaDoBloco(bloco);
+    }
+
+    public int blocoDoEndereco(int endereco) {
+        return endereco / tamBloco;
+    }
+
+    public int getUltimoEndereco() {
+        return ultimoEndereco;
+    }
+
+    public int getUltimoBloco() {
+        return ultimoBloco;
+    }
+
+    public int getUltimaLinha() {
+        return ultimaLinha;
     }
 
     public String getVisualizacao() {
