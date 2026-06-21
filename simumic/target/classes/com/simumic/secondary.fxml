@@ -45,10 +45,6 @@
                        -fx-font-weight: bold; -fx-background-radius: 0;"/>
 
         <Region HBox.hgrow="ALWAYS"/>
-
-        <Button text="↻ Atualizar" onAction="#atualizar"
-                style="-fx-background-color: #077d29; -fx-text-fill: white;
-                       -fx-font-weight: bold; -fx-background-radius: 0;"/>
     </HBox>
 
     <HBox spacing="15.0" style="-fx-border-color: #077d29; -fx-border-width: 0 0 1 0; -fx-padding: 4 10 4 10;">
