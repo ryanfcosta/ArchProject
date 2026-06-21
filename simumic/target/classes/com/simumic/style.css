@@ -39,7 +39,58 @@
     -fx-min-height: 39px; min-height: 39px;
     -fx-pref-width: 380px;
     -fx-background-insets: 2;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0; border-radius: 0;
 }
- .subciclo-active {
+
+.subciclo-active {
     -fx-background-color: linear-gradient(to right, #077d29  25%, #000000 25%); background-color: linear-gradient(to right, #077d29 025%, #000000 25%);
+}
+
+.button-padrao {
+    -fx-background-color: #000000; background-color: #000000;
+    -fx-text-fill: white;
+    -fx-font-weight: bold; font-weight: bold;
+    -fx-font-size: 12px; font-size: 12px;
+    -fx-border-color: #077d29; border-color: #077d29;
+    -fx-border-width: 2px; border-width: 2px;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0; border-radius: 0;
+}
+.button-padrao:pressed {
+    -fx-background-color: #077d29; background-color: #077d29;
+}
+
+.button-cache {
+    -fx-background-color: #000000; background-color: #000000;
+    -fx-text-fill: white;
+    -fx-font-weight: bold; font-weight: bold;
+    -fx-font-size: 12px; font-size: 12px;
+    -fx-border-color: #f1c40f; border-color: #f1c40f;
+    -fx-border-width: 2px; border-width: 2px;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0; border-radius: 0;
+
+}
+.button-cache:pressed {
+    -fx-background-color: #f1c40f; background-color: #f1c40f;
+    -fx-text-fill: white; 
+}
+.button-ciclo {
+    -fx-background-color: transparent; background-color: transparent;
+
+    -fx-text-fill: white;
+    -fx-font-weight: bold; font-weight: bold;
+    -fx-font-size: 12px; font-size: 12px;
+    -fx-border-color: #077d29; border-color: #077d29;
+    -fx-border-width: 2; border-width: 2;
+    -fx-padding: 10 20; padding: 10 20;
+    -fx-pref-width: 380px;
+    -fx-min-height: 39px; min-height: 39px;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0; border-radius: 0;
+}
+
+.button-ciclo:pressed {
+    -fx-background-color: #077d29; background-color: #077d29;
 }
