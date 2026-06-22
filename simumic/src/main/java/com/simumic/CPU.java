@@ -552,6 +552,30 @@ public class CPU {
         return enc_ctrl;
     }
 
+    public int getCondCtrl() {
+        return cond_ctrl;
+    }
+
+    public int getAluCtrl() {
+        return alu_ctrl;
+    }
+
+    public int getShCtrl() {
+        return sh_ctrl;
+    }
+
+    public int getRdCtrl() {
+        return rd_ctrl;
+    }
+
+    public int getWrCtrl() {
+        return wr_ctrl;
+    }
+
+    public int getAddrField() {
+        return addr_field;
+    }
+
     public int getMPC() {
         return mpc;
     }

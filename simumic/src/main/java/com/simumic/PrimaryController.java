@@ -60,6 +60,14 @@ public class PrimaryController {
     @FXML
     private Label num1, num2, num3, num4;
 
+    @FXML
+    private Label labelMpcVal;
+
+    @FXML
+    private Label labelMirAmux, labelMirCond, labelMirAlu, labelMirSh, labelMirMbr,
+            labelMirMar, labelMirRd, labelMirWr, labelMirEnc, labelMirC, labelMirB,
+            labelMirA, labelMirAddr;
+
     private Line[] todasLinhas;
     private Label[] numsClock;
 
@@ -449,6 +457,28 @@ public class PrimaryController {
         rectDecA.setStroke(COR_CINZA);
         rectDecB.setStroke(COR_CINZA);
         rectDecC.setStroke(COR_CINZA);
+
+        // Atualiza o MPC numérico (registrador do microsequenciador)
+        if (labelMpcVal != null) {
+            labelMpcVal.setText(String.format("%03d", cpu.getMPC()));
+        }
+
+        // Atualiza o painel do MIR (Microinstruction Register)
+        if (labelMirAmux != null) {
+            labelMirAmux.setText(String.valueOf(cpu.getAmuxCtrl()));
+            labelMirCond.setText(String.format("%02d", cpu.getCondCtrl()));
+            labelMirAlu.setText(String.format("%02d", cpu.getAluCtrl()));
+            labelMirSh.setText(String.valueOf(cpu.getShCtrl()));
+            labelMirMbr.setText(String.valueOf(cpu.getMbrCtrl()));
+            labelMirMar.setText(String.valueOf(cpu.getMarCtrl()));
+            labelMirRd.setText(String.valueOf(cpu.getRdCtrl()));
+            labelMirWr.setText(String.valueOf(cpu.getWrCtrl()));
+            labelMirEnc.setText(String.valueOf(cpu.getEncCtrl()));
+            labelMirC.setText(String.format("%04d", cpu.getCReg()));
+            labelMirB.setText(String.format("%04d", cpu.getBReg()));
+            labelMirA.setText(String.format("%04d", cpu.getAReg()));
+            labelMirAddr.setText(String.format("%08d", cpu.getAddrField()));
+        }
 
         if ("SUB1".equals(status)) {
             num1.setStyle("-fx-text-fill: " + CSS_VERDE + ";");
