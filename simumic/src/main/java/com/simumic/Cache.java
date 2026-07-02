@@ -51,11 +51,9 @@ public class Cache implements AcessoMemoria {
             misses++;
             ultimoAcessoHit = false;
             carregarBloco(bloco, linha);
-            logAcesso("READ", endereco, bloco, linha, false);
         } else {
             hits++;
             ultimoAcessoHit = true;
-            logAcesso("READ", endereco, bloco, linha, true);
         }
 
         ultimoEndereco = endereco;
@@ -81,10 +79,8 @@ public class Cache implements AcessoMemoria {
         if (!hit) {
             misses++;
             carregarBloco(bloco, linha);
-            logAcesso("WRITE", endereco, bloco, linha, false);
         } else {
             hits++;
-            logAcesso("WRITE", endereco, bloco, linha, true);
         }
 
         ultimoEndereco = endereco;
@@ -206,15 +202,4 @@ public class Cache implements AcessoMemoria {
         validos[linha] = true;
     }
 
-    private void logAcesso(String operacao, int endereco, int bloco, int linha, boolean hit) {
-        System.out.printf(
-                "%s %s %s | end=%04d bloco=%03d linha=%02d tag=%03d%n",
-                nome,
-                operacao,
-                hit ? "HIT" : "MISS",
-                endereco,
-                bloco,
-                linha,
-                tags[linha]);
-    }
 }

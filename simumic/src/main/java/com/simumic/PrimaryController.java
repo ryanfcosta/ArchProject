@@ -54,7 +54,7 @@ public class PrimaryController {
     private Line lBusC1, lBusC2, lBusC3, lBusA1, lBusA2, lBusA3, lBusB1, lBusB2,
             lMarL1, lL1L2_Mar, lL2Ram_Mar, lMbrL1, lL1L2_Mbr, lL2Ram_Mbr, lMarB, lMbrC, lRegC, lAmux1, lAmux2,
             lAluA, lAluB, lShifter, lCtrl1, lCtrl2, lCtrl3, lCtrl4,
-            lCond, lFlags1, lFlags2, lAddr1, lAddr2, lAddr3, lAddr4, lAddr5,
+            lCond, lFlags1, lFlags2, lAddr1, lAddr2, lAddr3, lAddr4, lAddr5, lInc1, lInc2,
             lDecA, lDecB, lDecC;
 
     @FXML
@@ -121,7 +121,7 @@ public class PrimaryController {
                 lBusC1, lBusC2, lBusC3, lBusA1, lBusA2, lBusA3, lBusB1, lBusB2,
                 lMarL1, lL1L2_Mar, lL2Ram_Mar, lMbrL1, lL1L2_Mbr, lL2Ram_Mbr, lMarB, lMbrC, lRegC, lAmux1, lAmux2,
                 lAluA, lAluB, lShifter, lCtrl1, lCtrl2, lCtrl3, lCtrl4,
-                lCond, lFlags1, lFlags2, lAddr1, lAddr2, lAddr3, lAddr4, lAddr5,
+                lCond, lFlags1, lFlags2, lAddr1, lAddr2, lAddr3, lAddr4, lAddr5,lInc1, lInc2,
                 lDecA, lDecB, lDecC
         };
         numsClock = new Label[] { num1, num2, num3, num4 };
@@ -569,6 +569,8 @@ public class PrimaryController {
             lAddr3.setStroke(COR_VERDE);
             lAddr4.setStroke(COR_VERDE);
             lAddr5.setStroke(COR_VERDE);
+            lInc1.setStroke(COR_VERDE);
+            lInc2.setStroke(COR_VERDE);
         }
         if (cacheL1 != null && cacheL2 != null) {
             labelL1Stats.setText(formatarStats(cacheL1));

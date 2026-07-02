@@ -68,6 +68,8 @@
                                         <Line fx:id="lAddr3" startX="1145.0" startY="515.0" endX="1145.0" endY="225.0" styleClass="bus-line"/> 
                                         <Line fx:id="lAddr4" startX="1145.0" startY="225.0" endX="900.0" endY="225.0" styleClass="bus-line"/> 
                                         <Line fx:id="lAddr5" startX="900.0" startY="225.0" endX="900.0" endY="245.0" styleClass="bus-line"/> 
+                                        <Line fx:id="lInc1" startX="820.0" startY="288.0" endX="820.0" endY="257.0" styleClass="bus-line"/>
+                                        <Line fx:id="lInc2" startX="820.0" startY="257.0" endX="870.0" endY="257.0" styleClass="bus-line"/>
 
                                         <Line fx:id="lDecC" startX="459.0" startY="125.0" endX="459.0" endY="135.0" styleClass="bus-line"/>
                                         <Line fx:id="lDecB" startX="507.0" startY="125.0" endX="507.0" endY="135.0" styleClass="bus-line"/>
