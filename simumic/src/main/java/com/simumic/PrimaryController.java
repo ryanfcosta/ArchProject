@@ -55,7 +55,7 @@ public class PrimaryController {
 
     @FXML
     private Line lBusC1, lBusC2, lBusC3, lBusA1, lBusA2, lBusA3, lBusB1, lBusB2,
-            lMarL1, lL1L2_Mar, lL2Ram_Mar, lMbrL1, lL1L2_Mbr, lL2Ram_Mbr, lMarB, lMbrC, lRegC, lAmux1, lAmux2,
+            lMarL1, lL1L2_Mar, lL2Ram_Mar, lMbrL1, lL1L2_Mbr, lL2Ram_Mbr, lMarB, lMbrC1, lMbrC2,lRegC, lAmux1, lAmux2,
             lAluA, lAluB, lShifter, lCtrl1, lCtrl2, lCtrl3, lCtrl4,
             lCond, lFlags1, lFlags2, lAddr1, lAddr2, lAddr3, lAddr4, lAddr5, lInc1, lInc2,
             lDecA, lDecB, lDecC;
@@ -122,7 +122,7 @@ public class PrimaryController {
 
         todasLinhas = new Line[] { // DEFINE PARA APAGAR TUDO QUANDO RESETAR
                 lBusC1, lBusC2, lBusC3, lBusA1, lBusA2, lBusA3, lBusB1, lBusB2,
-                lMarL1, lL1L2_Mar, lL2Ram_Mar, lMbrL1, lL1L2_Mbr, lL2Ram_Mbr, lMarB, lMbrC, lRegC, lAmux1, lAmux2,
+                lMarL1, lL1L2_Mar, lL2Ram_Mar, lMbrL1, lL1L2_Mbr, lL2Ram_Mbr, lMarB, lMbrC1,lMbrC2, lRegC, lAmux1, lAmux2,
                 lAluA, lAluB, lShifter, lCtrl1, lCtrl2, lCtrl3, lCtrl4,
                 lCond, lFlags1, lFlags2, lAddr1, lAddr2, lAddr3, lAddr4, lAddr5,lInc1, lInc2,
                 lDecA, lDecB, lDecC
@@ -547,8 +547,9 @@ public class PrimaryController {
             
             if (cpu.getMbrCtrl() == 1) {
                 rectMBR.setStroke(COR_VERDE);
-                if (lMbrC != null) lMbrC.setStroke(COR_VERDE);
-                
+                if (lMbrC1 != null) lMbrC1.setStroke(COR_VERDE);
+                if (lMbrC2 != null) lMbrC2.setStroke(COR_VERDE);
+
                 acenderBusC(); 
             }
 

@@ -25,33 +25,35 @@
                                 
                                 <Group scaleX="1.05" scaleY="1.05" translateX="15.0" translateY="-30.0">
                                     <children>
-                                        <Line fx:id="lBusC1" startX="460.0" startY="380.0" endX="460.0" endY="975.0" styleClass="bus-line"/> 
-                                        <Line fx:id="lBusC2" startX="800.0" startY="975.0" endX="460.0" endY="975.0" styleClass="bus-line"/>
-                                        <Line fx:id="lBusC3" startX="800.0" startY="948.0" endX="800.0" endY="975.0" styleClass="bus-line"/>
-                                        <Line fx:id="lRegC" startX="460.0" startY="380.0" endX="515.0" endY="380.0" styleClass="bus-line"/> 
-                                        <Line fx:id="lMbrC" startX="460.0" startY="695.0" endX="380.0" endY="695.0" styleClass="bus-line"/> 
+                                        <Line fx:id="lBusC1" startX="460.0" startY="380.0" endX="460.0" endY="955.0" styleClass="bus-line"/> 
+                                        <Line fx:id="lBusC2" startX="800.0" startY="955.0" endX="460.0" endY="955.0" styleClass="bus-line"/>
+                                        <Line fx:id="lBusC3" startX="800.0" startY="938.0" endX="800.0" endY="955.0" styleClass="bus-line"/>
+                                        <Line fx:id="lRegC" startX="460.0" startY="380.0" endX="515.0" endY="380.0" styleClass="bus-line"/>
+                                        <Line fx:id="lMbrC1" startX="457.0" startY="955.0" endX="335.0" endY="955.0" styleClass="bus-line"/>
+                                        <Line fx:id="lMbrC2" startX="335.0" startY="955.0" endX="335.0" endY="817.0" styleClass="bus-line"/>
 
-                                        <Line fx:id="lBusA1" startX="770.0" startY="280.0" endX="770.0" endY="540.0" styleClass="bus-line"/>
-                                        <Line fx:id="lBusA2" startX="660.0" startY="280.0" endX="770.0" endY="280.0" styleClass="bus-line"/> 
-                                        <Line fx:id="lBusA3" startX="770.0" startY="568.0" endX="770.0" endY="780.0" styleClass="bus-line"/>
+                                        <Line fx:id="lBusA1" startX="770.0" startY="280.0" endX="770.0" endY="640.0" styleClass="bus-line"/>
+                                        <Line fx:id="lBusA2" startX="660.0" startY="280.0" endX="770.0" endY="280.0" styleClass="bus-line"/>
+                                        <Line fx:id="lBusA3" startX="770.0" startY="668.0" endX="770.0" endY="780.0" styleClass="bus-line"/>
                                         <Line fx:id="lAluA" startX="770.0" startY="805.0" endX="770.0" endY="835.0" styleClass="bus-line"/>
 
-                                        <Line fx:id="lBusB1" startX="830.0" startY="480.0" endX="830.0" endY="540.0" styleClass="bus-line"/>
-                                        <Line fx:id="lBusB2" startX="660.0" startY="480.0" endX="830.0" endY="480.0" styleClass="bus-line"/> 
-                                        <Line fx:id="lAluB" startX="830.0" startY="568.0" endX="830.0" endY="835.0" styleClass="bus-line"/>
-                                        <Line fx:id="lMarB" startX="830.0" startY="595.0" endX="380.0" endY="595.0" styleClass="bus-line"/> 
+                                        <Line fx:id="lBusB1" startX="830.0" startY="480.0" endX="830.0" endY="640.0" styleClass="bus-line"/>
+                                        <Line fx:id="lBusB2" startX="660.0" startY="480.0" endX="830.0" endY="480.0" styleClass="bus-line"/>
+                                        <Line fx:id="lAluB" startX="830.0" startY="668.0" endX="830.0" endY="835.0" styleClass="bus-line"/>
+                                        
+                                        <Line fx:id="lMarB" startX="830.0" startY="722.0" endX="380.0" endY="722.0" styleClass="bus-line"/> 
+                                        <Line fx:id="lMarL1" startX="290.0" startY="722.0" endX="250.0" endY="722.0" styleClass="bus-line"/> 
+                                        <Line fx:id="lL1L2_Mar" startX="220.0" startY="722.0" endX="180.0" endY="722.0" styleClass="bus-line"/> 
+                                        <Line fx:id="lL2Ram_Mar" startX="120.0" startY="722.0" endX="105.0" endY="722.0" styleClass="bus-line"/>
 
-                                        <Line fx:id="lMarL1" startX="290.0" startY="595.0" endX="250.0" endY="595.0" styleClass="bus-line"/> 
-                                        <Line fx:id="lL1L2_Mar" startX="220.0" startY="595.0" endX="180.0" endY="595.0" styleClass="bus-line"/> 
-                                        <Line fx:id="lL2Ram_Mar" startX="120.0" startY="595.0" endX="100.0" endY="595.0" styleClass="bus-line"/> 
-                                        <Line fx:id="lMbrL1" startX="290.0" startY="695.0" endX="250.0" endY="695.0" styleClass="bus-line"/> 
-                                        <Line fx:id="lL1L2_Mbr" startX="220.0" startY="695.0" endX="180.0" endY="695.0" styleClass="bus-line"/> 
-                                        <Line fx:id="lL2Ram_Mbr" startX="120.0" startY="695.0" endX="100.0" endY="695.0" styleClass="bus-line"/>
+                                        <Line fx:id="lMbrL1" startX="290.0" startY="792.0" endX="250.0" endY="792.0" styleClass="bus-line"/> 
+                                        <Line fx:id="lL1L2_Mbr" startX="220.0" startY="792.0" endX="180.0" endY="792.0" styleClass="bus-line"/> 
+                                        <Line fx:id="lL2Ram_Mbr" startX="120.0" startY="792.0" endX="105.0" endY="792.0" styleClass="bus-line"/>
 
-                                        <Line fx:id="lAmux1" startX="335.0" startY="720.0" endX="335.0" endY="792.0" styleClass="bus-line"/> 
-                                        <Line fx:id="lAmux2" startX="335.0" startY="792.0" endX="730.0" endY="792.0" styleClass="bus-line"/>
-                                        <Line fx:id="lShifter" startX="800.0" startY="895.0" endX="800.0" endY="920.0" styleClass="bus-line"/> 
-
+                                        <Line fx:id="lAmux1" startX="380.0" startY="792.0" endX="380.0" endY="792.0" styleClass="bus-line"/> 
+                                        <Line fx:id="lAmux2" startX="380.0" startY="792.0" endX="730.0" endY="792.0" styleClass="bus-line"/>
+                                        <Line fx:id="lShifter" startX="800.0" startY="895.0" endX="800.0" endY="910.0" styleClass="bus-line"/> 
+                                        
                                         <Line fx:id="lCtrl1" startX="1180.0" startY="270.0" endX="1180.0" endY="288.0" styleClass="bus-line"/> 
                                         <Line fx:id="lCtrl2" startX="1120.0" startY="305.0" endX="1150.0" endY="305.0" styleClass="bus-line"/> 
                                         <Line fx:id="lCtrl3" startX="1180.0" startY="322.0" endX="1180.0" endY="375.0" styleClass="bus-line"/> 
@@ -71,15 +73,15 @@
                                         <Line fx:id="lDecB" startX="587.0" startY="125.0" endX="587.0" endY="135.0" styleClass="bus-line"/>
                                         <Line fx:id="lDecA" startX="636.0" startY="125.0" endX="636.0" endY="135.0" styleClass="bus-line"/>
 
-                                        <StackPane layoutX="15.0" layoutY="320.0">
-                                            <Rectangle fx:id="rectRAM" width="85.0" height="520.0" stroke="#d2d5d5" strokeWidth="2.0" fill="#000000"/>
-                                            <VBox alignment="CENTER">
+                                        <StackPane layoutX="25.0" layoutY="360.0">
+                                            <Rectangle fx:id="rectRAM" width="80.0" height="520.0" stroke="#d2d5d5" strokeWidth="2.0" fill="#000000"/>
+                                            <VBox alignment="CENTER" spacing="5.0">
                                                 <Label text="MEMÓRIA" textFill="WHITE" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
                                                 <Label text="RAM" textFill="WHITE" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
                                             </VBox>
                                         </StackPane>
-                                        
-                                        <VBox layoutX="30.0" layoutY="715.0" spacing="10.0">
+
+                                        <VBox layoutX="30.0" layoutY="852.0" spacing="10.0">
                                             <HBox alignment="CENTER_LEFT" spacing="5.0">
                                                 <Rectangle fx:id="rectFlagRD" width="12.0" height="12.0" stroke="#d2d5d5" strokeWidth="1.5" fill="#000000"/>
                                                 <Label text="RD" textFill="#d2d5d5" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
@@ -90,29 +92,29 @@
                                             </HBox>
                                         </VBox>
 
-                                        <StackPane layoutX="220.0" layoutY="570.0">
-                                            <Rectangle fx:id="rectL1" width="30.0" height="150.0" stroke="#f1c40f" strokeWidth="2.0" fill="#000000" strokeType="INSIDE"/>
-                                            <VBox alignment="CENTER" spacing="5.0">
-                                                <Label text="L1" textFill="#d2d5d5" style="-fx-font-weight: bold; -fx-font-size: 13;"/>
-                                            </VBox>
-                                        </StackPane>
-                                        
-                                        <StackPane layoutX="120.0" layoutY="570.0">
-                                            <Rectangle fx:id="rectL2" width="60.0" height="150.0" stroke="#f1c40f" strokeWidth="2.0" fill="#000000" strokeType="INSIDE"/>
+                                        <StackPane layoutX="120.0" layoutY="697.0">
+                                            <Rectangle fx:id="rectL2" width="60.0" height="120.0" stroke="#f1c40f" strokeWidth="2.0" fill="#000000" strokeType="INSIDE"/>
                                             <VBox alignment="CENTER" spacing="5.0">
                                                 <Label text="L2" textFill="#d2d5d5" style="-fx-font-weight: bold; -fx-font-size: 13;"/>
                                             </VBox>
                                         </StackPane>
 
-                                        <StackPane layoutX="290.0" layoutY="570.0">
+                                        <StackPane layoutX="220.0" layoutY="697.0">
+                                            <Rectangle fx:id="rectL1" width="30.0" height="120.0" stroke="#f1c40f" strokeWidth="2.0" fill="#000000" strokeType="INSIDE"/>
+                                            <VBox alignment="CENTER" spacing="5.0">
+                                                <Label text="L1" textFill="#d2d5d5" style="-fx-font-weight: bold; -fx-font-size: 13;"/>
+                                            </VBox>
+                                        </StackPane>
+
+                                        <StackPane layoutX="290.0" layoutY="697.0">
                                             <Rectangle fx:id="rectMAR" width="90.0" height="50.0" stroke="#d2d5d5" strokeWidth="2.0" fill="#000000"/>
                                             <VBox alignment="CENTER">
                                                 <Label text="MAR" textFill="WHITE" style="-fx-font-size: 11; -fx-font-weight: bold;"/>
                                                 <Label fx:id="labelMAR" text="0000" textFill="#d2d5d5"><font><Font name="Monospaced Bold" size="16.0"/></font></Label>
                                             </VBox>
                                         </StackPane>
-                                        
-                                        <StackPane layoutX="290.0" layoutY="670.0">
+
+                                        <StackPane layoutX="290.0" layoutY="767.0">
                                             <Rectangle fx:id="rectMBR" width="90.0" height="50.0" stroke="#d2d5d5" strokeWidth="2.0" fill="#000000"/>
                                             <VBox alignment="CENTER">
                                                 <Label text="MBR" textFill="WHITE" style="-fx-font-size: 11; -fx-font-weight: bold;"/>
@@ -156,11 +158,12 @@
                                             </children>
                                         </VBox>
 
-                                        <StackPane layoutX="745.0" layoutY="540.0">
+                                        <StackPane layoutX="745.0" layoutY="640.0">
                                             <Rectangle fx:id="rectLatchA" width="50.0" height="28.0" styleClass="logic-component"/>
                                             <Label text="A Latch" styleClass="reg-label" style="-fx-font-size: 10;"/>
                                         </StackPane>
-                                        <StackPane layoutX="805.0" layoutY="540.0">
+
+                                        <StackPane layoutX="805.0" layoutY="640.0">
                                             <Rectangle fx:id="rectLatchB" width="50.0" height="28.0" styleClass="logic-component"/>
                                             <Label text="B Latch" styleClass="reg-label" style="-fx-font-size: 10;"/>
                                         </StackPane>
@@ -173,7 +176,7 @@
                                         <Polygon fx:id="polygonALU" points="720.0, 835.0, 880.0, 835.0, 845.0, 895.0, 755.0, 895.0" fill="#000000" style="-fx-stroke: #d2d5d5; -fx-stroke-width: 2;"/>
                                         <Label text="ALU" textFill="WHITE" layoutX="785.0" layoutY="850.0" style="-fx-font-size: 14; -fx-font-weight: bold;"/>
 
-                                        <StackPane layoutX="760.0" layoutY="920.0">
+                                        <StackPane layoutX="760.0" layoutY="910.0">
                                             <Rectangle fx:id="rectShifter" width="80.0" height="28.0" stroke="#d2d5d5" strokeWidth="2.0" fill="#000000"/>
                                             <Label text="Shifter" textFill="WHITE" style="-fx-font-size: 12; -fx-font-weight: bold;"/>
                                         </StackPane>
