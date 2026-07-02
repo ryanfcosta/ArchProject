@@ -49,6 +49,9 @@ public class PrimaryController {
 
     @FXML
     private Rectangle rectDecA, rectDecB, rectDecC;
+    
+    @FXML
+    private Rectangle rectInc, rectMirAddr, rectMMUX, rectMPC;
 
     @FXML
     private Line lBusC1, lBusC2, lBusC3, lBusA1, lBusA2, lBusA3, lBusB1, lBusB2,
@@ -352,7 +355,6 @@ public class PrimaryController {
     private void acenderBusA() {
         lBusA1.setStroke(COR_VERDE);
         lBusA2.setStroke(COR_VERDE);
-        lBusA3.setStroke(COR_VERDE);
     }
 
     private void acenderBusB() {
@@ -407,6 +409,11 @@ public class PrimaryController {
         rectFlagN.setStroke(n ? COR_VERDE : COR_CINZA);
         rectFlagZ.setFill(z ? COR_VERDE : COR_FUNDO);
         rectFlagZ.setStroke(z ? COR_VERDE : COR_CINZA);
+
+        rectMPC.setStroke(COR_CINZA);
+        rectMMUX.setStroke(COR_CINZA);
+        rectInc.setStroke(COR_CINZA);
+        rectMirAddr.setStroke(COR_CINZA);
 
         rectFlagRD.setFill(COR_FUNDO);
         rectFlagRD.setStroke(COR_CINZA);
@@ -486,7 +493,6 @@ public class PrimaryController {
             rA.setStroke(COR_VERDE);
             Rectangle rB = getRectByIndex(cpu.getBReg());
             rB.setStroke(COR_VERDE);
-            rectAMUX.setStroke(COR_VERDE);
 
             lDecA.setStroke(COR_VERDE);
             lDecB.setStroke(COR_VERDE);
@@ -503,23 +509,28 @@ public class PrimaryController {
             num2.setStyle("-fx-text-fill: " + CSS_VERDE + ";");
             rectDecA.setStroke(COR_VERDE);
             rectDecB.setStroke(COR_VERDE);
-            rectLatchA.setStroke(COR_VERDE);
-            rectLatchB.setStroke(COR_VERDE);
 
             polygonALU.setStroke(COR_VERDE);
             rectShifter.setStroke(COR_VERDE);
-
-            lAluB.setStroke(COR_VERDE);
             lShifter.setStroke(COR_VERDE);
             lFlags1.setStroke(COR_VERDE);
+            rectAMUX.setStroke(COR_VERDE);
 
-            if (cpu.getAmuxCtrl() == 1) {
-                rectMBR.setStroke(COR_VERDE);
+            if (cpu.getAmuxCtrl() == 1) { // MBR e AMUX
+                rectMBR.setStroke(COR_VERDE); 
                 lAmux1.setStroke(COR_VERDE);
                 lAmux2.setStroke(COR_VERDE);
                 lAluA.setStroke(COR_VERDE);
-            } else {
+            } else { //
+                rectLatchA.setStroke(COR_VERDE);
+                lBusA3.setStroke(COR_VERDE); // Latch A e AMUX
                 lAluA.setStroke(COR_VERDE);
+            }
+
+            int aluCtrl = cpu.getAluCtrl();
+            if (aluCtrl == 0 || aluCtrl == 1) { // 0 = A+B, 1 = A AND B
+                rectLatchB.setStroke(COR_VERDE);
+                lAluB.setStroke(COR_VERDE);
             }
 
         } else if ("SUB3".equals(status)) {
@@ -571,6 +582,22 @@ public class PrimaryController {
             lAddr5.setStroke(COR_VERDE);
             lInc1.setStroke(COR_VERDE);
             lInc2.setStroke(COR_VERDE);
+            
+            rectMMUX.setStroke(COR_VERDE);
+            rectMPC.setStroke(COR_VERDE);
+            
+            int cond = cpu.getCondCtrl();
+            boolean flagN = cpu.isFlagN();
+            boolean flagZ = cpu.isFlagZ();
+
+            boolean usaInc = (cond == 0) || (cond == 1 && !flagN) || (cond == 2 && !flagZ);
+
+            if (usaInc) {
+                rectInc.setStroke(COR_VERDE);
+            } else {
+                rectMirAddr.setStroke(COR_VERDE);
+            }
+            
         }
         if (cacheL1 != null && cacheL2 != null) {
             labelL1Stats.setText(formatarStats(cacheL1));
