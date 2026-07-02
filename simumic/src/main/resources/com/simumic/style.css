@@ -12,7 +12,7 @@
 }
 
 .bank-case {
-    -fx-stroke: #d2d5d5; stroke: #d2d5d5;
+    -fx-stroke: #3498db; stroke: #3498db;
     -fx-stroke-width: 2; stroke-width: 2;
     -fx-fill: #000000; fill: #000000;
 }

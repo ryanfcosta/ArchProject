@@ -537,27 +537,29 @@ public class PrimaryController {
             num3.setStyle("-fx-text-fill: " + CSS_VERDE + ";");
             polygonALU.setStroke(COR_CINZA);
 
-            acenderBusC();
-
             if (cpu.getMarCtrl() == 1) {
                 rectMAR.setStroke(COR_VERDE);
-                if (lMarB != null)
-                    lMarB.setStroke(COR_VERDE);
-                acenderBusB();
+                
+                rectLatchB.setStroke(COR_VERDE);
+                if (lAluB != null) lAluB.setStroke(COR_VERDE);
+                if (lMarB != null) lMarB.setStroke(COR_VERDE);
             }
+            
             if (cpu.getMbrCtrl() == 1) {
                 rectMBR.setStroke(COR_VERDE);
-                if (lMbrC != null)
-                    lMbrC.setStroke(COR_VERDE);
+                if (lMbrC != null) lMbrC.setStroke(COR_VERDE);
+                
+                acenderBusC(); 
             }
 
         } else if ("SUB4".equals(status)) {
             num4.setStyle("-fx-text-fill: " + CSS_VERDE + ";");
-            acenderBusC();
 
             rectMicroSeq.setStroke(COR_VERDE);
 
             if (cpu.getEncCtrl() == 1) {
+                acenderBusC(); 
+                
                 Rectangle rC = getRectByIndex(cpu.getCReg());
                 rC.setStroke(COR_VERDE);
                 rectDecC.setStroke(COR_VERDE);
